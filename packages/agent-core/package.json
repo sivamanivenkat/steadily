@@ -13,6 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@steadily/merchants": "workspace:*",
+    "@steadily/rule-packs": "workspace:*",
     "@steadily/shared-types": "workspace:*",
     "@steadily/taxonomy": "workspace:*"
   }

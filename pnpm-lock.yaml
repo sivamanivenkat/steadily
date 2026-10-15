@@ -278,6 +278,12 @@ importers:
 
   packages/agent-core:
     dependencies:
+      '@steadily/merchants':
+        specifier: workspace:*
+        version: link:../merchants
+      '@steadily/rule-packs':
+        specifier: workspace:*
+        version: link:../rule-packs
       '@steadily/shared-types':
         specifier: workspace:*
         version: link:../shared-types
