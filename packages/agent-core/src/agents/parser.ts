@@ -108,7 +108,14 @@ function mergeFields(event: Captured, item: InboxItem | null, packs: readonly Ru
     try {
       fromText =
         parseAlert(
-          { text: item.rawText, receivedAt: item.createdAt, source: item.source },
+          {
+            text: item.rawText,
+            receivedAt: item.createdAt,
+            source: item.source,
+            // The origin lets a pack claim the alert, so its app-specific push rules run.
+            ...(item.originApp ? { androidPackage: item.originApp } : {}),
+            ...(item.originSender ? { smsSender: item.originSender } : {}),
+          },
           packs,
         ) ?? {};
     } catch {

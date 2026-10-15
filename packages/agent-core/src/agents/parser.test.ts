@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgentContext, EventPayload, StoredEvent } from '@steadily/shared-types';
 import { createInMemoryRepos, type InboxItem } from '../ports';
 import { createCapturingLogger, createFixedClock, createNoopLlm } from '../testing';
+import type { RulePack } from '@steadily/rule-packs';
 import { createParserAgent, kindFor } from './parser';
 
 // Synthetic data only.
@@ -243,6 +244,73 @@ describe('Parser agent', () => {
       ctx,
     );
     expect(await repos.transactions.get(INBOX_1)).toMatchObject({ kind: 'transfer' });
+  });
+
+  describe('alert origin', () => {
+    // Same text as the shared chase push fixture: brand-agnostic, so only the
+    // posting app tells the parser it is a Chase alert.
+    const CHASE_PUSH =
+      'You made a $5 transaction with SQ *BLUE BOTTLE COFFEE on your card ending in 1234';
+    const pushCapture = () => captured({ source: 'android_notification' });
+
+    it('runs app-specific push rules when the posting package is known', async () => {
+      const { repos, ctx, agent, addInbox } = setup();
+      addInbox(CHASE_PUSH, {
+        source: 'android_notification',
+        originApp: 'com.chase.sig.android',
+      });
+
+      const out = await agent.handle(pushCapture(), ctx);
+
+      expect(out).toEqual([{ type: 'transaction.parsed', payload: { transactionId: INBOX_1 } }]);
+      expect(await repos.transactions.get(INBOX_1)).toMatchObject({
+        amountMinor: 500,
+        kind: 'expense',
+        merchantRaw: 'SQ *BLUE BOTTLE COFFEE',
+        accountLast4: '1234',
+        issuerId: 'chase',
+      });
+    });
+
+    it('does not apply the chase push rule without the package', async () => {
+      const { repos, ctx, agent, addInbox } = setup();
+      addInbox(CHASE_PUSH, { source: 'android_notification' });
+
+      await agent.handle(pushCapture(), ctx);
+
+      const tx = await repos.transactions.get(INBOX_1);
+      expect(tx?.issuerId ?? null).not.toBe('chase');
+    });
+
+    it('lets the SMS sender claim the alert for its pack', async () => {
+      // Two synthetic packs match the same text; only the sender decides between them.
+      const pack = (issuerId: string, smsSenders: string[]): RulePack => ({
+        issuerId,
+        displayName: issuerId,
+        version: 1,
+        verified: false,
+        sources: { androidPackages: [], smsSenders },
+        rules: [
+          {
+            id: `${issuerId}_txn`,
+            channel: 'sms',
+            direction: 'debit',
+            pattern: 'Spent \\$(?<amount>[0-9.]+) at (?<merchant>.+)$',
+          },
+        ],
+      });
+      const packs = [pack('bank_a', ['11111']), pack('bank_b', ['22222'])];
+      const { repos, ctx, addInbox } = setup();
+      const agent = createParserAgent({ repos, packs });
+      addInbox('Spent $3.50 at SYNTHETIC DELI', { originSender: '22222' });
+
+      await agent.handle(captured(), ctx);
+
+      expect(await repos.transactions.get(INBOX_1)).toMatchObject({
+        amountMinor: 350,
+        issuerId: 'bank_b',
+      });
+    });
   });
 
   it('derives kind from direction, issuer and merchant', () => {
