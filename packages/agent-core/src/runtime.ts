@@ -26,6 +26,17 @@ export interface RunResult {
   stoppedByLoopGuard: boolean;
 }
 
+export interface TickResult {
+  /** Agents that have a `tick`. */
+  ticked: number;
+  /** Events published from ticks. */
+  published: number;
+  /** Ticks that threw or returned invalid events (nothing published for them). */
+  failed: number;
+  /** The delivery run that followed. */
+  run: RunResult;
+}
+
 export const DEFAULT_MAX_ATTEMPTS = 3;
 export const DEFAULT_MAX_DELIVERIES_PER_RUN = 1000;
 const DEFAULT_BATCH_SIZE = 100;
@@ -104,6 +115,40 @@ export class AgentRuntime {
     const run = this.running.then(() => this.runOnce());
     this.running = run.catch(() => undefined);
     return run;
+  }
+
+  /**
+   * Periodic entry point (app foreground, background task, Headless JS): calls
+   * every registered agent's `tick` in registration order, publishes what each
+   * returns (causationId null), then delivers until idle. A failing or invalid
+   * tick is logged by error name and skipped; other agents still tick.
+   * Serialized with `runUntilIdle`.
+   */
+  tick(): Promise<TickResult> {
+    const run = this.running.then(() => this.tickOnce());
+    this.running = run.catch(() => undefined);
+    return run;
+  }
+
+  private async tickOnce(): Promise<TickResult> {
+    let ticked = 0;
+    let published = 0;
+    let failed = 0;
+    for (const agent of this.agents) {
+      if (!agent.tick) continue;
+      ticked++;
+      try {
+        const emitted = await agent.tick(this.ctx);
+        published += (await this.bus.publish(emitted, null)).length;
+      } catch (error) {
+        failed++;
+        const reason =
+          error instanceof Error ? error.name.slice(0, MAX_ERROR_NAME_LENGTH) : 'non-error thrown';
+        this.log.warn(`Agent tick failed (${reason})`, { agent: agent.name });
+      }
+    }
+    const run = await this.runOnce();
+    return { ticked, published, failed, run };
   }
 
   private async runOnce(): Promise<RunResult> {

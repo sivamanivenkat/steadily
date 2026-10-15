@@ -540,3 +540,64 @@ describe('replay: review-nudger', () => {
     ]);
   });
 });
+
+describe('AgentRuntime.tick', () => {
+  const checkin: NewEvent = {
+    type: 'notify.request',
+    payload: { kind: 'weekly_checkin', urgency: 'instant' },
+  };
+
+  it('publishes tick output without causation, then delivers it', async () => {
+    const { runtime, store } = setup();
+    const ticker: Agent = { ...recorder('ticker', []), tick: async () => [checkin] };
+    const listener = recorder('listener', ['notify.request']);
+    runtime.register(ticker).register(listener);
+
+    const result = await runtime.tick();
+
+    expect(result).toMatchObject({ ticked: 1, published: 1, failed: 0 });
+    expect(result.run).toMatchObject({ deliveries: 1, succeeded: 1 });
+    expect(store.all().map(({ event }) => [event.type, event.causationId])).toEqual([
+      ['notify.request', null],
+    ]);
+    expect(listener.seen).toHaveLength(1);
+  });
+
+  it('isolates a failing or invalid tick and logs only the error name', async () => {
+    const { runtime, store, log } = setup();
+    const throws: Agent = {
+      ...recorder('throws', []),
+      tick: async () => {
+        throw new TypeError(`boom ${SECRET_MERCHANT}`);
+      },
+    };
+    const invalid: Agent = {
+      ...recorder('invalid', []),
+      tick: async () => [{ type: 'notify.request', payload: { kind: 'nope' } } as never],
+    };
+    const ok: Agent = { ...recorder('ok', []), tick: async () => [checkin] };
+    runtime.register(throws).register(invalid).register(ok).register(recorder('no-tick', []));
+
+    const result = await runtime.tick();
+
+    expect(result).toMatchObject({ ticked: 3, published: 1, failed: 2 });
+    expect(store.all()).toHaveLength(1);
+    expect(log.entries.map((e) => [e.level, e.meta?.agent])).toEqual([
+      ['warn', 'throws'],
+      ['warn', 'invalid'],
+    ]);
+    expect(JSON.stringify(log.entries)).not.toContain(SECRET_MERCHANT);
+  });
+
+  it('delivers events that were already pending', async () => {
+    const { runtime, bus } = setup();
+    const listener = recorder('listener', ['transaction.parsed']);
+    runtime.register(listener);
+    await bus.publish([parsed(TXN_1)], null);
+
+    const result = await runtime.tick();
+
+    expect(result).toMatchObject({ ticked: 0, published: 0 });
+    expect(listener.seen).toHaveLength(1);
+  });
+});
