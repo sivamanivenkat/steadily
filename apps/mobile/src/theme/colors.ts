@@ -18,6 +18,12 @@ export type ColorTokens = {
   accent: string;
   /** Accent text and links. */
   accentInk: string;
+  /** Text and icons on a filled `accent` button (4.5:1 or better). */
+  onAccent: string;
+  /** Soft accent wash behind accent-tinted secondary actions. */
+  accentTint: string;
+  /** Soft neutral wash behind neutral secondary actions. */
+  neutralTint: string;
   /** Success marks (on-track icon, saved toast check). */
   onTrack: string;
   headsUp: { text: string; bg: string };
@@ -42,6 +48,9 @@ export const lightColors: ColorTokens = {
   ink2: '#4E556E',
   accent: '#4F5BD5',
   accentInk: '#3F47A8',
+  onAccent: '#FFFFFF',
+  accentTint: 'rgba(79,91,213,0.12)',
+  neutralTint: 'rgba(30,34,53,0.06)',
   onTrack: '#2E8B6E',
   headsUp: { text: '#8A520F', bg: '#FFE9C9' },
   onDevice: { text: '#1E6E5B', bg: '#D3F3EA' },
@@ -68,6 +77,9 @@ export const darkColors: ColorTokens = {
   ink2: '#A9AEC8',
   accent: '#9DA6FF',
   accentInk: '#B9C0FF',
+  onAccent: '#0F1222',
+  accentTint: 'rgba(157,166,255,0.16)',
+  neutralTint: 'rgba(255,255,255,0.08)',
   // Dark has no dedicated success value in the spec; reuse the on-device green.
   onTrack: '#9FE3CF',
   headsUp: { text: '#FFD49A', bg: 'rgba(255,212,154,0.14)' },

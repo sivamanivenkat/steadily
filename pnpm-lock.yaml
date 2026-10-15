@@ -187,6 +187,12 @@ importers:
       '@expo-google-fonts/plus-jakarta-sans':
         specifier: ^0.4.2
         version: 0.4.2
+      '@steadily/agent-core':
+        specifier: workspace:*
+        version: link:../../packages/agent-core
+      '@steadily/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@steadily/taxonomy':
         specifier: workspace:*
         version: link:../../packages/taxonomy
