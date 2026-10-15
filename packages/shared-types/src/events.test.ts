@@ -78,6 +78,23 @@ describe('events', () => {
     ).toThrow();
   });
 
+  it('accepts an optional positive threshold on notify requests', () => {
+    const warning = {
+      type: 'notify.request',
+      payload: { kind: 'budget_warning', urgency: 'instant', budgetId: id, threshold: 100 },
+    } as const;
+    expect(parseNewEvent(warning).payload).toEqual(warning.payload);
+    expect(() =>
+      parseNewEvent({ ...warning, payload: { ...warning.payload, threshold: 0 } }),
+    ).toThrow();
+    expect(() =>
+      parseNewEvent({
+        type: 'notify.request',
+        payload: { kind: 'weekly_checkin', urgency: 'instant' },
+      }),
+    ).not.toThrow();
+  });
+
   it('exposes every event type', () => {
     expect(EVENT_TYPES).toContain('notify.request');
   });

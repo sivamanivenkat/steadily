@@ -82,6 +82,8 @@ export const EventPayloads = {
     transactionId: Id.optional(),
     budgetId: Id.optional(),
     subscriptionId: Id.optional(),
+    /** budget_warning only: the percent-used threshold crossed (e.g. 90, 100). */
+    threshold: z.number().positive().optional(),
   }),
   'question.asked': z.object({ questionId: Id }),
   'question.answered': z.object({

@@ -39,4 +39,10 @@ export interface Agent<TContext extends AgentContext = AgentContext> {
   readonly name: string;
   readonly subscribes: readonly EventType[];
   handle(event: StoredEvent, ctx: TContext): Promise<NewEvent[]>;
+  /**
+   * Optional periodic work (app foreground, background task). Returned events
+   * are published with no causation. Must be safe to call at any frequency:
+   * the agent decides itself whether anything is due.
+   */
+  tick?(ctx: TContext): Promise<NewEvent[]>;
 }
