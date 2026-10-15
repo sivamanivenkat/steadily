@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Agent, EventType, NewEvent, StoredEvent } from '@steadily/shared-types';
 import { EventBus } from './event-bus';
-import { InMemoryEventStore } from './event-store';
-import { AgentRuntime, type AgentRuntimeOptions } from './runtime';
+import { InMemoryEventStore, type EventStore } from './event-store';
+import { AgentRuntime, agentCursorName, type AgentRuntimeOptions } from './runtime';
 import {
   createCapturingLogger,
   createFixedClock,
@@ -286,6 +286,202 @@ describe('AgentRuntime', () => {
     const { runtime } = setup();
     runtime.register(recorder('x', []));
     expect(() => runtime.register(recorder('x', []))).toThrow();
+  });
+});
+
+/** Store wrapper that counts calls, to see where a run starts scanning. */
+function spyStore(inner: EventStore) {
+  const calls = { readAfter: [] as number[], isProcessed: 0 };
+  const store: EventStore = {
+    append: (events) => inner.append(events),
+    readAfter: (seq, limit) => {
+      calls.readAfter.push(seq);
+      return inner.readAfter(seq, limit);
+    },
+    isProcessed: (agent, eventId) => {
+      calls.isProcessed++;
+      return inner.isProcessed(agent, eventId);
+    },
+    markProcessed: (agent, eventId, at) => inner.markProcessed(agent, eventId, at),
+    recordHandled: (record) => inner.recordHandled(record),
+    getFailureAttempts: (agent, eventId) => inner.getFailureAttempts!(agent, eventId),
+    recordFailure: (failure) => inner.recordFailure!(failure),
+    getCursor: (name) => inner.getCursor!(name),
+    setCursor: (name, seq, at) => inner.setCursor!(name, seq, at),
+  };
+  return { store, calls };
+}
+
+/** Only the required EventStore methods: no persisted failures or cursors. */
+function minimalStore(inner: InMemoryEventStore): EventStore {
+  return {
+    append: (events) => inner.append(events),
+    readAfter: (seq, limit) => inner.readAfter(seq, limit),
+    isProcessed: (agent, eventId) => inner.isProcessed(agent, eventId),
+    markProcessed: (agent, eventId, at) => inner.markProcessed(agent, eventId, at),
+    recordHandled: (record) => inner.recordHandled(record),
+  };
+}
+
+function failingAgent(name = 'failing'): Agent & { calls: number } {
+  const agent = {
+    name,
+    subscribes: ['transaction.captured'] as EventType[],
+    calls: 0,
+    async handle(): Promise<NewEvent[]> {
+      agent.calls++;
+      throw new TypeError(`boom ${SECRET_MERCHANT}`);
+    },
+  };
+  return agent;
+}
+
+describe('AgentRuntime restarts', () => {
+  it('keeps retry counts across restarts and records only the error name', async () => {
+    const { runtime, bus, store, log } = setup({ maxAttempts: 3 });
+    runtime.register(failingAgent());
+    const [row] = await bus.publish([captured()], null);
+    await runtime.runUntilIdle();
+    await runtime.runUntilIdle();
+    expect(store.allFailures()).toEqual([
+      {
+        agent: 'failing',
+        eventId: row!.event.id,
+        attempts: 2,
+        errorName: 'TypeError',
+        gaveUp: false,
+        at: '2026-10-15T08:00:00.000Z',
+      },
+    ]);
+
+    const restarted = new AgentRuntime({ store, log, llm: createNoopLlm(), maxAttempts: 3 });
+    const again = failingAgent();
+    restarted.register(again);
+    expect(await restarted.runUntilIdle()).toMatchObject({ deliveries: 1, skipped: 1 });
+    expect(again.calls).toBe(1);
+    expect(store.allFailures()[0]).toMatchObject({ attempts: 3, gaveUp: true });
+    expect(await store.isProcessed('failing', row!.event.id)).toBe(true);
+    expect(log.entries.at(-1)?.message).toBe('Agent failed 3 times (TypeError); skipping event');
+    expect(JSON.stringify(store.allFailures())).not.toContain(SECRET_MERCHANT);
+  });
+
+  it('clears the failure record once the agent succeeds', async () => {
+    const { runtime, bus, store } = setup();
+    let fail = true;
+    runtime.register(
+      recorder('flaky', ['transaction.parsed'], () => {
+        if (fail) throw new Error('flaky');
+        return [];
+      }),
+    );
+    await bus.publish([parsed(TXN_1)], null);
+    await runtime.runUntilIdle();
+    expect(store.allFailures()).toHaveLength(1);
+    fail = false;
+    expect((await runtime.runUntilIdle()).succeeded).toBe(1);
+    expect(store.allFailures()).toEqual([]);
+  });
+
+  it('scans from the stored cursor after a restart', async () => {
+    const inner = new InMemoryEventStore();
+    const { runtime, bus } = setup({ store: inner });
+    runtime.register(recorder('a', ['transaction.parsed']));
+    await bus.publish([parsed(TXN_1), parsed(TXN_2), categorized(TXN_1, false)], null);
+    await runtime.runUntilIdle();
+    expect(
+      await inner.getCursor(agentCursorName({ name: 'a', subscribes: ['transaction.parsed'] })),
+    ).toBe(3);
+
+    const { store, calls } = spyStore(inner);
+    const restarted = new AgentRuntime({
+      store,
+      log: createCapturingLogger(),
+      llm: createNoopLlm(),
+    });
+    restarted.register(recorder('a', ['transaction.parsed']));
+    expect((await restarted.runUntilIdle()).deliveries).toBe(0);
+    expect(calls.readAfter).toEqual([3]);
+    expect(calls.isProcessed).toBe(0);
+  });
+
+  it('gives a newly registered agent the full history', async () => {
+    const inner = new InMemoryEventStore();
+    const { runtime, bus } = setup({ store: inner });
+    runtime.register(recorder('a', ['transaction.parsed']));
+    await bus.publish([parsed(TXN_1), parsed(TXN_2)], null);
+    await runtime.runUntilIdle();
+
+    const restarted = new AgentRuntime({
+      store: inner,
+      log: createCapturingLogger(),
+      llm: createNoopLlm(),
+    });
+    const a = recorder('a', ['transaction.parsed']);
+    const b = recorder('b', ['transaction.parsed']);
+    restarted.register(a).register(b);
+    expect((await restarted.runUntilIdle()).deliveries).toBe(2);
+    expect(a.seen).toEqual([]);
+    expect(b.seen).toHaveLength(2);
+  });
+
+  it('rescans when an agent subscribes to a new event type', async () => {
+    const inner = new InMemoryEventStore();
+    const { runtime, bus } = setup({ store: inner });
+    runtime.register(recorder('a', ['transaction.parsed']));
+    await bus.publish([parsed(TXN_1), categorized(TXN_1, false)], null);
+    await runtime.runUntilIdle();
+
+    const restarted = new AgentRuntime({
+      store: inner,
+      log: createCapturingLogger(),
+      llm: createNoopLlm(),
+    });
+    const a = recorder('a', ['transaction.parsed', 'transaction.categorized']);
+    restarted.register(a);
+    expect((await restarted.runUntilIdle()).deliveries).toBe(1);
+    expect(a.seen.map((e) => e.type)).toEqual(['transaction.categorized']);
+  });
+
+  it('does not move the cursor past an event that is still being retried', async () => {
+    const inner = new InMemoryEventStore();
+    const { runtime, bus } = setup({ store: inner });
+    const picky = recorder('picky', ['transaction.parsed'], (event) => {
+      if (event.type === 'transaction.parsed' && event.payload.transactionId === TXN_1) {
+        throw new Error('first fails');
+      }
+      return [];
+    });
+    runtime.register(picky);
+    await bus.publish([parsed(TXN_2), parsed(TXN_1), parsed(TXN_2)], null);
+    expect(await runtime.runUntilIdle()).toMatchObject({ succeeded: 2, failed: 1 });
+    expect(await inner.getCursor(agentCursorName(picky))).toBe(1);
+
+    const restarted = new AgentRuntime({
+      store: inner,
+      log: createCapturingLogger(),
+      llm: createNoopLlm(),
+    });
+    const again = recorder('picky', ['transaction.parsed']);
+    restarted.register(again);
+    expect(await restarted.runUntilIdle()).toMatchObject({ deliveries: 1, succeeded: 1 });
+    expect(
+      again.seen.map((e) => e.type === 'transaction.parsed' && e.payload.transactionId),
+    ).toEqual([TXN_1]);
+    expect(await inner.getCursor(agentCursorName(picky))).toBe(3);
+  });
+
+  it('keeps working with a store that has no failure or cursor support', async () => {
+    const inner = new InMemoryEventStore();
+    const store = minimalStore(inner);
+    const { runtime, bus } = setup({ store, maxAttempts: 2 });
+    const agent = failingAgent();
+    runtime.register(agent);
+    await bus.publish([captured()], null);
+    expect((await runtime.runUntilIdle()).skipped).toBe(0);
+    expect((await runtime.runUntilIdle()).skipped).toBe(1);
+    expect((await runtime.runUntilIdle()).deliveries).toBe(0);
+    expect(agent.calls).toBe(2);
+    expect(inner.allFailures()).toEqual([]);
   });
 });
 
