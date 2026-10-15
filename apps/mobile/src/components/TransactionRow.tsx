@@ -1,11 +1,12 @@
-import { getBuiltInCategory, isBuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
+import type { CategoryId } from '@steadily/taxonomy';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { categoryColors, iconSize, layout, radius, space, useTheme } from '@/theme';
+import { layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
-import { Icon, type IconName } from './Icon';
+import { CategoryTile, categoryMeta } from './CategoryTile';
+import { Icon } from './Icon';
 
 export type TransactionBadge = { kind: 'priceUp' | 'review'; label: string };
 
@@ -18,18 +19,12 @@ type TransactionRowProps = {
   /** e.g. "8:14 AM", "Yesterday" */
   timeLabel: string;
   badge?: TransactionBadge;
+  /** Replaces the category name in the caption, e.g. "Income", "Not an expense". */
+  kindLabel?: string;
+  /** Money coming in: shown with a plus sign. */
+  incoming?: boolean;
   onPress?: () => void;
 };
-
-const TILE_SIZE = 40;
-
-function categoryMeta(id: CategoryId, fallbackName?: string): { name: string; icon: IconName } {
-  if (isBuiltInCategoryId(id)) {
-    const category = getBuiltInCategory(id);
-    return { name: category.name, icon: category.icon };
-  }
-  return { name: fallbackName ?? 'Custom', icon: 'dots' };
-}
 
 export function TransactionRow({
   merchant,
@@ -38,27 +33,26 @@ export function TransactionRow({
   categoryName,
   timeLabel,
   badge,
+  kindLabel,
+  incoming = false,
   onPress,
 }: TransactionRowProps) {
-  const { colors, scheme } = useTheme();
+  const { colors } = useTheme();
   const category = categoryMeta(categoryId, categoryName);
-  const tile = categoryColors(categoryId, scheme);
+  const caption = kindLabel ?? category.name;
+  const spoken = incoming ? `plus ${spokenMoney(amountCents)}` : spokenMoney(amountCents);
 
-  const label = [merchant, spokenMoney(amountCents), category.name, timeLabel, badge?.label]
-    .filter(Boolean)
-    .join(', ');
+  const label = [merchant, spoken, caption, timeLabel, badge?.label].filter(Boolean).join(', ');
 
   const content = (
     <>
-      <View style={[styles.tile, { backgroundColor: tile.fill }]}>
-        <Icon name={category.icon} size={iconSize.md} color={tile.ink} />
-      </View>
+      <CategoryTile categoryId={categoryId} icon={category.icon} />
       <View style={styles.text}>
         <AppText variant="bodyStrong" numberOfLines={2}>
           {merchant}
         </AppText>
         <AppText variant="caption" color={colors.ink2}>
-          {category.name} · {timeLabel}
+          {caption} · {timeLabel}
         </AppText>
         {badge ? (
           <View style={[styles.badge, { backgroundColor: colors.headsUp.bg }]}>
@@ -75,7 +69,7 @@ export function TransactionRow({
         ) : null}
       </View>
       <AppText variant="amount" style={styles.amount}>
-        {formatMoney(amountCents)}
+        {`${incoming ? '+' : ''}${formatMoney(amountCents)}`}
       </AppText>
     </>
   );
@@ -108,13 +102,6 @@ const styles = StyleSheet.create({
     paddingVertical: layout.rowPaddingVertical,
   },
   pressed: { opacity: 0.7 },
-  tile: {
-    width: TILE_SIZE,
-    height: TILE_SIZE,
-    borderRadius: radius.tile,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   text: {
     flex: 1,
     flexShrink: 1,

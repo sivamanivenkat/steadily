@@ -1,0 +1,273 @@
+import { useRouter } from 'expo-router';
+import type { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import {
+  AppText,
+  Button,
+  Glass,
+  OnDeviceBadge,
+  RadioRow,
+  Screen,
+  ScreenHeader,
+  SectionLabel,
+  StatusPill,
+  ToggleRow,
+} from '@/components';
+import {
+  ISSUER_HEALTH_LABEL,
+  issuerHealth,
+  issuerName,
+  useData,
+  useDataSource,
+  useNow,
+} from '@/data';
+import type { Settings } from '@/data/types';
+import { layout, radius, space, useTheme } from '@/theme';
+
+const NOTIFY_OPTIONS: readonly {
+  value: Settings['notifyMode'];
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: 'unsure_only',
+    label: 'Only when unsure',
+    description: 'Ask about new or unclear charges. Log the rest quietly.',
+  },
+  {
+    value: 'every_transaction',
+    label: 'Every transaction',
+    description: 'A short note each time something is logged.',
+  },
+  { value: 'off', label: 'Off', description: 'Check the review queue yourself.' },
+];
+
+const THEME_OPTIONS: readonly { value: Settings['theme']; label: string }[] = [
+  { value: 'system', label: 'Match phone' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+];
+
+/** "22:00" -> "10:00 PM" */
+function clockLabel(hhmm: string): string {
+  const [h = 0, m = 0] = hhmm.split(':').map(Number);
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 === 0 ? 12 : h % 12;
+  return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
+}
+
+const DEFAULT_QUIET_HOURS = { start: '22:00', end: '07:00' };
+
+function Card({ children }: { children: ReactNode }) {
+  return (
+    <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
+      {children}
+    </Glass>
+  );
+}
+
+function Divided({ children }: { children: ReactNode[] }) {
+  const { colors } = useTheme();
+  return (
+    <>
+      {children.map((child, i) => (
+        <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
+          {child}
+        </View>
+      ))}
+    </>
+  );
+}
+
+export function SettingsScreen() {
+  const router = useRouter();
+  const source = useDataSource();
+  const { colors } = useTheme();
+  const now = useNow();
+  const { data: settings } = useData((s) => s.getSettings());
+  const { data: setups } = useData((s) => s.listIssuerSetup());
+
+  const update = (patch: Partial<Settings>) => void source.updateSettings(patch);
+  const selected = setups?.filter((s) => s.selected) ?? [];
+
+  return (
+    <Screen withTabBar={false}>
+      <ScreenHeader title="Settings" onBack={() => router.back()} />
+
+      <SectionLabel>Banks and cards</SectionLabel>
+      <Card>
+        {selected.length === 0 ? (
+          <AppText variant="body" color={colors.ink2} style={styles.padded}>
+            No banks or cards set up yet.
+          </AppText>
+        ) : (
+          <Divided>
+            {selected.map((s) => {
+              const health = issuerHealth(s, now);
+              return (
+                <View
+                  key={s.issuerId}
+                  style={styles.issuerRow}
+                  accessible
+                  accessibilityLabel={`${issuerName(s.issuerId)}: ${ISSUER_HEALTH_LABEL[health]}`}
+                >
+                  <AppText variant="bodyStrong" style={styles.flex}>
+                    {issuerName(s.issuerId)}
+                  </AppText>
+                  <StatusPill
+                    label={ISSUER_HEALTH_LABEL[health]}
+                    tone={
+                      health === 'receiving'
+                        ? 'onTrack'
+                        : health === 'quiet'
+                          ? 'headsUp'
+                          : 'neutral'
+                    }
+                    icon={
+                      health === 'receiving' ? 'check' : health === 'quiet' ? 'bell' : undefined
+                    }
+                  />
+                </View>
+              );
+            })}
+          </Divided>
+        )}
+        <Button
+          label={selected.length === 0 ? 'Set up alerts' : 'Continue setup'}
+          variant="link"
+          onPress={() => void source.saveOnboarding({ completed: false })}
+          accessibilityHint="Opens the alert setup guide where you left off"
+          style={styles.linkStart}
+        />
+      </Card>
+
+      {settings ? (
+        <>
+          <SectionLabel>Notifications</SectionLabel>
+          <Card>
+            <View accessibilityRole="radiogroup" accessibilityLabel="When to notify">
+              <Divided>
+                {NOTIFY_OPTIONS.map((option) => (
+                  <RadioRow
+                    key={option.value}
+                    label={option.label}
+                    description={option.description}
+                    selected={settings.notifyMode === option.value}
+                    onPress={() => update({ notifyMode: option.value })}
+                  />
+                ))}
+              </Divided>
+            </View>
+          </Card>
+          <Card>
+            <Divided>
+              <ToggleRow
+                label="Daily summary"
+                description="One evening note with the day's total."
+                value={settings.dailySummary}
+                onValueChange={(dailySummary) => update({ dailySummary })}
+              />
+              <ToggleRow
+                label="Quiet hours"
+                description={
+                  settings.quietHours
+                    ? `No notifications from ${clockLabel(settings.quietHours.start)} to ${clockLabel(settings.quietHours.end)}.`
+                    : 'Notifications can arrive at any time.'
+                }
+                value={settings.quietHours !== null}
+                onValueChange={(on) => update({ quietHours: on ? DEFAULT_QUIET_HOURS : null })}
+              />
+            </Divided>
+          </Card>
+
+          <SectionLabel>Cloud AI</SectionLabel>
+          <Card>
+            <ToggleRow
+              label="Use cloud AI for unclear merchants"
+              value={settings.cloudAiOptIn}
+              onValueChange={(cloudAiOptIn) => update({ cloudAiOptIn })}
+            />
+            <View style={styles.explain}>
+              <AppText variant="caption" color={colors.ink2}>
+                {settings.cloudAiOptIn
+                  ? 'On. When Steadily cannot tell a category on this phone, it sends only the merchant name and the amount, through Steadily’s server, to a cloud AI model.'
+                  : 'Off. Everything is worked out on this phone. If you turn this on, only the merchant name and the amount of an unclear charge would be sent, through Steadily’s server, to a cloud AI model.'}
+              </AppText>
+              <AppText variant="caption" color={colors.ink2}>
+                Never sent: alert text, screenshots, card numbers, account details or your name.
+              </AppText>
+            </View>
+          </Card>
+
+          <SectionLabel>Appearance</SectionLabel>
+          <Card>
+            <View accessibilityRole="radiogroup" accessibilityLabel="Theme">
+              <Divided>
+                {THEME_OPTIONS.map((option) => (
+                  <RadioRow
+                    key={option.value}
+                    label={option.label}
+                    selected={settings.theme === option.value}
+                    onPress={() => update({ theme: option.value })}
+                  />
+                ))}
+              </Divided>
+            </View>
+          </Card>
+        </>
+      ) : null}
+
+      <SectionLabel>Privacy</SectionLabel>
+      <Card>
+        <View style={styles.privacy}>
+          <OnDeviceBadge />
+          <AppText variant="body" color={colors.ink2}>
+            Alerts are read on this phone and the text is deleted. Open any transaction to see
+            exactly what we kept.
+          </AppText>
+        </View>
+      </Card>
+
+      {__DEV__ ? (
+        <>
+          <SectionLabel>Developer</SectionLabel>
+          <Card>
+            <Divided>
+              <Button
+                label="Reopen onboarding"
+                variant="link"
+                onPress={() => void source.saveOnboarding({ completed: false })}
+                style={styles.linkStart}
+              />
+              <Button
+                label="Restart onboarding from the beginning"
+                variant="link"
+                onPress={() => void source.saveOnboarding({ completed: false, step: 'welcome' })}
+                style={styles.linkStart}
+              />
+            </Divided>
+          </Card>
+        </>
+      ) : null}
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  card: { paddingHorizontal: space.lg, paddingVertical: space.xs },
+  padded: { paddingVertical: space.md },
+  issuerRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: space.sm,
+    minHeight: layout.touchTarget,
+    paddingVertical: space.sm,
+  },
+  linkStart: { alignSelf: 'flex-start', marginLeft: -space.lg },
+  explain: { gap: space.sm, paddingBottom: space.md },
+  privacy: { gap: space.sm, paddingVertical: space.md },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
+});

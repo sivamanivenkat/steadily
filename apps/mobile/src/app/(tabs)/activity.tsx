@@ -1,11 +1,3 @@
-import { PlaceholderScreen } from '@/components';
+import { ActivityScreen } from '@/screens/ActivityScreen';
 
-export default function ActivityScreen() {
-  return (
-    <PlaceholderScreen
-      title="Activity"
-      heading="Your transactions"
-      body="Everything captured from your alerts and shares will show up here, with items to review at the top."
-    />
-  );
-}
+export default ActivityScreen;

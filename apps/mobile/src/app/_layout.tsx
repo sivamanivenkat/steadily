@@ -10,13 +10,20 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { AppProviders, createSyntheticDataSource, useData } from '@/data';
 import { fontFamily, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Already hidden (e.g. fast refresh): nothing to do.
 });
 
-export default function RootLayout() {
+/**
+ * Synthetic in-memory data until packages/db is wired in. Lives for the app session; a cold
+ * start begins from the seed (and onboarding) again.
+ */
+const dataSource = createSyntheticDataSource();
+
+function RootNavigator() {
   const theme = useTheme();
   const [fontsLoaded, fontError] = useFonts({
     [fontFamily.regular]: PlusJakartaSans_400Regular,
@@ -25,7 +32,9 @@ export default function RootLayout() {
     [fontFamily.bold]: PlusJakartaSans_700Bold,
     [fontFamily.extrabold]: PlusJakartaSans_800ExtraBold,
   });
-  const ready = fontsLoaded || fontError !== null;
+  const { data: onboarding } = useData((source) => source.getOnboarding());
+  const { data: settings } = useData((source) => source.getSettings());
+  const ready = (fontsLoaded || fontError !== null) && onboarding !== undefined && !!settings;
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
@@ -33,6 +42,7 @@ export default function RootLayout() {
 
   if (!ready) return null;
 
+  const onboarded = onboarding.completed;
   const navigationTheme = theme.scheme === 'dark' ? DarkTheme : DefaultTheme;
   return (
     <ThemeProvider
@@ -41,11 +51,27 @@ export default function RootLayout() {
         colors: { ...navigationTheme.colors, background: theme.colors.ground },
       }}
     >
-      <StatusBar style="auto" />
+      <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+        <Stack.Protected guard={onboarded}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="review" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="budget-edit" options={{ presentation: 'modal' }} />
+        </Stack.Protected>
+        <Stack.Protected guard={!onboarded}>
+          <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+        </Stack.Protected>
       </Stack>
     </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AppProviders source={dataSource}>
+      <RootNavigator />
+    </AppProviders>
   );
 }
