@@ -6,6 +6,7 @@ import type {
   StoredEvent,
   Transaction,
 } from '@steadily/shared-types';
+import { toMerchantKey } from '@steadily/merchants';
 import { createInMemoryRepos, type UserRule } from '../ports';
 import {
   createCapturingLogger,
@@ -356,6 +357,240 @@ describe('Categorizer agent', () => {
     expect(await agent.handle(parsed(), ctx)).toEqual([]);
     await add({ deletedAt: NOW });
     expect(await agent.handle(parsed(), ctx)).toEqual([]);
+  });
+
+  describe('review suggestions', () => {
+    const TX_5 = '00000000-0000-4000-8000-0000000000a5';
+    const TX_6 = '00000000-0000-4000-8000-0000000000a6';
+
+    it('collects history candidates, best first, without the chosen category', async () => {
+      const { ctx, agent, add } = setup();
+      const history = { merchantName: 'Amazon', status: 'confirmed' as const };
+      await add({ ...history, id: TX_2, categoryId: 'food.groceries' });
+      await add({ ...history, id: TX_3, categoryId: 'shopping.general' });
+      await add({ merchantName: 'Amazon' });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'shopping.general',
+        needsReview: true,
+        suggestions: [
+          { categoryId: 'food.groceries', confidence: 0.44 },
+          { categoryId: 'food.dining', confidence: 0 },
+          { categoryId: 'transport.general', confidence: 0 },
+        ],
+      });
+    });
+
+    it('ranks heuristic and LLM candidates by confidence', async () => {
+      const llm = fakeLlm('on_device', { categoryId: 'shopping.general', confidence: 0.5 });
+      const { ctx, agent, add } = setup(llm);
+      // Evening café dinner: the coffee hint (0.75) wins, the LLM answer becomes a chip.
+      await add({
+        merchantName: 'Sunrise Cafe',
+        amountMinor: 4200,
+        occurredAt: '2026-10-15T00:30:00.000Z',
+      });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'food.coffee',
+        suggestions: [
+          { categoryId: 'shopping.general', confidence: 0.5 },
+          { categoryId: 'food.groceries', confidence: 0 },
+          { categoryId: 'food.dining', confidence: 0 },
+        ],
+      });
+    });
+
+    it("pads with this month's most used categories, then the static order", async () => {
+      const { ctx, agent, add } = setup();
+      const thisMonth = { status: 'confirmed' as const, occurredAt: '2026-10-05T15:00:00.000Z' };
+      await add({ ...thisMonth, id: TX_2, merchantName: 'Clinic A', categoryId: 'health.general' });
+      await add({ ...thisMonth, id: TX_3, merchantName: 'Clinic B', categoryId: 'health.general' });
+      await add({ ...thisMonth, id: TX_4, merchantName: 'Cinema', categoryId: 'travel.general' });
+      // Last month and unconfirmed rows don't count.
+      await add({
+        id: TX_5,
+        merchantName: 'Old',
+        categoryId: 'gifts.general',
+        status: 'confirmed',
+        occurredAt: '2026-09-20T15:00:00.000Z',
+      });
+      await add({ id: TX_6, merchantName: 'Open', categoryId: 'personal_care.general' });
+      await add({ merchantName: 'Zyx Holdings' });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'other.general',
+        suggestions: [
+          { categoryId: 'health.general', confidence: 0 },
+          { categoryId: 'travel.general', confidence: 0 },
+          { categoryId: 'shopping.general', confidence: 0 },
+        ],
+      });
+    });
+
+    it('never suggests the fallback while other categories exist', async () => {
+      const llm = fakeLlm('on_device', { categoryId: 'other.general', confidence: 0.4 });
+      const { ctx, agent, add } = setup(llm);
+      await add({
+        merchantName: 'Zyx Holdings',
+        categoryId: 'bills.utilities',
+        categoryConfidence: 0.7,
+        categorySource: 'classifier',
+      });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      // The native quick category (0.7) beats the LLM; the LLM's fallback is not a chip.
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'bills.utilities',
+        suggestions: [
+          { categoryId: 'shopping.general', confidence: 0 },
+          { categoryId: 'food.groceries', confidence: 0 },
+          { categoryId: 'food.dining', confidence: 0 },
+        ],
+      });
+    });
+
+    it('keeps a beaten pipeline answer as a chip when the quick category wins', async () => {
+      const llm = fakeLlm('on_device', { categoryId: 'travel.general', confidence: 0.6 });
+      const { ctx, agent, add } = setup(llm);
+      await add({
+        merchantName: 'Zyx Holdings',
+        categoryId: 'bills.utilities',
+        categoryConfidence: 0.7,
+        categorySource: 'classifier',
+      });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      const payload = out[0]?.payload as EventPayload<'transaction.categorized'>;
+      expect(payload.suggestions?.[0]).toEqual({ categoryId: 'travel.general', confidence: 0.6 });
+    });
+
+    it('omits suggestions when the category is auto-saved', async () => {
+      const { ctx, agent, add } = setup();
+      await add();
+      const out = await agent.handle(parsed(), ctx);
+      expect(out[0]?.payload).not.toHaveProperty('suggestions');
+    });
+  });
+
+  describe('payments to people (P2P)', () => {
+    const venmo = { issuerId: 'venmo', merchantName: 'Sam Example', merchantRaw: 'Sam Example' };
+
+    it('always asks, even when the LLM is confident, with P2P chips', async () => {
+      const llm = fakeLlm('on_device', { categoryId: 'gifts.general', confidence: 0.9 });
+      const { repos, ctx, agent, add } = setup(llm);
+      await add(venmo);
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toEqual({
+        transactionId: TX_1,
+        categoryId: 'gifts.general',
+        confidence: 0.9,
+        source: 'on_device_llm',
+        needsReview: true,
+        suggestions: [
+          { categoryId: 'food.dining', confidence: 0 },
+          { categoryId: 'housing.rent_mortgage', confidence: 0 },
+          { categoryId: 'shopping.general', confidence: 0 },
+        ],
+      });
+      expect((await repos.transactions.get(TX_1))?.status).toBe('needs_review');
+    });
+
+    it('offers dining, rent and gifts when nothing else is known', async () => {
+      const { ctx, agent, add } = setup();
+      await add({ ...venmo, issuerId: 'zelle' });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'other.general',
+        needsReview: true,
+        suggestions: [
+          { categoryId: 'food.dining', confidence: 0 },
+          { categoryId: 'housing.rent_mortgage', confidence: 0 },
+          { categoryId: 'gifts.general', confidence: 0 },
+        ],
+      });
+    });
+
+    it("puts the user's past categories for this person first", async () => {
+      const { ctx, agent, add } = setup();
+      await add({
+        ...venmo,
+        id: TX_2,
+        categoryId: 'housing.rent_mortgage',
+        status: 'confirmed',
+      });
+      await add(venmo);
+
+      const out = await agent.handle(parsed(), ctx);
+
+      const payload = out[0]?.payload as EventPayload<'transaction.categorized'>;
+      expect(payload.suggestions?.map((s) => s.categoryId)).toEqual([
+        'housing.rent_mortgage',
+        'food.dining',
+        'gifts.general',
+      ]);
+      expect(payload.suggestions?.[0]?.confidence).toBe(0.88);
+    });
+
+    it('never sends the counterparty name to a cloud LLM', async () => {
+      const llm = fakeLlm('cloud', { categoryId: 'gifts.general', confidence: 0.9 });
+      const { ctx, agent, add } = setup(llm);
+      await add({ ...venmo, issuerId: 'cash_app' });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(llm.chooseCategory).not.toHaveBeenCalled();
+      expect(out[0]?.payload).toMatchObject({ categoryId: 'other.general', needsReview: true });
+    });
+
+    it('auto-saves when the user has a rule for this person', async () => {
+      const { ctx, agent, add, repos } = setup();
+      await repos.userRules.upsert(
+        makeRule({ pattern: toMerchantKey('Sam Example'), categoryId: 'housing.rent_mortgage' }),
+      );
+      await add(venmo);
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toEqual({
+        transactionId: TX_1,
+        categoryId: 'housing.rent_mortgage',
+        confidence: CONFIDENCE.userRule,
+        source: 'user_rule',
+        needsReview: false,
+      });
+    });
+
+    it('treats a P2P checkout at a known business like any purchase', async () => {
+      const { ctx, agent, add } = setup();
+      await add({ issuerId: 'paypal', merchantName: 'Netflix', merchantRaw: 'PAYPAL *NETFLIX' });
+
+      const out = await agent.handle(parsed(), ctx);
+
+      expect(out[0]?.payload).toMatchObject({
+        categoryId: 'subscriptions.general',
+        needsReview: false,
+      });
+    });
+
+    it('leaves money received through P2P apps alone', async () => {
+      const { ctx, agent, add } = setup();
+      await add({ ...venmo, kind: 'transfer' });
+      const out = await agent.handle(parsed(), ctx);
+      expect(out[0]?.payload).toMatchObject({ needsReview: false });
+    });
   });
 
   describe('user corrections', () => {

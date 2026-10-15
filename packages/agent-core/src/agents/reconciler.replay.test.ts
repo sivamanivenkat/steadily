@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Fixture, type Fixture as FixtureType } from '@steadily/rule-packs';
-import type { EventPayload, NewEvent, StoredEvent } from '@steadily/shared-types';
+import type { EventPayload, LlmPort, NewEvent, StoredEvent } from '@steadily/shared-types';
 import capitalOneFixtures from '@steadily/rule-packs/fixtures/capital_one.json';
 import chaseFixtures from '@steadily/rule-packs/fixtures/chase.json';
 import venmoFixtures from '@steadily/rule-packs/fixtures/venmo.json';
@@ -107,7 +107,7 @@ const CAPTURES: Capture[] = [
   fromFixture(INBOX.otp, 'chase', 'negative: one-time code'),
 ];
 
-function setup() {
+function setup(llm: LlmPort = createNoopLlm()) {
   const store = new InMemoryEventStore();
   const repos = createInMemoryRepos();
   const log = createCapturingLogger();
@@ -117,7 +117,7 @@ function setup() {
     log,
     clock,
     newId: createSequentialIds(),
-    llm: createNoopLlm(),
+    llm,
   });
   runtime
     .register(createParserAgent({ repos }))
@@ -203,6 +203,15 @@ describe('Parser -> Categorizer -> Reconciler replay', () => {
       categorySource: 'none',
       status: 'needs_review',
     });
+    // D-009: a payment to a person asks with split / rent / gift chips.
+    const venmoCategorized = ofType('transaction.categorized').find(
+      (e) => e.payload.transactionId === INBOX.venmoPaid,
+    );
+    expect(venmoCategorized?.payload.suggestions?.map((s) => s.categoryId)).toEqual([
+      'food.dining',
+      'housing.rent_mortgage',
+      'gifts.general',
+    ]);
     expect(tx(INBOX.venmoReceived)).toMatchObject({ kind: 'transfer', status: 'confirmed' });
     expect(tx(INBOX.otp)).toBeUndefined();
     expect(repos.transactions.rows.size).toBe(8);
@@ -289,6 +298,24 @@ describe('Parser -> Categorizer -> Reconciler replay', () => {
       outcome: 'refund_linked',
       relatedTransactionId: INBOX.amazon,
     });
+  });
+
+  it('asks instantly about a P2P payment even when the LLM is confident', async () => {
+    const llm: LlmPort = {
+      tier: async () => 'on_device',
+      chooseCategory: async () => ({ categoryId: 'gifts.general', confidence: 0.95 }),
+    };
+    const { repos, capture, ofType } = setup(llm);
+
+    await capture([fromFixture(INBOX.venmoPaid, 'venmo', 'sms you paid someone')]);
+
+    expect(repos.transactions.rows.get(INBOX.venmoPaid)).toMatchObject({
+      categoryId: 'gifts.general',
+      status: 'needs_review',
+    });
+    expect(ofType('notify.request').map((e) => e.payload)).toEqual([
+      { kind: 'transaction_needs_review', urgency: 'instant', transactionId: INBOX.venmoPaid },
+    ]);
   });
 
   it('is deterministic and idempotent on replay', async () => {

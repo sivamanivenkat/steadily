@@ -15,8 +15,10 @@ import {
   isBuiltInCategoryId,
   type CategoryId,
 } from '@steadily/taxonomy';
+import { monthPeriod } from '../budget-math';
 import { randomId, type IdGenerator } from '../event-bus';
 import type { Repos, UserRule } from '../ports';
+import { P2P_ISSUER_IDS } from './parser';
 
 export const CATEGORIZER_AGENT_NAME = 'categorizer';
 
@@ -50,6 +52,28 @@ export const CONFIDENCE = {
 /** Prior confirmed transactions in one category needed to trust history at a multi-category merchant. */
 export const MIN_HISTORY_MATCHES = 2;
 
+/** Most review chips shown for one transaction (D-009: top-3 category chips). */
+export const MAX_SUGGESTIONS = 3;
+
+/**
+ * Last-resort review chips, after every pipeline candidate and the user's month
+ * favourites. The tail keeps three chips available when the first ones are taken.
+ */
+export const DEFAULT_SUGGESTIONS: readonly CategoryId[] = [
+  'shopping.general',
+  'food.groceries',
+  'food.dining',
+  'transport.general',
+  'bills.utilities',
+];
+
+/** Chips for a payment to a person (D-009 "split, loan, rent, gift"). */
+export const P2P_SUGGESTIONS: readonly CategoryId[] = [
+  'food.dining',
+  'housing.rent_mortgage',
+  'gifts.general',
+];
+
 /** Upper bound on transactions re-categorized by one "apply to similar" correction. */
 const APPLY_TO_SIMILAR_LIMIT = 1000;
 const HISTORY_LIMIT = 50;
@@ -60,6 +84,12 @@ export interface CategorizerAgentDeps {
   newId?: IdGenerator;
   /** IANA zone for time-of-day hints. Defaults to the device zone. */
   timeZone?: string;
+}
+
+/** A category the pipeline considered, offered as a review chip. */
+export interface CategorySuggestion {
+  categoryId: CategoryId;
+  confidence: number;
 }
 
 export interface CategoryChoice {
@@ -78,6 +108,10 @@ export interface CategoryChoice {
  *
  * Income and transfers are not spending, so they skip classification (unless a user
  * rule matches) and are confirmed under the fallback category.
+ *
+ * Review: whenever a transaction needs review, `suggestions` carries up to three
+ * other categories for the chips (see `suggestionsFor`). A payment to a person
+ * through a P2P app always needs review (D-009) unless a user rule matches it.
  */
 export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
   const { repos } = deps;
@@ -88,14 +122,16 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
     const tx = await repos.transactions.get(event.payload.transactionId);
     if (!tx || tx.deletedAt !== null) return [];
 
+    const candidates: CategorySuggestion[] = [];
     let choice: CategoryChoice;
     if (tx.categorySource === 'user') {
       // Never override the user, but still announce so downstream agents run.
       choice = { categoryId: tx.categoryId, confidence: CONFIDENCE.user, source: 'user' };
     } else {
-      choice = await chooseCategory(tx, ctx, event.id);
+      choice = await chooseCategory(tx, ctx, event.id, candidates);
       // The native fast path may already have done better (e.g. a newer dictionary).
       if (tx.categorySource !== 'none' && tx.categoryConfidence > choice.confidence) {
+        candidates.push({ categoryId: choice.categoryId, confidence: choice.confidence });
         choice = {
           categoryId: tx.categoryId,
           confidence: tx.categoryConfidence,
@@ -104,7 +140,14 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
       }
     }
 
-    const needsReview = choice.confidence < AUTO_SAVE_CONFIDENCE;
+    // D-009: a payment to a person always asks (split, loan, rent, gift), unless the
+    // user already told us what payments to this person are.
+    const askP2P =
+      isPaymentToPerson(tx) && choice.source !== 'user' && choice.source !== 'user_rule';
+    const needsReview = askP2P || choice.confidence < AUTO_SAVE_CONFIDENCE;
+    const suggestions = needsReview
+      ? await suggestionsFor(tx, choice, candidates, askP2P, ctx)
+      : [];
     await repos.transactions.update(tx.id, {
       categoryId: choice.categoryId,
       categoryConfidence: choice.confidence,
@@ -123,15 +166,21 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
         confidence: choice.confidence,
         source: choice.source,
         needsReview,
+        ...(suggestions.length > 0 ? { suggestions } : {}),
       },
     };
     return [out];
   }
 
+  /**
+   * Runs the pipeline. Every step that produced a category but did not win
+   * adds it to `candidates`, for the review chips.
+   */
   async function chooseCategory(
     tx: Transaction,
     ctx: AgentContext,
     eventId: string,
+    candidates: CategorySuggestion[],
   ): Promise<CategoryChoice> {
     const key = tx.merchantName ? toMerchantKey(tx.merchantName) : '';
 
@@ -167,6 +216,10 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
           source: 'dictionary',
         };
       }
+      candidates.push({
+        categoryId: entry.categoryId,
+        confidence: CONFIDENCE.dictionaryMultiDefault,
+      });
       const usual = await usualCategory(tx);
       return usual
         ? { categoryId: usual, confidence: CONFIDENCE.dictionaryHistory, source: 'dictionary' }
@@ -181,11 +234,18 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
     const hint = tx.merchantName ? heuristicCategory(tx, timeZone) : null;
     if (hint && hint.confidence >= AUTO_SAVE_CONFIDENCE) return hint;
 
-    // 4./5. Constrained LLM, on-device or cloud as the port allows.
-    const llm = tx.merchantName ? await askLlm(tx, tx.merchantName, ctx, eventId) : null;
-    const best = [hint, llm]
+    // 4./5. Constrained LLM, on-device or cloud as the port allows. A P2P
+    // counterparty is a person's name and never goes to cloud AI (D-011 item 8).
+    const llm = tx.merchantName
+      ? await askLlm(tx, tx.merchantName, ctx, eventId, !isP2PDebit(tx))
+      : null;
+    const ranked = [hint, llm]
       .filter((c): c is CategoryChoice => c !== null)
-      .sort((a, b) => b.confidence - a.confidence)[0];
+      .sort((a, b) => b.confidence - a.confidence);
+    for (const other of ranked) {
+      candidates.push({ categoryId: other.categoryId, confidence: other.confidence });
+    }
+    const best = ranked[0];
     if (best) return best;
 
     // Fallback.
@@ -194,22 +254,87 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
 
   /** The user's most common confirmed category at this merchant, if seen often enough. */
   async function usualCategory(tx: Transaction): Promise<CategoryId | null> {
-    if (!tx.merchantName) return null;
+    const [top] = await merchantHistory(tx);
+    return top && top.count >= MIN_HISTORY_MATCHES ? top.categoryId : null;
+  }
+
+  /** Confirmed expense categories at this merchant, most used first (ties: first seen). */
+  async function merchantHistory(
+    tx: Transaction,
+  ): Promise<{ categoryId: CategoryId; count: number }[]> {
+    if (!tx.merchantName) return [];
     const history = await repos.transactions.listByMerchant(tx.merchantName, HISTORY_LIMIT);
     const counts = new Map<CategoryId, number>();
     for (const other of history) {
       if (other.id === tx.id || other.status !== 'confirmed' || other.kind !== 'expense') continue;
       counts.set(other.categoryId, (counts.get(other.categoryId) ?? 0) + 1);
     }
-    let best: CategoryId | null = null;
-    let bestCount = 0;
-    for (const [categoryId, count] of counts) {
-      if (count > bestCount) {
-        best = categoryId;
-        bestCount = count;
-      }
+    return [...counts]
+      .map(([categoryId, count]) => ({ categoryId, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  /** The user's most used confirmed expense categories in the current local month. */
+  async function monthFavourites(tx: Transaction, ctx: AgentContext): Promise<CategoryId[]> {
+    const period = monthPeriod(ctx.now(), timeZone);
+    const rows = await repos.transactions.listBetween(period.start, period.end);
+    const counts = new Map<CategoryId, number>();
+    for (const row of rows) {
+      if (row.id === tx.id || row.status !== 'confirmed' || row.kind !== 'expense') continue;
+      counts.set(row.categoryId, (counts.get(row.categoryId) ?? 0) + 1);
     }
-    return bestCount >= MIN_HISTORY_MATCHES ? best : null;
+    return [...counts]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([categoryId]) => categoryId);
+  }
+
+  /**
+   * Up to MAX_SUGGESTIONS review chips, best first, never the chosen category:
+   * 1. Pipeline candidates and this merchant's history, by confidence
+   *    (history confidence = share of past confirmed transactions × 0.88).
+   *    For a payment to a person: history first, then the P2P chips.
+   * 2. Padding: the user's most used categories this month, then DEFAULT_SUGGESTIONS.
+   * FALLBACK_CATEGORY_ID only appears when nothing else is left. Padding chips
+   * carry confidence 0: they are convenient, not predicted.
+   */
+  async function suggestionsFor(
+    tx: Transaction,
+    choice: CategoryChoice,
+    candidates: readonly CategorySuggestion[],
+    p2p: boolean,
+    ctx: AgentContext,
+  ): Promise<CategorySuggestion[]> {
+    const history = await merchantHistory(tx);
+    const total = history.reduce((sum, h) => sum + h.count, 0);
+    const fromHistory = history.map((h) => ({
+      categoryId: h.categoryId,
+      confidence: (CONFIDENCE.dictionaryHistory * h.count) / total,
+    }));
+
+    const ranked: CategorySuggestion[] = p2p
+      ? [
+          ...fromHistory,
+          ...P2P_SUGGESTIONS.map((categoryId) => ({ categoryId, confidence: 0 })),
+          ...byConfidence(candidates),
+        ]
+      : byConfidence([...candidates, ...fromHistory]);
+
+    const out: CategorySuggestion[] = [];
+    const add = (s: CategorySuggestion) => {
+      if (out.length >= MAX_SUGGESTIONS) return;
+      if (s.categoryId === choice.categoryId || s.categoryId === FALLBACK_CATEGORY_ID) return;
+      if (out.some((o) => o.categoryId === s.categoryId)) return;
+      out.push({ categoryId: s.categoryId, confidence: clamp01(round2(s.confidence)) });
+    };
+    ranked.forEach(add);
+    if (out.length < MAX_SUGGESTIONS) {
+      for (const categoryId of await monthFavourites(tx, ctx)) add({ categoryId, confidence: 0 });
+    }
+    for (const categoryId of DEFAULT_SUGGESTIONS) add({ categoryId, confidence: 0 });
+    if (out.length === 0 && choice.categoryId !== FALLBACK_CATEGORY_ID) {
+      out.push({ categoryId: FALLBACK_CATEGORY_ID, confidence: 0 });
+    }
+    return out;
   }
 
   async function correct(event: StoredEvent<'transaction.user_corrected'>, ctx: AgentContext) {
@@ -279,15 +404,47 @@ export function createCategorizerAgent(deps: CategorizerAgentDeps): Agent {
   };
 }
 
+/** A debit from a P2P app (Venmo, Cash App, Zelle, PayPal). */
+export function isP2PDebit(tx: Pick<Transaction, 'kind' | 'issuerId'>): boolean {
+  return tx.kind === 'expense' && tx.issuerId !== null && P2P_ISSUER_IDS.has(tx.issuerId);
+}
+
+/**
+ * A P2P debit whose counterparty is not a known business. P2P apps also pay
+ * merchants (e.g. PayPal checkout at a dictionary merchant); those are
+ * categorized like any other purchase. Only payments to people always ask.
+ */
+export function isPaymentToPerson(
+  tx: Pick<Transaction, 'kind' | 'issuerId' | 'merchantName'>,
+): boolean {
+  if (!isP2PDebit(tx)) return false;
+  const key = tx.merchantName ? toMerchantKey(tx.merchantName) : '';
+  return !key || lookupMerchant(key) === undefined;
+}
+
+function byConfidence(list: readonly CategorySuggestion[]): CategorySuggestion[] {
+  // Stable: equal confidences keep pipeline order.
+  return [...list].sort((a, b) => b.confidence - a.confidence);
+}
+
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function clamp01(value: number): number {
+  return Number.isFinite(value) ? Math.min(Math.max(value, 0), 1) : 0;
+}
+
 async function askLlm(
   tx: Transaction,
   merchant: string,
   ctx: AgentContext,
   eventId: string,
+  allowCloud: boolean,
 ): Promise<CategoryChoice | null> {
   try {
     const tier = await ctx.llm.tier();
-    if (tier === 'none') return null;
+    if (tier === 'none' || (tier === 'cloud' && !allowCloud)) return null;
     // Minimal payload (D-011): merchant name and amount only.
     const result = await ctx.llm.chooseCategory({
       merchant,
