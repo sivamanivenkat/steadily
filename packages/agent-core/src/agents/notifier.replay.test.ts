@@ -166,9 +166,10 @@ describe('replay: Budget Coach + Subscription Watcher + Notifier', () => {
         type: 'notify.request',
         payload: {
           kind: 'budget_warning',
-          urgency: 'instant',
+          urgency: 'summary',
           budgetId: COFFEE_BUDGET,
           transactionId: id(2),
+          threshold: 90,
         },
       },
       {
@@ -211,6 +212,49 @@ describe('replay: Budget Coach + Subscription Watcher + Notifier', () => {
       nextDueAt: '2026-11-03T12:00:00.000Z',
     });
     expect(log.entries.filter((e) => e.level !== 'info')).toEqual([]);
+  });
+
+  it('warns instantly when a correction pushes a budget over 100%', async () => {
+    const { runtime, repos, sink } = await replay();
+    // $12 of dining, then the user moves it to Coffee: 95% -> 107%.
+    await repos.transactions.insert(
+      tx(3, {
+        amountMinor: 1200,
+        categoryId: 'food.dining',
+        occurredAt: '2026-10-12T12:00:00.000Z',
+      }),
+    );
+    for (const event of inputEvents((await repos.transactions.get(id(3)))!)) {
+      await runtime.bus.publish([event], null);
+      await runtime.runUntilIdle();
+    }
+    await runtime.bus.publish(
+      [
+        {
+          type: 'transaction.user_corrected',
+          payload: {
+            transactionId: id(3),
+            previousCategoryId: 'food.dining',
+            categoryId: 'food.coffee',
+            applyToSimilar: false,
+          },
+        },
+      ],
+      null,
+    );
+    await runtime.runUntilIdle();
+
+    expect(sink.delivered.map((n) => [n.kind, n.threshold])).toEqual([
+      ['transaction_needs_review', undefined],
+      ['budget_warning', 100],
+    ]);
+    expect(sink.delivered[1]).toEqual({
+      requestId: expect.any(String),
+      kind: 'budget_warning',
+      budgetId: COFFEE_BUDGET,
+      transactionId: id(3),
+      threshold: 100,
+    });
   });
 
   it('is deterministic and idempotent', async () => {

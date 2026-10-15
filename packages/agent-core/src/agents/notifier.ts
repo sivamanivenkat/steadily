@@ -18,6 +18,8 @@ export interface NotificationRef {
   transactionId?: string;
   budgetId?: string;
   subscriptionId?: string;
+  /** budget_warning: percent-used threshold crossed, so the text can say "over budget". */
+  threshold?: number;
 }
 
 /** Port to the OS notification layer (D-012). */
@@ -74,12 +76,27 @@ const ROUTES: Record<Settings['notifyMode'], Record<NotificationKind, NotifyDeci
   },
 };
 
+/** A budget_warning at or above this threshold means "over budget". */
+export const OVER_BUDGET_PERCENT = 100;
+
+/**
+ * Over-budget warnings (threshold ≥ 100) are the one budget event worth an
+ * interruption: instant in `unsure_only` and `every_transaction`, summary in `off`.
+ */
+const OVER_BUDGET_ROUTES: Record<Settings['notifyMode'], NotifyDecision> = {
+  unsure_only: 'deliver',
+  every_transaction: 'deliver',
+  off: 'summary',
+};
+
 /**
  * The Notifier's decision table, as a pure function:
  *
  * 1. Route by mode (`ROUTES`): `unsure_only` delivers only needs-review
  *    instantly; `every_transaction` also delivers transaction_logged; `off`
  *    keeps only needs-review, in the summary. Everything else goes to the summary.
+ *    Exception: a budget_warning with `threshold` ≥ 100 uses `OVER_BUDGET_ROUTES`
+ *    (75% / 90% warnings, or ones without a threshold, follow `ROUTES`).
  * 2. A 'summary'-urgency request is never delivered instantly.
  * 3. During quiet hours an instant delivery goes to the summary instead.
  * 4. With the daily summary turned off, anything bound for it is dropped
@@ -88,7 +105,7 @@ const ROUTES: Record<Settings['notifyMode'], Record<NotificationKind, NotifyDeci
  * and it is not quiet hours; otherwise dropped (queued items wait for the next one).
  */
 export function decideNotification(
-  request: Pick<NotifyRequest, 'kind' | 'urgency'>,
+  request: Pick<NotifyRequest, 'kind' | 'urgency' | 'threshold'>,
   settings: Pick<Settings, 'notifyMode' | 'dailySummary' | 'quietHours'>,
   localMinuteOfDay: number,
 ): NotifyDecision {
@@ -96,7 +113,11 @@ export function decideNotification(
   if (request.kind === 'daily_summary') {
     return settings.dailySummary && !quiet ? 'deliver' : 'drop';
   }
-  let decision = ROUTES[settings.notifyMode][request.kind];
+  const overBudget =
+    request.kind === 'budget_warning' && (request.threshold ?? 0) >= OVER_BUDGET_PERCENT;
+  let decision = overBudget
+    ? OVER_BUDGET_ROUTES[settings.notifyMode]
+    : ROUTES[settings.notifyMode][request.kind];
   if (decision === 'deliver' && (request.urgency === 'summary' || quiet)) decision = 'summary';
   if (decision === 'summary' && !settings.dailySummary) decision = 'drop';
   return decision;
@@ -133,6 +154,9 @@ export interface NotifierDeps {
  * Notifier (D-012): the only agent that reaches the user. Reads settings on
  * every request, decides deliver / summary / drop and hands ids to the sink.
  * Emits no events. Throttling beyond the mode table is left to the sink.
+ *
+ * TODO: a `tick` that requests the daily summary at the user's summary time and
+ * asks the sink to flush the queue. No tick yet: the sink owns the queue today.
  */
 export function createNotifier(deps: NotifierDeps): Agent {
   return {
@@ -159,5 +183,6 @@ function toRef(requestId: string, payload: NotifyRequest): NotificationRef {
   if (payload.transactionId !== undefined) ref.transactionId = payload.transactionId;
   if (payload.budgetId !== undefined) ref.budgetId = payload.budgetId;
   if (payload.subscriptionId !== undefined) ref.subscriptionId = payload.subscriptionId;
+  if (payload.threshold !== undefined) ref.threshold = payload.threshold;
   return ref;
 }

@@ -97,6 +97,40 @@ describe('decideNotification: full decision table', () => {
   }
 });
 
+describe('decideNotification: budget warnings by threshold', () => {
+  const warning = (threshold: number | undefined, urgency: 'instant' | 'summary' = 'instant') =>
+    threshold === undefined
+      ? { kind: 'budget_warning' as const, urgency }
+      : { kind: 'budget_warning' as const, urgency, threshold };
+
+  /** Instant request, daytime, daily summary on. */
+  const EXPECTED: Record<Settings['notifyMode'], Record<string, NotifyDecision>> = {
+    unsure_only: { none: 'summary', 75: 'summary', 90: 'summary', 100: 'deliver' },
+    every_transaction: { none: 'summary', 75: 'summary', 90: 'summary', 100: 'deliver' },
+    off: { none: 'drop', 75: 'drop', 90: 'drop', 100: 'summary' },
+  };
+
+  for (const mode of MODES) {
+    for (const threshold of [undefined, 75, 90, 100]) {
+      it(`${mode} / ${threshold ?? 'no'} threshold`, () => {
+        expect(decideNotification(warning(threshold), settingsFor(mode), NOON)).toBe(
+          EXPECTED[mode][threshold ?? 'none'],
+        );
+      });
+    }
+  }
+
+  it('over budget still respects quiet hours, urgency and the daily summary setting', () => {
+    for (const mode of ['unsure_only', 'every_transaction'] as const) {
+      expect(decideNotification(warning(100), settingsFor(mode), MIDNIGHT)).toBe('summary');
+      expect(decideNotification(warning(100, 'summary'), settingsFor(mode), NOON)).toBe('summary');
+      expect(decideNotification(warning(100), settingsFor(mode, false), MIDNIGHT)).toBe('drop');
+    }
+    expect(decideNotification(warning(100), settingsFor('off', false), NOON)).toBe('drop');
+    expect(decideNotification(warning(120), settingsFor('unsure_only'), NOON)).toBe('deliver');
+  });
+});
+
 describe('decideNotification: invariants', () => {
   it('never delivers during quiet hours or for summary-urgency requests', () => {
     for (const mode of MODES) {

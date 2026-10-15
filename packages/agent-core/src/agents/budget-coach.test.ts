@@ -8,7 +8,13 @@ import {
 import type { CategoryId } from '@steadily/taxonomy';
 import { createInMemoryRepos, type Budget } from '../ports';
 import { createCapturingLogger, createFixedClock, createNoopLlm } from '../testing';
-import { createBudgetCoach, highestCrossed } from './budget-coach';
+import {
+  createBudgetCoach,
+  DEFAULT_WEEKLY_CHECKIN,
+  highestCrossed,
+  InMemoryLastCheckinStore,
+  latestCheckinSlot,
+} from './budget-coach';
 
 // Synthetic data only.
 const NY = 'America/New_York';
@@ -84,6 +90,20 @@ function categorized(
   };
 }
 
+function userCorrected(
+  transactionId: string,
+  previousCategoryId: CategoryId,
+  categoryId: CategoryId,
+): StoredEvent {
+  return {
+    id: id(1000 + ++eventSeq),
+    type: 'transaction.user_corrected',
+    at: '2026-10-15T16:00:00.000Z',
+    causationId: null,
+    payload: { transactionId, previousCategoryId, categoryId, applyToSimilar: false },
+  };
+}
+
 /** Coffee budget $100, overall $500; existing coffee spending `existingCoffee`. */
 async function setup(existingCoffee: number, budgets?: Budget[]) {
   const repos = createInMemoryRepos();
@@ -137,7 +157,7 @@ describe('Budget Coach', () => {
     for (const event of out) expect(() => parseNewEvent(event)).not.toThrow();
   });
 
-  it('asks for a budget_warning at 90% and 100%', async () => {
+  it('asks for a summary budget_warning at 90%, marked with the threshold', async () => {
     const { repos, ctx, agent } = await setup(8500);
     await repos.transactions.insert(tx(2, { amountMinor: 600 }));
     const out = await agent.handle(reconciled(id(2)), ctx);
@@ -146,9 +166,27 @@ describe('Budget Coach', () => {
       type: 'notify.request',
       payload: {
         kind: 'budget_warning',
+        urgency: 'summary',
+        budgetId: COFFEE_BUDGET,
+        transactionId: id(2),
+        threshold: 90,
+      },
+    });
+    for (const event of out) expect(() => parseNewEvent(event)).not.toThrow();
+  });
+
+  it('asks for an instant budget_warning at 100%', async () => {
+    const { repos, ctx, agent } = await setup(9500);
+    await repos.transactions.insert(tx(2, { amountMinor: 500 }));
+    const out = await agent.handle(reconciled(id(2)), ctx);
+    expect(out[1]).toEqual({
+      type: 'notify.request',
+      payload: {
+        kind: 'budget_warning',
         urgency: 'instant',
         budgetId: COFFEE_BUDGET,
         transactionId: id(2),
+        threshold: 100,
       },
     });
     for (const event of out) expect(() => parseNewEvent(event)).not.toThrow();
@@ -205,15 +243,62 @@ describe('Budget Coach', () => {
     expect(await agent.handle(reconciled(id(404)), ctx)).toEqual([]);
   });
 
-  it('checks only the new category budget after a user correction', async () => {
-    const { repos, ctx, agent } = await setup(7000);
-    // $40 moved from Dining into Coffee: coffee goes 70% -> 110%, overall unchanged.
-    await repos.transactions.insert(tx(2, { amountMinor: 4000, categorySource: 'user' }));
-    const out = await agent.handle(categorized(id(2), 'food.coffee', 'user'), ctx);
-    expect(out.map((e) => e.type)).toEqual(['budget.threshold_crossed', 'notify.request']);
-    expect(out[0]).toMatchObject({ payload: { budgetId: COFFEE_BUDGET, percentUsed: 110 } });
-    // Stale event: the row now has another category.
-    expect(await agent.handle(categorized(id(2), 'food.dining', 'user'), ctx)).toEqual([]);
+  describe('user corrections', () => {
+    it('checks only the new category budget after a correction', async () => {
+      const { repos, ctx, agent } = await setup(7000);
+      // $40 moved from Dining into Coffee: coffee goes 70% -> 110%, overall unchanged.
+      await repos.transactions.insert(
+        tx(2, { amountMinor: 4000, categoryId: 'food.coffee', categorySource: 'user' }),
+      );
+      const out = await agent.handle(userCorrected(id(2), 'food.dining', 'food.coffee'), ctx);
+      expect(out.map((e) => e.type)).toEqual(['budget.threshold_crossed', 'notify.request']);
+      expect(out[0]).toMatchObject({ payload: { budgetId: COFFEE_BUDGET, percentUsed: 110 } });
+      expect(out[1]).toMatchObject({ payload: { urgency: 'instant', threshold: 100 } });
+      for (const event of out) expect(() => parseNewEvent(event)).not.toThrow();
+    });
+
+    it('gives the same answer before the Categorizer has applied the correction', async () => {
+      const { repos, ctx, agent } = await setup(7000);
+      // The row still shows the previous category.
+      await repos.transactions.insert(tx(2, { amountMinor: 4000, categoryId: 'food.dining' }));
+      const out = await agent.handle(userCorrected(id(2), 'food.dining', 'food.coffee'), ctx);
+      expect(out[0]).toMatchObject({ payload: { budgetId: COFFEE_BUDGET, percentUsed: 110 } });
+    });
+
+    it('ignores superseded, no-op and non-spending corrections', async () => {
+      const { repos, ctx, agent } = await setup(7000);
+      // A later correction already moved the row on to Groceries.
+      await repos.transactions.insert(tx(2, { amountMinor: 4000, categoryId: 'food.groceries' }));
+      expect(await agent.handle(userCorrected(id(2), 'food.dining', 'food.coffee'), ctx)).toEqual(
+        [],
+      );
+      await repos.transactions.insert(tx(3, { amountMinor: 4000 }));
+      expect(await agent.handle(userCorrected(id(3), 'food.coffee', 'food.coffee'), ctx)).toEqual(
+        [],
+      );
+      await repos.transactions.insert(tx(4, { amountMinor: 4000, kind: 'income' }));
+      expect(await agent.handle(userCorrected(id(4), 'food.dining', 'food.coffee'), ctx)).toEqual(
+        [],
+      );
+    });
+
+    it('does not warn when moving spending out of a budget', async () => {
+      const { repos, ctx, agent } = await setup(9500);
+      await repos.transactions.insert(tx(2, { amountMinor: 4000, categoryId: 'food.dining' }));
+      expect(await agent.handle(userCorrected(id(2), 'food.coffee', 'food.dining'), ctx)).toEqual(
+        [],
+      );
+    });
+
+    it('warns once for one change, however it is announced', async () => {
+      const { repos, ctx, agent } = await setup(7000);
+      // A manual entry the user categorized: categorized(source user) + reconciled 'new'.
+      await repos.transactions.insert(tx(2, { amountMinor: 4000, categorySource: 'user' }));
+      const fromCategorized = await agent.handle(categorized(id(2), 'food.coffee', 'user'), ctx);
+      const fromReconciled = await agent.handle(reconciled(id(2)), ctx);
+      expect(fromCategorized).toEqual([]);
+      expect(fromReconciled.filter((e) => e.type === 'notify.request')).toHaveLength(1);
+    });
   });
 
   it('subtracts linked refunds before deciding', async () => {
@@ -251,5 +336,92 @@ describe('Budget Coach', () => {
     ]);
     await repos.transactions.insert(tx(2, { amountMinor: 3000 }));
     expect(await agent.handle(reconciled(id(2)), ctx)).toEqual([]);
+  });
+});
+
+describe('Budget Coach weekly check-in', () => {
+  // Sunday 2026-10-18, 18:00 in New York (EDT) is 22:00 UTC.
+  const SLOT = '2026-10-18T22:00:00.000Z';
+  const CHECKIN = {
+    type: 'notify.request',
+    payload: { kind: 'weekly_checkin', urgency: 'instant' },
+  };
+
+  function checkinSetup(options: Partial<Parameters<typeof createBudgetCoach>[0]> = {}) {
+    const repos = createInMemoryRepos();
+    const clock = createFixedClock(SLOT);
+    const ctx = { now: clock, llm: createNoopLlm(), log: createCapturingLogger() };
+    const store = new InMemoryLastCheckinStore();
+    const make = () =>
+      createBudgetCoach({
+        transactions: repos.transactions,
+        budgets: repos.budgets,
+        timeZone: NY,
+        lastCheckinStore: store,
+        ...options,
+      });
+    return { ctx, clock, store, make, agent: make() };
+  }
+
+  it('emits once per local week, at or after Sunday 18:00', async () => {
+    const { ctx, clock, store, agent, make } = checkinSetup();
+
+    clock.set('2026-10-18T21:59:00.000Z');
+    expect(await agent.tick!(ctx)).toEqual([]);
+
+    clock.set(SLOT);
+    const out = await agent.tick!(ctx);
+    expect(out).toEqual([CHECKIN]);
+    for (const event of out) expect(() => parseNewEvent(event)).not.toThrow();
+    expect(store.value).toBe('2026-10-18');
+
+    clock.set('2026-10-19T13:00:00.000Z');
+    expect(await agent.tick!(ctx)).toEqual([]);
+    // A restarted agent with the same store remembers.
+    expect(await make().tick!(ctx)).toEqual([]);
+
+    clock.set('2026-10-25T22:00:00.000Z');
+    expect(await agent.tick!(ctx)).toEqual([CHECKIN]);
+  });
+
+  it('sends a late check-in within the grace period, then gives up', async () => {
+    const late = checkinSetup();
+    late.clock.set('2026-10-19T13:00:00.000Z'); // Monday 09:00 New York
+    expect(await late.agent.tick!(late.ctx)).toEqual([CHECKIN]);
+
+    const tooLate = checkinSetup();
+    tooLate.clock.set('2026-10-21T13:00:00.000Z'); // Wednesday
+    expect(await tooLate.agent.tick!(tooLate.ctx)).toEqual([]);
+    expect(tooLate.store.value).toBeNull();
+  });
+
+  it('uses the configured day and time, or none', async () => {
+    const friday = checkinSetup({ weeklyCheckin: { dayOfWeek: 5, time: '08:30' } });
+    friday.clock.set('2026-10-16T12:30:00.000Z'); // Friday 08:30 New York
+    expect(await friday.agent.tick!(friday.ctx)).toEqual([CHECKIN]);
+    expect(friday.store.value).toBe('2026-10-16');
+
+    const off = checkinSetup({ weeklyCheckin: null });
+    expect(await off.agent.tick!(off.ctx)).toEqual([]);
+  });
+
+  it('rejects an invalid schedule', () => {
+    expect(() => checkinSetup({ weeklyCheckin: { dayOfWeek: 7, time: '18:00' } })).toThrow(
+      RangeError,
+    );
+    expect(() => checkinSetup({ weeklyCheckin: { dayOfWeek: 0, time: '24:00' } })).toThrow(
+      RangeError,
+    );
+  });
+
+  it('finds the slot in local time across a DST change', () => {
+    // US DST ends Sunday 2026-11-01: 18:00 EST is 23:00 UTC.
+    expect(
+      latestCheckinSlot(new Date('2026-11-01T23:30:00.000Z'), DEFAULT_WEEKLY_CHECKIN, NY),
+    ).toEqual({ at: new Date('2026-11-01T23:00:00.000Z'), date: '2026-11-01' });
+    // Just before it, the previous Sunday (EDT) is the latest slot.
+    expect(
+      latestCheckinSlot(new Date('2026-11-01T22:30:00.000Z'), DEFAULT_WEEKLY_CHECKIN, NY),
+    ).toEqual({ at: new Date('2026-10-25T22:00:00.000Z'), date: '2026-10-25' });
   });
 });
