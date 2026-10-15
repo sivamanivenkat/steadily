@@ -23,6 +23,8 @@ function setup() {
       expiresAt: '2026-10-21T15:12:00.000Z',
       source: 'ios_sms_shortcut',
       rawText,
+      originApp: null,
+      originSender: null,
       ...overrides,
     };
     repos.inbox.rows.set(item.id, item);

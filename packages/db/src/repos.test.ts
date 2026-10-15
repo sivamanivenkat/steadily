@@ -190,6 +190,8 @@ describe('SqliteInboxRepo', () => {
     expiresAt,
     source: 'share_text',
     rawText: 'Synthetic alert text',
+    originApp: n === 1 ? 'com.example.bank' : null,
+    originSender: null,
   });
 
   it('inserts, gets and deletes items', async () => {

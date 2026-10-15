@@ -100,6 +100,8 @@ function toInboxItem(row: InboxRow): InboxItem {
     expiresAt: row.expiresAt,
     source: row.source,
     rawText: row.rawText,
+    originApp: row.originApp,
+    originSender: row.originSender,
   };
 }
 
@@ -466,6 +468,8 @@ export function insertInboxItem(db: SteadilyDb, item: InboxItem): void {
       expiresAt: item.expiresAt,
       source: item.source,
       rawText: item.rawText,
+      originApp: item.originApp,
+      originSender: item.originSender,
     })
     .run();
 }

@@ -30,6 +30,11 @@ export const EventPayloads = {
     confidence: Confidence,
     source: CategorySource,
     needsReview: z.boolean(),
+    /** Up to 3 alternatives for the review chips, best first, excluding categoryId. */
+    suggestions: z
+      .array(z.object({ categoryId: CategoryIdSchema, confidence: Confidence }))
+      .max(3)
+      .optional(),
   }),
   'transaction.reconciled': z.object({
     transactionId: Id,

@@ -125,6 +125,10 @@ export const inbox = sqliteTable(
     expiresAt: text('expires_at').notNull(),
     source: text('source').$type<CaptureSource>().notNull(),
     rawText: text('raw_text').notNull(),
+    /** Android package that posted the notification, used to pick rule packs. */
+    originApp: text('origin_app'),
+    /** SMS sender id / short code, used to pick rule packs. */
+    originSender: text('origin_sender'),
   },
   (t) => [index('inbox_expires_at_idx').on(t.expiresAt)],
 );
@@ -186,7 +190,11 @@ export const subscriptions = sqliteTable(
     nextDueAt: text('next_due_at'),
     dismissed: integer('dismissed', { mode: 'boolean' }).notNull().default(false),
   },
-  (t) => [uniqueIndex('subscriptions_merchant_cadence_idx').on(t.merchantName, t.cadence)],
+  (t) => [
+    uniqueIndex('subscriptions_merchant_cadence_idx')
+      .on(t.merchantName, t.cadence)
+      .where(sql`${t.deletedAt} IS NULL`),
+  ],
 );
 
 /** Issuers the user set up in onboarding (D-014), stored on device only. */

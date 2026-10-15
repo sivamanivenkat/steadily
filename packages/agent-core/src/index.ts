@@ -4,6 +4,7 @@ export * from './runtime';
 export * from './ports';
 export * from './testing';
 export * from './budget-math';
+export * from './agents';
 export * from './agents/budget-coach';
 export * from './agents/subscription-watcher';
 export * from './agents/notifier';

@@ -133,6 +133,8 @@ function setup() {
         expiresAt: '2026-10-22T00:00:00.000Z',
         source: c.source,
         rawText: c.rawText,
+        originApp: null,
+        originSender: null,
       });
       events.push({
         type: 'transaction.captured',

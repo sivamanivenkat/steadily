@@ -16,6 +16,10 @@ export type InboxItem = {
   source: CaptureSource;
   /** Raw alert / OCR text. Never logged, never put on an event (D-011). */
   rawText: string;
+  /** Android package that posted the notification, if any. */
+  originApp: string | null;
+  /** SMS sender id / short code, if any. */
+  originSender: string | null;
 };
 
 export type UserRule = {
