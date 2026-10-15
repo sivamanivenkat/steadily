@@ -1,0 +1,1263 @@
+{
+  "version": 1,
+  "merchants": [
+    {
+      "key": "kroger",
+      "name": "Kroger",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "safeway",
+      "name": "Safeway",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "publix",
+      "name": "Publix",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "whole_foods_market",
+      "name": "Whole Foods Market",
+      "categoryId": "food.groceries",
+      "aliases": ["whole_foods", "wholefds_mkt", "wholefds", "wfm"]
+    },
+    {
+      "key": "trader_joes",
+      "name": "Trader Joe's",
+      "categoryId": "food.groceries",
+      "aliases": ["trader_joe_s"]
+    },
+    {
+      "key": "aldi",
+      "name": "Aldi",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "h_e_b",
+      "name": "H-E-B",
+      "categoryId": "food.groceries",
+      "aliases": ["heb"]
+    },
+    {
+      "key": "albertsons",
+      "name": "Albertsons",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "wegmans",
+      "name": "Wegmans",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "food_lion",
+      "name": "Food Lion",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "giant_eagle",
+      "name": "Giant Eagle",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "stop_shop",
+      "name": "Stop & Shop",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "meijer",
+      "name": "Meijer",
+      "categoryId": "food.groceries",
+      "multiCategory": true
+    },
+    {
+      "key": "sprouts_farmers_market",
+      "name": "Sprouts Farmers Market",
+      "categoryId": "food.groceries",
+      "aliases": ["sprouts", "sprouts_farmers_mkt"]
+    },
+    {
+      "key": "vons",
+      "name": "Vons",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "ralphs",
+      "name": "Ralphs",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "harris_teeter",
+      "name": "Harris Teeter",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "shoprite",
+      "name": "ShopRite",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "hy_vee",
+      "name": "Hy-Vee",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "winco_foods",
+      "name": "WinCo Foods",
+      "categoryId": "food.groceries",
+      "aliases": ["winco"]
+    },
+    {
+      "key": "instacart",
+      "name": "Instacart",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "fred_meyer",
+      "name": "Fred Meyer",
+      "categoryId": "food.groceries",
+      "multiCategory": true
+    },
+    {
+      "key": "save_a_lot",
+      "name": "Save A Lot",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "smart_final",
+      "name": "Smart & Final",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "piggly_wiggly",
+      "name": "Piggly Wiggly",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "food_4_less",
+      "name": "Food 4 Less",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "lidl",
+      "name": "Lidl",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "market_basket",
+      "name": "Market Basket",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "jewel_osco",
+      "name": "Jewel-Osco",
+      "categoryId": "food.groceries",
+      "aliases": ["jewel"]
+    },
+    {
+      "key": "king_soopers",
+      "name": "King Soopers",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "mcdonalds",
+      "name": "McDonald's",
+      "categoryId": "food.dining",
+      "aliases": ["mcdonald_s", "mcdonald"]
+    },
+    {
+      "key": "chipotle",
+      "name": "Chipotle",
+      "categoryId": "food.dining",
+      "aliases": ["chipotle_mexican_grill"]
+    },
+    {
+      "key": "subway",
+      "name": "Subway",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "taco_bell",
+      "name": "Taco Bell",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "wendys",
+      "name": "Wendy's",
+      "categoryId": "food.dining",
+      "aliases": ["wendy_s"]
+    },
+    {
+      "key": "burger_king",
+      "name": "Burger King",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "chick_fil_a",
+      "name": "Chick-fil-A",
+      "categoryId": "food.dining",
+      "aliases": ["chickfila"]
+    },
+    {
+      "key": "panera_bread",
+      "name": "Panera Bread",
+      "categoryId": "food.dining",
+      "aliases": ["panera"]
+    },
+    {
+      "key": "dominos",
+      "name": "Domino's",
+      "categoryId": "food.dining",
+      "aliases": ["domino_s", "dominos_pizza"]
+    },
+    {
+      "key": "pizza_hut",
+      "name": "Pizza Hut",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "papa_johns",
+      "name": "Papa John's",
+      "categoryId": "food.dining",
+      "aliases": ["papa_john_s"]
+    },
+    {
+      "key": "kfc",
+      "name": "KFC",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "popeyes",
+      "name": "Popeyes",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "sonic_drive_in",
+      "name": "Sonic Drive-In",
+      "categoryId": "food.dining",
+      "aliases": ["sonic"]
+    },
+    {
+      "key": "arbys",
+      "name": "Arby's",
+      "categoryId": "food.dining",
+      "aliases": ["arby_s"]
+    },
+    {
+      "key": "five_guys",
+      "name": "Five Guys",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "shake_shack",
+      "name": "Shake Shack",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "in_n_out_burger",
+      "name": "In-N-Out Burger",
+      "categoryId": "food.dining",
+      "aliases": ["in_n_out"]
+    },
+    {
+      "key": "panda_express",
+      "name": "Panda Express",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "olive_garden",
+      "name": "Olive Garden",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "applebees",
+      "name": "Applebee's",
+      "categoryId": "food.dining",
+      "aliases": ["applebee_s"]
+    },
+    {
+      "key": "chilis",
+      "name": "Chili's",
+      "categoryId": "food.dining",
+      "aliases": ["chili_s"]
+    },
+    {
+      "key": "buffalo_wild_wings",
+      "name": "Buffalo Wild Wings",
+      "categoryId": "food.dining",
+      "aliases": ["bww"]
+    },
+    {
+      "key": "jack_in_the_box",
+      "name": "Jack in the Box",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "wingstop",
+      "name": "Wingstop",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "raising_canes",
+      "name": "Raising Cane's",
+      "categoryId": "food.dining",
+      "aliases": ["raising_cane_s", "raising_canes_chicken"]
+    },
+    {
+      "key": "jersey_mikes",
+      "name": "Jersey Mike's",
+      "categoryId": "food.dining",
+      "aliases": ["jersey_mike_s", "jersey_mikes_subs"]
+    },
+    {
+      "key": "jimmy_johns",
+      "name": "Jimmy John's",
+      "categoryId": "food.dining",
+      "aliases": ["jimmy_john_s"]
+    },
+    {
+      "key": "qdoba",
+      "name": "Qdoba",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "sweetgreen",
+      "name": "Sweetgreen",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cava",
+      "name": "Cava",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "dennys",
+      "name": "Denny's",
+      "categoryId": "food.dining",
+      "aliases": ["denny_s"]
+    },
+    {
+      "key": "ihop",
+      "name": "IHOP",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cracker_barrel",
+      "name": "Cracker Barrel",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "texas_roadhouse",
+      "name": "Texas Roadhouse",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "whataburger",
+      "name": "Whataburger",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "culvers",
+      "name": "Culver's",
+      "categoryId": "food.dining",
+      "aliases": ["culver_s"]
+    },
+    {
+      "key": "zaxbys",
+      "name": "Zaxby's",
+      "categoryId": "food.dining",
+      "aliases": ["zaxby_s"]
+    },
+    {
+      "key": "doordash",
+      "name": "DoorDash",
+      "categoryId": "food.dining",
+      "aliases": ["doordash_dashpass"]
+    },
+    {
+      "key": "uber_eats",
+      "name": "Uber Eats",
+      "categoryId": "food.dining",
+      "aliases": ["ubereats"]
+    },
+    {
+      "key": "grubhub",
+      "name": "Grubhub",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "postmates",
+      "name": "Postmates",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "starbucks",
+      "name": "Starbucks",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "dunkin",
+      "name": "Dunkin'",
+      "categoryId": "food.coffee",
+      "aliases": ["dunkin_donuts"]
+    },
+    {
+      "key": "dutch_bros",
+      "name": "Dutch Bros",
+      "categoryId": "food.coffee",
+      "aliases": ["dutch_bros_coffee"]
+    },
+    {
+      "key": "peets_coffee",
+      "name": "Peet's Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["peet_s_coffee", "peets"]
+    },
+    {
+      "key": "tim_hortons",
+      "name": "Tim Hortons",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "caribou_coffee",
+      "name": "Caribou Coffee",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "blue_bottle_coffee",
+      "name": "Blue Bottle Coffee",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "philz_coffee",
+      "name": "Philz Coffee",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "uber",
+      "name": "Uber",
+      "categoryId": "transport.general",
+      "aliases": ["uber_trip"]
+    },
+    {
+      "key": "lyft",
+      "name": "Lyft",
+      "categoryId": "transport.general",
+      "aliases": ["lyft_ride"]
+    },
+    {
+      "key": "parkmobile",
+      "name": "ParkMobile",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "spothero",
+      "name": "SpotHero",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "e_zpass",
+      "name": "E-ZPass",
+      "categoryId": "transport.general",
+      "aliases": ["ezpass", "e_z_pass"]
+    },
+    {
+      "key": "lime",
+      "name": "Lime",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "mta",
+      "name": "MTA",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "clipper",
+      "name": "Clipper",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "jiffy_lube",
+      "name": "Jiffy Lube",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "autozone",
+      "name": "AutoZone",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "valvoline",
+      "name": "Valvoline",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "shell",
+      "name": "Shell",
+      "categoryId": "transport.gas",
+      "aliases": ["shell_oil", "shell_service"]
+    },
+    {
+      "key": "chevron",
+      "name": "Chevron",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "exxon",
+      "name": "Exxon",
+      "categoryId": "transport.gas",
+      "aliases": ["exxonmobil", "exxon_mobil"]
+    },
+    {
+      "key": "mobil",
+      "name": "Mobil",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "bp",
+      "name": "BP",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "sunoco",
+      "name": "Sunoco",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "speedway",
+      "name": "Speedway",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "marathon",
+      "name": "Marathon",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "valero",
+      "name": "Valero",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "circle_k",
+      "name": "Circle K",
+      "categoryId": "transport.gas",
+      "multiCategory": true
+    },
+    {
+      "key": "wawa",
+      "name": "Wawa",
+      "categoryId": "transport.gas",
+      "multiCategory": true
+    },
+    {
+      "key": "sheetz",
+      "name": "Sheetz",
+      "categoryId": "transport.gas",
+      "multiCategory": true
+    },
+    {
+      "key": "quiktrip",
+      "name": "QuikTrip",
+      "categoryId": "transport.gas",
+      "multiCategory": true,
+      "aliases": ["qt"]
+    },
+    {
+      "key": "racetrac",
+      "name": "RaceTrac",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "caseys",
+      "name": "Casey's",
+      "categoryId": "transport.gas",
+      "multiCategory": true,
+      "aliases": ["casey_s", "caseys_general_store"]
+    },
+    {
+      "key": "citgo",
+      "name": "Citgo",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "phillips_66",
+      "name": "Phillips 66",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "costco_gas",
+      "name": "Costco Gas",
+      "categoryId": "transport.gas",
+      "aliases": ["costco_gasoline"]
+    },
+    {
+      "key": "murphy_usa",
+      "name": "Murphy USA",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "loves",
+      "name": "Love's",
+      "categoryId": "transport.gas",
+      "aliases": ["love_s", "loves_travel_stop"]
+    },
+    {
+      "key": "pilot_flying_j",
+      "name": "Pilot Flying J",
+      "categoryId": "transport.gas",
+      "aliases": ["pilot_travel_center"]
+    },
+    {
+      "key": "arco",
+      "name": "Arco",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "76",
+      "name": "76",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "amazon",
+      "name": "Amazon",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["amazon_com", "amzn", "amzn_mktp_us", "amazon_mktpl"]
+    },
+    {
+      "key": "target",
+      "name": "Target",
+      "categoryId": "shopping.general",
+      "multiCategory": true
+    },
+    {
+      "key": "walmart",
+      "name": "Walmart",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["wal_mart", "wm_supercenter", "walmart_com"]
+    },
+    {
+      "key": "costco",
+      "name": "Costco",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["costco_whse", "costco_wholesale"]
+    },
+    {
+      "key": "sams_club",
+      "name": "Sam's Club",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["sam_s_club", "samsclub"]
+    },
+    {
+      "key": "bjs_wholesale_club",
+      "name": "BJ's Wholesale Club",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["bj_s_wholesale", "bjs"]
+    },
+    {
+      "key": "best_buy",
+      "name": "Best Buy",
+      "categoryId": "shopping.general",
+      "aliases": ["bestbuy", "bestbuy_com"]
+    },
+    {
+      "key": "the_home_depot",
+      "name": "The Home Depot",
+      "categoryId": "shopping.general",
+      "aliases": ["home_depot"]
+    },
+    {
+      "key": "lowes",
+      "name": "Lowe's",
+      "categoryId": "shopping.general",
+      "aliases": ["lowe_s"]
+    },
+    {
+      "key": "ikea",
+      "name": "IKEA",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "macys",
+      "name": "Macy's",
+      "categoryId": "shopping.general",
+      "aliases": ["macy_s"]
+    },
+    {
+      "key": "kohls",
+      "name": "Kohl's",
+      "categoryId": "shopping.general",
+      "aliases": ["kohl_s"]
+    },
+    {
+      "key": "nordstrom",
+      "name": "Nordstrom",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "tj_maxx",
+      "name": "TJ Maxx",
+      "categoryId": "shopping.general",
+      "aliases": ["tjmaxx", "t_j_maxx"]
+    },
+    {
+      "key": "marshalls",
+      "name": "Marshalls",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "ross",
+      "name": "Ross",
+      "categoryId": "shopping.general",
+      "aliases": ["ross_stores"]
+    },
+    {
+      "key": "old_navy",
+      "name": "Old Navy",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "gap",
+      "name": "Gap",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "hm",
+      "name": "H&M",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "zara",
+      "name": "Zara",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "nike",
+      "name": "Nike",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "etsy",
+      "name": "Etsy",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "ebay",
+      "name": "eBay",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "wayfair",
+      "name": "Wayfair",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "dollar_tree",
+      "name": "Dollar Tree",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "dollar_general",
+      "name": "Dollar General",
+      "categoryId": "shopping.general",
+      "multiCategory": true
+    },
+    {
+      "key": "five_below",
+      "name": "Five Below",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "apple",
+      "name": "Apple",
+      "categoryId": "shopping.general",
+      "multiCategory": true,
+      "aliases": ["apple_com", "apple_com_bill", "apple_store"]
+    },
+    {
+      "key": "michaels",
+      "name": "Michaels",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "staples",
+      "name": "Staples",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "petco",
+      "name": "Petco",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "petsmart",
+      "name": "PetSmart",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "chewy",
+      "name": "Chewy",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "dicks_sporting_goods",
+      "name": "Dick's Sporting Goods",
+      "categoryId": "shopping.general",
+      "aliases": ["dick_s_sporting_goods", "dicks_sporting"]
+    },
+    {
+      "key": "shein",
+      "name": "Shein",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "temu",
+      "name": "Temu",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "xfinity",
+      "name": "Xfinity",
+      "categoryId": "bills.utilities",
+      "aliases": ["comcast", "comcast_xfinity"]
+    },
+    {
+      "key": "verizon",
+      "name": "Verizon",
+      "categoryId": "bills.utilities",
+      "aliases": ["verizon_wireless", "vz_wireless"]
+    },
+    {
+      "key": "att",
+      "name": "AT&T",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "t_mobile",
+      "name": "T-Mobile",
+      "categoryId": "bills.utilities",
+      "aliases": ["tmobile"]
+    },
+    {
+      "key": "spectrum",
+      "name": "Spectrum",
+      "categoryId": "bills.utilities",
+      "aliases": ["charter_spectrum"]
+    },
+    {
+      "key": "pge",
+      "name": "PG&E",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "con_edison",
+      "name": "Con Edison",
+      "categoryId": "bills.utilities",
+      "aliases": ["coned"]
+    },
+    {
+      "key": "duke_energy",
+      "name": "Duke Energy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "cox",
+      "name": "Cox",
+      "categoryId": "bills.utilities",
+      "aliases": ["cox_comm"]
+    },
+    {
+      "key": "geico",
+      "name": "GEICO",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "progressive",
+      "name": "Progressive",
+      "categoryId": "bills.utilities",
+      "aliases": ["progressive_ins"]
+    },
+    {
+      "key": "allstate",
+      "name": "Allstate",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "state_farm",
+      "name": "State Farm",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "mint_mobile",
+      "name": "Mint Mobile",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "google_fi",
+      "name": "Google Fi",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "rocket_mortgage",
+      "name": "Rocket Mortgage",
+      "categoryId": "housing.rent_mortgage"
+    },
+    {
+      "key": "mr_cooper",
+      "name": "Mr. Cooper",
+      "categoryId": "housing.rent_mortgage"
+    },
+    {
+      "key": "netflix",
+      "name": "Netflix",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "spotify",
+      "name": "Spotify",
+      "categoryId": "subscriptions.general",
+      "aliases": ["spotify_usa"]
+    },
+    {
+      "key": "hulu",
+      "name": "Hulu",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "disney",
+      "name": "Disney+",
+      "categoryId": "subscriptions.general",
+      "aliases": ["disney_plus", "disneyplus"]
+    },
+    {
+      "key": "hbo_max",
+      "name": "HBO Max",
+      "categoryId": "subscriptions.general",
+      "aliases": ["hbomax", "max_com"]
+    },
+    {
+      "key": "youtube",
+      "name": "YouTube",
+      "categoryId": "subscriptions.general",
+      "aliases": ["youtube_premium", "youtubepremium"]
+    },
+    {
+      "key": "amazon_prime",
+      "name": "Amazon Prime",
+      "categoryId": "subscriptions.general",
+      "aliases": ["prime_video", "amazon_prime_video"]
+    },
+    {
+      "key": "audible",
+      "name": "Audible",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "paramount",
+      "name": "Paramount+",
+      "categoryId": "subscriptions.general",
+      "aliases": ["paramount_plus"]
+    },
+    {
+      "key": "peacock",
+      "name": "Peacock",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "adobe",
+      "name": "Adobe",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "dropbox",
+      "name": "Dropbox",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "google_one",
+      "name": "Google One",
+      "categoryId": "subscriptions.general",
+      "aliases": ["google_storage"]
+    },
+    {
+      "key": "patreon",
+      "name": "Patreon",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "the_new_york_times",
+      "name": "The New York Times",
+      "categoryId": "subscriptions.general",
+      "aliases": ["nytimes", "ny_times"]
+    },
+    {
+      "key": "siriusxm",
+      "name": "SiriusXM",
+      "categoryId": "subscriptions.general",
+      "aliases": ["sirius_xm", "siriusxm_radio"]
+    },
+    {
+      "key": "icloud",
+      "name": "iCloud",
+      "categoryId": "subscriptions.general",
+      "aliases": ["apple_icloud"]
+    },
+    {
+      "key": "cvs",
+      "name": "CVS",
+      "categoryId": "health.general",
+      "multiCategory": true,
+      "aliases": ["cvs_pharmacy"]
+    },
+    {
+      "key": "walgreens",
+      "name": "Walgreens",
+      "categoryId": "health.general",
+      "multiCategory": true
+    },
+    {
+      "key": "rite_aid",
+      "name": "Rite Aid",
+      "categoryId": "health.general",
+      "multiCategory": true
+    },
+    {
+      "key": "planet_fitness",
+      "name": "Planet Fitness",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "la_fitness",
+      "name": "LA Fitness",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "equinox",
+      "name": "Equinox",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "goodrx",
+      "name": "GoodRx",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "amc_theatres",
+      "name": "AMC Theatres",
+      "categoryId": "entertainment.general",
+      "aliases": ["amc"]
+    },
+    {
+      "key": "regal",
+      "name": "Regal",
+      "categoryId": "entertainment.general",
+      "aliases": ["regal_cinemas"]
+    },
+    {
+      "key": "ticketmaster",
+      "name": "Ticketmaster",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "stubhub",
+      "name": "StubHub",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "steam",
+      "name": "Steam",
+      "categoryId": "entertainment.general",
+      "aliases": ["steam_games", "steampowered"]
+    },
+    {
+      "key": "playstation",
+      "name": "PlayStation",
+      "categoryId": "entertainment.general",
+      "aliases": ["playstation_network", "psn"]
+    },
+    {
+      "key": "xbox",
+      "name": "Xbox",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "nintendo",
+      "name": "Nintendo",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "fandango",
+      "name": "Fandango",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "live_nation",
+      "name": "Live Nation",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "dave_busters",
+      "name": "Dave & Buster's",
+      "categoryId": "entertainment.general",
+      "aliases": ["dave_buster_s"]
+    },
+    {
+      "key": "topgolf",
+      "name": "Topgolf",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "delta_air_lines",
+      "name": "Delta Air Lines",
+      "categoryId": "travel.general",
+      "aliases": ["delta_air", "delta_airlines"]
+    },
+    {
+      "key": "united_airlines",
+      "name": "United Airlines",
+      "categoryId": "travel.general",
+      "aliases": ["united_air", "united_airl"]
+    },
+    {
+      "key": "american_airlines",
+      "name": "American Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "southwest_airlines",
+      "name": "Southwest Airlines",
+      "categoryId": "travel.general",
+      "aliases": ["southwest", "southwes"]
+    },
+    {
+      "key": "jetblue",
+      "name": "JetBlue",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "alaska_airlines",
+      "name": "Alaska Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "spirit_airlines",
+      "name": "Spirit Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "frontier_airlines",
+      "name": "Frontier Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "marriott",
+      "name": "Marriott",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "hilton",
+      "name": "Hilton",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "hyatt",
+      "name": "Hyatt",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "airbnb",
+      "name": "Airbnb",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "expedia",
+      "name": "Expedia",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "bookingcom",
+      "name": "Booking.com",
+      "categoryId": "travel.general",
+      "aliases": ["booking"]
+    },
+    {
+      "key": "hertz",
+      "name": "Hertz",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "enterprise_rent_a_car",
+      "name": "Enterprise Rent-A-Car",
+      "categoryId": "travel.general",
+      "aliases": ["enterprise_rent_a"]
+    },
+    {
+      "key": "avis",
+      "name": "Avis",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "amtrak",
+      "name": "Amtrak",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "ulta_beauty",
+      "name": "Ulta Beauty",
+      "categoryId": "personal_care.general",
+      "aliases": ["ulta"]
+    },
+    {
+      "key": "sephora",
+      "name": "Sephora",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "great_clips",
+      "name": "Great Clips",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "supercuts",
+      "name": "Supercuts",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "sport_clips",
+      "name": "Sport Clips",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "bath_body_works",
+      "name": "Bath & Body Works",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "gofundme",
+      "name": "GoFundMe",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "1_800_flowers",
+      "name": "1-800-Flowers",
+      "categoryId": "gifts.general",
+      "aliases": ["1800flowers"]
+    },
+    {
+      "key": "american_red_cross",
+      "name": "American Red Cross",
+      "categoryId": "gifts.general",
+      "aliases": ["red_cross"]
+    },
+    {
+      "key": "edible_arrangements",
+      "name": "Edible Arrangements",
+      "categoryId": "gifts.general"
+    }
+  ]
+}
