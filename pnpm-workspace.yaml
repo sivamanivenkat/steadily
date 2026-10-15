@@ -2,4 +2,45 @@ packages:
   - 'apps/*'
   - 'packages/*'
 allowBuilds:
+  '@parcel/watcher': true
   esbuild: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@expo/cli@58.1.9'
+  - '@expo/config-plugins@58.0.9'
+  - '@expo/config@58.0.6'
+  - '@expo/image-utils@0.12.5'
+  - '@expo/inline-modules@0.2.6'
+  - '@expo/local-build-cache-provider@58.0.6'
+  - '@expo/metro-config@58.0.14'
+  - '@expo/metro-file-map@58.0.5'
+  - '@expo/prebuild-config@58.0.14'
+  - '@expo/require-utils@58.0.4'
+  - '@expo/router-server@58.0.14'
+  - '@react-native/asset-utils@0.88.0'
+  - '@react-native/codegen@0.88.0'
+  - '@react-native/community-cli-plugin@0.88.0'
+  - '@react-native/debugger-frontend@0.88.0'
+  - '@react-native/debugger-shell@0.88.0'
+  - '@react-native/dev-middleware@0.88.0'
+  - '@react-native/gradle-plugin@0.88.0'
+  - '@react-native/normalize-colors@0.88.0'
+  - '@react-native/virtualized-lists@0.88.0'
+  - babel-preset-expo@58.0.15
+  - expo-asset@58.0.16
+  - expo-constants@58.0.12
+  - expo-linking@58.0.13
+  - expo-modules-autolinking@58.0.13
+  - expo-modules-core@58.0.19
+  - expo-modules-jsi@58.0.14
+  - expo-router@58.0.20
+  - expo-splash-screen@58.0.9
+  - expo-system-ui@58.0.6
+  - expo@58.0.11
+  - react-native@0.88.0
+  - react-native-svg@15.16.0
+  - '@react-native/jest-preset@0.88.0'
+  - '@react-native/js-polyfills@0.88.0'
+  - jest-expo@58.0.11
+  - '@expo/package-manager@1.14.2'
+  - '@react-native/babel-plugin-codegen@0.88.0'
