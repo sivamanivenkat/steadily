@@ -1,6 +1,6 @@
 import type { Agent, AgentContext, AgentLogger, LlmPort } from '@steadily/shared-types';
 import { EventBus, type Clock, type IdGenerator, systemClock } from './event-bus';
-import type { EventStore } from './event-store';
+import type { EventStore, FailureRecord } from './event-store';
 
 export interface AgentRuntimeOptions {
   store: EventStore;
@@ -29,6 +29,17 @@ export interface RunResult {
 export const DEFAULT_MAX_ATTEMPTS = 3;
 export const DEFAULT_MAX_DELIVERIES_PER_RUN = 1000;
 const DEFAULT_BATCH_SIZE = 100;
+/** Longest error name stored in `failed_events`. */
+const MAX_ERROR_NAME_LENGTH = 100;
+
+/**
+ * Name of an agent's delivery cursor in the store. It includes the agent's
+ * subscriptions, so an agent that subscribes to a new event type after an
+ * update gets a fresh cursor and sees the older events of that type.
+ */
+export function agentCursorName(agent: Pick<Agent, 'name' | 'subscribes'>): string {
+  return `agent:${agent.name}|${[...agent.subscribes].sort().join(',')}`;
+}
 
 /**
  * Delivers bus events to subscribed agents (D-017).
@@ -38,6 +49,9 @@ const DEFAULT_BATCH_SIZE = 100;
  * - Emitted events and the processed marker are committed atomically, only on success.
  * - A failing agent never blocks other agents; it is retried on the next run, up to
  *   `maxAttempts`, then the event is skipped for that agent (marked processed).
+ * - If the store supports it, retry counts (`failed_events`) and per-agent delivery
+ *   cursors (`runtime_cursors`) are persisted, so they survive app restarts and a
+ *   restarted runtime scans from each agent's cursor instead of seq 0.
  * - Logs carry messages, agent names and event ids only (D-011).
  */
 export class AgentRuntime {
@@ -50,10 +64,15 @@ export class AgentRuntime {
   private readonly maxDeliveries: number;
   private readonly batchSize: number;
   private readonly agents: Agent[] = [];
-  /** Failure counts per (agent, event). In memory: reset when the app restarts. */
+  /** Failure counts per (agent, event), used only when the store cannot persist them. */
   private readonly attempts = new Map<string, number>();
-  /** Every event at or below this seq is settled for every registered agent. */
-  private settledSeq = 0;
+  /**
+   * Per agent: every event at or below this seq is settled (processed or given up).
+   * Loaded lazily from the store's cursor on the first run after `register`.
+   */
+  private readonly settled = new Map<string, number>();
+  /** Last cursor value written to (or read from) the store, per agent. */
+  private readonly persisted = new Map<string, number>();
   private running: Promise<unknown> = Promise.resolve();
 
   constructor(options: AgentRuntimeOptions) {
@@ -75,9 +94,8 @@ export class AgentRuntime {
     if (this.agents.some((existing) => existing.name === agent.name)) {
       throw new Error(`Agent already registered: ${agent.name}`);
     }
+    // A new agent starts from its stored cursor, or from seq 0 if it has none.
     this.agents.push(agent);
-    // A new agent may have work on old events: rescan from the start.
-    this.settledSeq = 0;
     return this;
   }
 
@@ -96,81 +114,147 @@ export class AgentRuntime {
       skipped: 0,
       stoppedByLoopGuard: false,
     };
+    if (this.agents.length === 0) return result;
+    await this.loadCursors();
+
     // Pairs that failed in this run wait for the next run.
     const failedThisRun = new Set<string>();
-    let scanSeq = this.settledSeq;
-    let prefixSettled = true;
+    // Agents whose settled prefix can still advance in this run.
+    const advancing = new Set(this.agents.map((agent) => agent.name));
+    let scanSeq = Math.min(...this.agents.map((agent) => this.settledSeq(agent)));
 
-    for (;;) {
-      const batch = await this.store.readAfter(scanSeq, this.batchSize);
-      if (batch.length === 0) break;
+    try {
+      for (;;) {
+        const batch = await this.store.readAfter(scanSeq, this.batchSize);
+        if (batch.length === 0) break;
 
-      for (const { seq, event } of batch) {
-        let eventSettled = true;
-        for (const agent of this.agents) {
-          if (!agent.subscribes.includes(event.type)) continue;
-          const key = attemptKey(agent.name, event.id);
-          if (failedThisRun.has(key)) {
-            eventSettled = false;
-            continue;
-          }
-          if (await this.store.isProcessed(agent.name, event.id)) continue;
+        for (const { seq, event } of batch) {
+          for (const agent of this.agents) {
+            if (seq <= this.settledSeq(agent)) continue;
+            let pairSettled = true;
 
-          if (result.deliveries >= this.maxDeliveries) {
-            result.stoppedByLoopGuard = true;
-            this.log.warn(
-              `Delivery cap of ${this.maxDeliveries} reached; stopping run (possible event loop)`,
-              { agent: agent.name, eventId: event.id },
-            );
-            return result;
-          }
-          result.deliveries++;
+            if (agent.subscribes.includes(event.type)) {
+              const key = pairKey(agent.name, event.id);
+              if (failedThisRun.has(key)) {
+                pairSettled = false;
+              } else if (!(await this.store.isProcessed(agent.name, event.id))) {
+                if (result.deliveries >= this.maxDeliveries) {
+                  result.stoppedByLoopGuard = true;
+                  this.log.warn(
+                    `Delivery cap of ${this.maxDeliveries} reached; stopping run (possible event loop)`,
+                    { agent: agent.name, eventId: event.id },
+                  );
+                  return result;
+                }
+                result.deliveries++;
 
-          try {
-            const emitted = await agent.handle(event, this.ctx);
-            const prepared = this.bus.prepare(emitted, event.id);
-            await this.store.recordHandled({
-              agent: agent.name,
-              eventId: event.id,
-              at: this.clock().toISOString(),
-              emitted: prepared,
-            });
-            this.attempts.delete(key);
-            result.succeeded++;
-          } catch (error) {
-            result.failed++;
-            const attempt = (this.attempts.get(key) ?? 0) + 1;
-            // Error messages may echo payload values, so only the error name is logged.
-            const reason = error instanceof Error ? error.name : 'non-error thrown';
-            if (attempt >= this.maxAttempts) {
-              this.attempts.delete(key);
-              await this.store.markProcessed(agent.name, event.id, this.clock().toISOString());
-              result.skipped++;
-              this.log.error(`Agent failed ${attempt} times (${reason}); skipping event`, {
-                agent: agent.name,
-                eventId: event.id,
-              });
-            } else {
-              this.attempts.set(key, attempt);
-              failedThisRun.add(key);
-              eventSettled = false;
-              this.log.warn(
-                `Agent failed (${reason}), attempt ${attempt}/${this.maxAttempts}; will retry`,
-                { agent: agent.name, eventId: event.id },
-              );
+                try {
+                  const emitted = await agent.handle(event, this.ctx);
+                  const prepared = this.bus.prepare(emitted, event.id);
+                  await this.store.recordHandled({
+                    agent: agent.name,
+                    eventId: event.id,
+                    at: this.clock().toISOString(),
+                    emitted: prepared,
+                  });
+                  this.attempts.delete(key);
+                  result.succeeded++;
+                } catch (error) {
+                  result.failed++;
+                  // Error messages may echo payload values, so only the error name is kept.
+                  const reason =
+                    error instanceof Error
+                      ? error.name.slice(0, MAX_ERROR_NAME_LENGTH)
+                      : 'non-error thrown';
+                  const attempt = (await this.failureAttempts(agent.name, event.id)) + 1;
+                  const gaveUp = attempt >= this.maxAttempts;
+                  await this.recordFailure({
+                    agent: agent.name,
+                    eventId: event.id,
+                    attempts: attempt,
+                    errorName: reason,
+                    gaveUp,
+                    at: this.clock().toISOString(),
+                  });
+                  if (gaveUp) {
+                    result.skipped++;
+                    this.log.error(`Agent failed ${attempt} times (${reason}); skipping event`, {
+                      agent: agent.name,
+                      eventId: event.id,
+                    });
+                  } else {
+                    failedThisRun.add(key);
+                    pairSettled = false;
+                    this.log.warn(
+                      `Agent failed (${reason}), attempt ${attempt}/${this.maxAttempts}; will retry`,
+                      { agent: agent.name, eventId: event.id },
+                    );
+                  }
+                }
+              }
             }
-          }
-        }
 
-        scanSeq = seq;
-        prefixSettled = prefixSettled && eventSettled;
-        if (prefixSettled) this.settledSeq = seq;
+            if (!pairSettled) advancing.delete(agent.name);
+            else if (advancing.has(agent.name)) this.settled.set(agent.name, seq);
+          }
+          scanSeq = seq;
+        }
+        await this.persistCursors();
       }
+    } finally {
+      await this.persistCursors();
     }
     return result;
   }
+
+  private settledSeq(agent: Agent): number {
+    return this.settled.get(agent.name) ?? 0;
+  }
+
+  private async loadCursors(): Promise<void> {
+    for (const agent of this.agents) {
+      if (this.settled.has(agent.name)) continue;
+      const stored = this.store.getCursor
+        ? await this.store.getCursor(agentCursorName(agent))
+        : null;
+      this.settled.set(agent.name, stored ?? 0);
+      this.persisted.set(agent.name, stored ?? 0);
+    }
+  }
+
+  /** Writes cursors that moved since the last write. Stale cursors are safe, just slower. */
+  private async persistCursors(): Promise<void> {
+    if (!this.store.setCursor) return;
+    const at = this.clock().toISOString();
+    for (const agent of this.agents) {
+      const seq = this.settledSeq(agent);
+      if (this.persisted.get(agent.name) === seq) continue;
+      await this.store.setCursor(agentCursorName(agent), seq, at);
+      this.persisted.set(agent.name, seq);
+    }
+  }
+
+  private get persistsFailures(): boolean {
+    return this.store.getFailureAttempts !== undefined && this.store.recordFailure !== undefined;
+  }
+
+  private async failureAttempts(agent: string, eventId: string): Promise<number> {
+    if (this.persistsFailures) return this.store.getFailureAttempts!(agent, eventId);
+    return this.attempts.get(pairKey(agent, eventId)) ?? 0;
+  }
+
+  private async recordFailure(failure: FailureRecord): Promise<void> {
+    if (this.persistsFailures) return this.store.recordFailure!(failure);
+    const key = pairKey(failure.agent, failure.eventId);
+    if (failure.gaveUp) {
+      this.attempts.delete(key);
+      await this.store.markProcessed(failure.agent, failure.eventId, failure.at);
+    } else {
+      this.attempts.set(key, failure.attempts);
+    }
+  }
 }
 
-function attemptKey(agent: string, eventId: string): string {
+function pairKey(agent: string, eventId: string): string {
   return `${agent}\u0000${eventId}`;
 }
