@@ -182,6 +182,15 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@types/node@22.20.5)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(tsx@4.23.15))
 
+  packages/agent-core:
+    dependencies:
+      '@steadily/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@steadily/taxonomy':
+        specifier: workspace:*
+        version: link:../taxonomy
+
   packages/db:
     dependencies:
       '@steadily/shared-types':
