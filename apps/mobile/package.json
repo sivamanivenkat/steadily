@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
+    "@steadily/agent-core": "workspace:*",
+    "@steadily/shared-types": "workspace:*",
     "@steadily/taxonomy": "workspace:*",
     "expo": "~58.0.11",
     "expo-blur": "~58.0.3",

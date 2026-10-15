@@ -16,7 +16,14 @@ type UiIcon =
   | 'chevronRight'
   | 'chevronLeft'
   | 'arrowUp'
-  | 'inbox';
+  | 'inbox'
+  | 'lock'
+  | 'search'
+  | 'close'
+  | 'plus'
+  | 'bell'
+  | 'battery'
+  | 'phone';
 
 export type IconName = CategoryIcon | UiIcon;
 
@@ -105,6 +112,25 @@ const shapes: Record<IconName, readonly Shape[]> = {
   inbox: [
     'M4 13l2.4-6.6A1 1 0 0 1 7.3 5.8h9.4a1 1 0 0 1 .9.6L20 13v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z',
     'M4 13h4.5a3.5 3.5 0 0 0 7 0H20',
+  ],
+  lock: [
+    'M6.5 11h11a1 1 0 0 1 1 1v7.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V12a1 1 0 0 1 1-1z',
+    'M8.5 11V7.5a3.5 3.5 0 0 1 7 0V11',
+    'M12 15v2',
+  ],
+  search: [[10.5, 10.5, 6], 'M15 15l5 5'],
+  close: ['M6.5 6.5l11 11', 'M17.5 6.5l-11 11'],
+  plus: ['M12 5.5v13', 'M5.5 12h13'],
+  bell: ['M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z', 'M10 20.5a2 2 0 0 0 4 0'],
+  battery: [
+    'M4 8h13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z',
+    'M21 10.5v3',
+    'M6.5 11v2',
+    'M9.5 11v2',
+  ],
+  phone: [
+    'M8 3h8a1.5 1.5 0 0 1 1.5 1.5v15A1.5 1.5 0 0 1 16 21H8a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 8 3z',
+    'M11 18h2',
   ],
 };
 

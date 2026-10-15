@@ -1,11 +1,3 @@
-import { PlaceholderScreen } from '@/components';
+import { BudgetsScreen } from '@/screens/BudgetsScreen';
 
-export default function BudgetsScreen() {
-  return (
-    <PlaceholderScreen
-      title="Budgets"
-      heading="Budgets by category"
-      body="Set a monthly amount per category and see how your pace compares with the calendar."
-    />
-  );
-}
+export default BudgetsScreen;

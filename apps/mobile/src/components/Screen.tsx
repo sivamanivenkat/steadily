@@ -29,6 +29,9 @@ export function Screen({ children, withTabBar = true }: ScreenProps) {
           },
         ]}
         contentInsetAdjustmentBehavior="never"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
       >
         {children}
       </ScrollView>

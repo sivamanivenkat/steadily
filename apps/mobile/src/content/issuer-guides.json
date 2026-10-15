@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "verified": false,
+  "notice": "Placeholder guides. Steps are generic and have not been checked against any bank app. Real guides will be served from Supabase (D-014) once every menu path is verified.",
+  "issuers": {
+    "chase": {
+      "kind": "card",
+      "todo": "Replace with the verified Chase app menu path for purchase alerts.",
+      "steps": [
+        "Open the Chase app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "amex": {
+      "kind": "card",
+      "todo": "Replace with the verified Amex app menu path for purchase alerts.",
+      "steps": [
+        "Open the Amex app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "capital_one": {
+      "kind": "card",
+      "todo": "Replace with the verified Capital One app menu path for purchase alerts.",
+      "steps": [
+        "Open the Capital One app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "citi": {
+      "kind": "card",
+      "todo": "Replace with the verified Citi app menu path for purchase alerts.",
+      "steps": [
+        "Open the Citi app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "discover": {
+      "kind": "card",
+      "todo": "Replace with the verified Discover app menu path for purchase alerts.",
+      "steps": [
+        "Open the Discover app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "bank_of_america": {
+      "kind": "card",
+      "todo": "Replace with the verified Bank of America app menu path for purchase alerts.",
+      "steps": [
+        "Open the Bank of America app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "wells_fargo": {
+      "kind": "card",
+      "todo": "Replace with the verified Wells Fargo app menu path for purchase alerts.",
+      "steps": [
+        "Open the Wells Fargo app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "us_bank": {
+      "kind": "card",
+      "todo": "Replace with the verified US Bank app menu path for purchase alerts.",
+      "steps": [
+        "Open the US Bank app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every card purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    },
+    "apple_card": {
+      "kind": "card",
+      "todo": "Verify whether Apple Card offers text alerts. If not, point to the Apple Pay Shortcut and statement import (D-014 fallbacks).",
+      "steps": [
+        "Open Wallet and tap Apple Card.",
+        "Find the notification settings for transactions.",
+        "Turn on transaction notifications.",
+        "On iPhone, the Apple Pay Shortcut can also log purchases. We'll show you how in the next step."
+      ]
+    },
+    "venmo": {
+      "kind": "p2p",
+      "todo": "Replace with the verified Venmo app menu path for payment notifications.",
+      "steps": [
+        "Open the Venmo app.",
+        "Find the notification settings.",
+        "Turn on notifications for payments you send and receive."
+      ]
+    },
+    "cash_app": {
+      "kind": "p2p",
+      "todo": "Replace with the verified Cash App menu path for payment notifications.",
+      "steps": [
+        "Open Cash App.",
+        "Find the notification settings.",
+        "Turn on notifications for payments and card purchases."
+      ]
+    },
+    "other": {
+      "kind": "card",
+      "todo": "Generic guide for banks without a dedicated guide yet.",
+      "steps": [
+        "Open your bank or card app and sign in.",
+        "Find the alerts or notifications settings.",
+        "Turn on an alert for every purchase, with the lowest amount allowed.",
+        "Choose text message on iPhone, or push or text on Android."
+      ]
+    }
+  }
+}
