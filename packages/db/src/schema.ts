@@ -89,6 +89,31 @@ export const processedEvents = sqliteTable(
 );
 
 /**
+ * Delivery failures per agent, so retry counts survive restarts and events an
+ * agent gave up on are visible. Stores the error's name only, never its message
+ * (messages can contain payload values, D-011).
+ */
+export const failedEvents = sqliteTable(
+  'failed_events',
+  {
+    agent: text('agent').notNull(),
+    eventId: text('event_id').notNull(),
+    attempts: integer('attempts').notNull(),
+    lastErrorName: text('last_error_name').notNull(),
+    gaveUp: integer('gave_up', { mode: 'boolean' }).notNull().default(false),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.agent, t.eventId] })],
+);
+
+/** Last event seq the runtime has fully delivered, to avoid rescanning from 0. */
+export const runtimeCursors = sqliteTable('runtime_cursors', {
+  name: text('name').primaryKey(),
+  seq: integer('seq').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+/**
  * Short-lived raw captures (alert text, OCR text) awaiting parsing.
  * Rows are deleted as soon as the Parser finishes, and expired rows are purged.
  */

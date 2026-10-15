@@ -1,19 +1,24 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getTableColumns, getTableName } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import * as schema from './schema';
 
-const migrationSql = readFileSync(
-  fileURLToPath(new URL('../migrations/0000_init.sql', import.meta.url)),
-  'utf8',
-);
+const migrationsDir = fileURLToPath(new URL('../migrations/', import.meta.url));
+const migrationSql = readdirSync(migrationsDir)
+  .filter((file) => file.endsWith('.sql'))
+  .sort()
+  .map((file) => readFileSync(join(migrationsDir, file), 'utf8'))
+  .join('\n');
 
 describe('db schema', () => {
   const tables = [
     schema.transactions,
     schema.events,
     schema.processedEvents,
+    schema.failedEvents,
+    schema.runtimeCursors,
     schema.inbox,
     schema.userRules,
     schema.categoryPrefs,
