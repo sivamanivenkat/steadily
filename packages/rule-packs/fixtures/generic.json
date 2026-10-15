@@ -1,0 +1,144 @@
+[
+  {
+    "name": "you made a transaction with",
+    "input": {
+      "text": "You made a $18.40 transaction with PANERA BREAD #601234",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 1840,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "PANERA BREAD #601234",
+      "occurredAt": "2026-10-14T15:12:00.000Z"
+    }
+  },
+  {
+    "name": "a purchase at, with card ending",
+    "input": {
+      "text": "A $9.99 purchase at SPOTIFY USA was made on your card ending in 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 999,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SPOTIFY USA",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234"
+    }
+  },
+  {
+    "name": "spent at",
+    "input": {
+      "text": "Alert: You spent $5 at SQ *JOES COFFEE.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 500,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *JOES COFFEE",
+      "occurredAt": "2026-10-14T15:12:00.000Z"
+    }
+  },
+  {
+    "name": "purchase of with ending without \"in\"",
+    "input": {
+      "text": "Purchase of $1,234.56 at BEST BUY 00123 on card ending 4821",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 123456,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "BEST BUY 00123",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821"
+    }
+  },
+  {
+    "name": "refund from is a credit",
+    "input": {
+      "text": "Your bank: A refund of $20.00 from TARGET T-1234 has been posted.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 2000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "TARGET T-1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z"
+    }
+  },
+  {
+    "name": "USD-prefixed amount",
+    "input": {
+      "text": "Card alert: Purchase of USD 12.30 at UBER *TRIP.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": {
+      "amountMinor": 1230,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "UBER *TRIP",
+      "occurredAt": "2026-10-14T15:12:00.000Z"
+    }
+  },
+  {
+    "name": "unknown android app falls back to generic",
+    "input": {
+      "text": "A $3.25 purchase at DUNKIN #345678 was approved",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.example.unknownbank"
+    },
+    "expected": {
+      "amountMinor": 325,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "DUNKIN #345678",
+      "occurredAt": "2026-10-14T15:12:00.000Z"
+    }
+  },
+  {
+    "name": "negative: verification code",
+    "input": {
+      "text": "Your verification code is 123456",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: sale promo",
+    "input": {
+      "text": "Big sale! Save $20 on purchases over $100 at our store.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: balance",
+    "input": {
+      "text": "Your balance is $1,000.00",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: declined purchase",
+    "input": {
+      "text": "A $45.00 purchase at EXAMPLE STORE was declined.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: empty text",
+    "input": {
+      "text": "   ",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "issuerId": "venmo",
+  "displayName": "Venmo",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.venmo"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "venmo_paid_you",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Venmo[^:]*: (?<merchant>[^$:]+?) paid you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "venmo_you_paid",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Venmo[^:]*: You paid (?<merchant>[^$:]+?) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "venmo_card_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Venmo[^:]*: You made an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) purchase at (?<merchant>.+?)(?: with your Venmo [A-Za-z ]*?(?:card|Card)(?: ending in (?<last4>[0-9]{4}))?)?\\.?$"
+    },
+    {
+      "id": "venmo_push_paid_you",
+      "channel": "push",
+      "direction": "credit",
+      "pattern": "^(?<merchant>[^$:]+?) paid you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "venmo_push_you_paid",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^You paid (?<merchant>[^$:]+?) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "venmo_push_card_purchase",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^You made an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) purchase at (?<merchant>.+?)(?: with your Venmo [A-Za-z ]*?card(?: ending in (?<last4>[0-9]{4}))?)?\\.?$"
+    }
+  ]
+}

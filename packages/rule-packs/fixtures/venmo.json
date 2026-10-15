@@ -1,0 +1,96 @@
+[
+  {
+    "name": "sms you paid someone",
+    "input": {
+      "text": "Venmo: You paid Sam Example $12.00 for pizza",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1200,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "venmo"
+    }
+  },
+  {
+    "name": "push someone paid you is a credit",
+    "input": {
+      "text": "Alex Sample paid you $45.50 for concert tickets",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.venmo"
+    },
+    "expected": {
+      "amountMinor": 4550,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "venmo"
+    }
+  },
+  {
+    "name": "push you paid whole dollars",
+    "input": {
+      "text": "You paid Jordan Sample $8",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.venmo"
+    },
+    "expected": {
+      "amountMinor": 800,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Jordan Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "venmo"
+    }
+  },
+  {
+    "name": "sms debit card purchase",
+    "input": {
+      "text": "Venmo: You made a $23.10 purchase at SQ *GREEN LEAF MARKET with your Venmo Debit Card ending in 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2310,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *GREEN LEAF MARKET",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "venmo"
+    }
+  },
+  {
+    "name": "negative: payment request",
+    "input": {
+      "text": "Venmo: Alex Sample requests $15.00 for groceries",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: login code",
+    "input": {
+      "text": "Venmo: Your Venmo login code is 482910. Do not share it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: bank transfer",
+    "input": {
+      "text": "Venmo: Your transfer of $100.00 to your bank is complete.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

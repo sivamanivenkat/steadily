@@ -1,0 +1,97 @@
+[
+  {
+    "name": "sms charge or hold with card ending",
+    "input": {
+      "text": "Capital One: A charge or hold of $42.17 was placed on your Quicksilver card ending in 4821 at SHELL OIL 57444 HOUSTON TX.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 4217,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SHELL OIL 57444 HOUSTON TX",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "capital_one"
+    }
+  },
+  {
+    "name": "sms USD-prefixed amount with date",
+    "input": {
+      "text": "Capital One: A purchase of USD 12.30 was made at TST* JOES DINER on Oct 14, 2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1230,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "TST* JOES DINER",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "capital_one"
+    }
+  },
+  {
+    "name": "push whole-dollar transaction",
+    "input": {
+      "text": "Transaction of $8 at UBER *TRIP on your Venture card ending in 1234",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.konylabs.capitalone"
+    },
+    "expected": {
+      "amountMinor": 800,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "UBER *TRIP",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "capital_one"
+    }
+  },
+  {
+    "name": "sms refund is a credit",
+    "input": {
+      "text": "Capital One: A refund of $19.99 from AMZN Mktp US*2K4AB1C23 was posted to your Savor card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1999,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "AMZN Mktp US*2K4AB1C23",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "capital_one"
+    }
+  },
+  {
+    "name": "negative: statement ready",
+    "input": {
+      "text": "Capital One: Your statement is ready. Minimum payment of $35.00 is due Nov 3.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: verification code",
+    "input": {
+      "text": "Capital One: Use verification code 551203 to sign in. We will never ask for this code.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: shopping promo",
+    "input": {
+      "text": "Capital One Shopping: Save up to $40 on purchases at select retailers this week.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

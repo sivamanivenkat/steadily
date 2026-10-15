@@ -1,0 +1,36 @@
+{
+  "issuerId": "capital_one",
+  "displayName": "Capital One",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.konylabs.capitalone"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "capital_one_charge",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Capital One[^:]*: (?:A )?(?:charge|purchase|transaction) (?:or hold )?(?:of|for) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:was )?(?:made |placed )?(?:on your [A-Za-z ]*?(?:card|account) ending in (?<last4>[0-9]{4}) )?at (?<merchant>.+?)(?: on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "capital_one_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Capital One[^:]*: (?:A )?(?:credit|refund) (?:of|for) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:was |has been )?(?:posted|applied) to your [A-Za-z ]*?(?:card|account) ending in (?<last4>[0-9]{4})\\.?$"
+    },
+    {
+      "id": "capital_one_push_charge",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^(?:A )?(?:charge|purchase|transaction) (?:or hold )?(?:of|for) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:was )?(?:made |placed )?at (?<merchant>.+?)(?: on your [A-Za-z ]*?(?:card|account) ending in (?<last4>[0-9]{4}))?\\.?$"
+    }
+  ]
+}

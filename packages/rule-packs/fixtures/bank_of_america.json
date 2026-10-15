@@ -1,0 +1,105 @@
+[
+  {
+    "name": "sms debit card purchase with ending",
+    "input": {
+      "text": "Bank of America: A debit card purchase of $31.08 was made at KROGER #0412 using your card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 3108,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "KROGER #0412",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "bank_of_america"
+    }
+  },
+  {
+    "name": "sms credit card transaction with date",
+    "input": {
+      "text": "BofA: Credit card transaction of $89.99 at SPOTIFY*P1234ABCD on 10/14/2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 8999,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SPOTIFY*P1234ABCD",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "bank_of_america"
+    }
+  },
+  {
+    "name": "sms card charged",
+    "input": {
+      "text": "Bank of America: Your credit card ending in 1234 was charged $1,200.00 at DELTA AIR LINES 0062345.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 120000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "DELTA AIR LINES 0062345",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "bank_of_america"
+    }
+  },
+  {
+    "name": "sms refund posted",
+    "input": {
+      "text": "Bank of America: A refund of $40.00 from IKEA 123 was posted to your account ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 4000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "IKEA 123",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "bank_of_america"
+    }
+  },
+  {
+    "name": "push purchase via app",
+    "input": {
+      "text": "Purchase of $4.50 at DD *DOORDASH CHIPOTLE using your debit card ending in 1234",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.infonow.bofa"
+    },
+    "expected": {
+      "amountMinor": 450,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "DD *DOORDASH CHIPOTLE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "bank_of_america"
+    }
+  },
+  {
+    "name": "negative: balance",
+    "input": {
+      "text": "Bank of America: Your balance for account ending in 1234 is $3,210.55.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: sign-in code",
+    "input": {
+      "text": "BofA: Your Online Banking sign-in code is 559102. We'll never call you for this code.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

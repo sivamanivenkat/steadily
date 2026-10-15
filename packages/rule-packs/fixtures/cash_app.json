@@ -1,0 +1,95 @@
+[
+  {
+    "name": "sms you paid someone",
+    "input": {
+      "text": "Cash App: You paid $25.00 to Sam Example for rent split",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2500,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "cash_app"
+    }
+  },
+  {
+    "name": "push someone sent you is a credit",
+    "input": {
+      "text": "Alex Sample sent you $60",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.squareup.cash"
+    },
+    "expected": {
+      "amountMinor": 6000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "cash_app"
+    }
+  },
+  {
+    "name": "push cash card spend",
+    "input": {
+      "text": "You spent $7.45 at SQ *CORNER BAKERY CAFE",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.squareup.cash"
+    },
+    "expected": {
+      "amountMinor": 745,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *CORNER BAKERY CAFE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "cash_app"
+    }
+  },
+  {
+    "name": "sms cash card charged",
+    "input": {
+      "text": "Cash App: Your Cash Card was charged $15.99 at HULU 800-555-0100.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1599,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "HULU 800-555-0100",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "cash_app"
+    }
+  },
+  {
+    "name": "negative: sign-in code",
+    "input": {
+      "text": "Cash App: Your sign-in code is 123456. Do not share it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: referral promo",
+    "input": {
+      "text": "Cash App: Get $5 when a friend signs up with your code.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: investing purchase",
+    "input": {
+      "text": "Cash App: Your $50.00 Bitcoin purchase is complete.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

@@ -1,0 +1,98 @@
+[
+  {
+    "name": "sms approved purchase, 5-digit ending keeps last 4",
+    "input": {
+      "text": "American Express: A purchase of $63.25 was approved at WHOLEFDS MKT 10234 on your card ending in 41234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 6325,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "WHOLEFDS MKT 10234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "amex"
+    }
+  },
+  {
+    "name": "sms card charged with dashed ending",
+    "input": {
+      "text": "Amex: Your card ending 4-21234 was charged $1,050.00 at DELTA AIR LINES.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 105000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "DELTA AIR LINES",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "amex"
+    }
+  },
+  {
+    "name": "sms credit posted",
+    "input": {
+      "text": "American Express: A credit of $25.00 from SP * EXAMPLE GOODS has been posted to your account ending in 54821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "SP * EXAMPLE GOODS",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "amex"
+    }
+  },
+  {
+    "name": "push purchase approved",
+    "input": {
+      "text": "Purchase Approved: $9.99 at NETFLIX.COM on card ending in 31234",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.americanexpress.android.acctsvcs.us"
+    },
+    "expected": {
+      "amountMinor": 999,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "NETFLIX.COM",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "amex"
+    }
+  },
+  {
+    "name": "negative: verification code",
+    "input": {
+      "text": "American Express: Your one-time verification code is 708512. It expires in 10 minutes.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: offer",
+    "input": {
+      "text": "Amex Offers: Spend $50 or more at participating merchants, get $10 back. Add offer by Nov 30.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: payment received",
+    "input": {
+      "text": "American Express: Your payment of $250.00 has been received. Thank you.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]
