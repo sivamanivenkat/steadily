@@ -1,0 +1,23 @@
+{
+  "name": "steadily",
+  "private": true,
+  "description": "Privacy-first budget tracker for iOS and Android",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.8",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4"
+  }
+}
