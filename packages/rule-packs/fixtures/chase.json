@@ -1,0 +1,122 @@
+[
+  {
+    "name": "sms card transaction with last4 and date",
+    "input": {
+      "text": "Chase Sapphire (...4821): You made a $25.40 transaction with STARBUCKS STORE 1234 on Oct 14, 2026 at 8:12 AM ET.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2540,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "STARBUCKS STORE 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "sms online transaction with thousands separator",
+    "input": {
+      "text": "Chase Freedom: You made a $1,234.56 online, phone, or mail transaction with AMAZON.COM*AB12CD34.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 123456,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "AMAZON.COM*AB12CD34",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "push whole-dollar amount with card ending",
+    "input": {
+      "text": "You made a $5 transaction with SQ *BLUE BOTTLE COFFEE on your card ending in 1234",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.chase.sig.android"
+    },
+    "expected": {
+      "amountMinor": 500,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *BLUE BOTTLE COFFEE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "sms refund is a credit",
+    "input": {
+      "text": "Chase Freedom (...4821): You have a $18.99 refund from TARGET 00012345.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1899,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "TARGET 00012345",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "multi-line text is normalized",
+    "input": {
+      "text": "Chase Sapphire:\nYou made a $7.10 transaction\nwith  CHIPOTLE 1234 .",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 710,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "CHIPOTLE 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "negative: one-time code",
+    "input": {
+      "text": "Chase: Your one-time code is 482913. Don't share it. We'll never call to ask for it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: balance alert",
+    "input": {
+      "text": "Chase: Your available balance in account ending in 1234 is $2,345.67 as of Oct 14.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: promotional offer",
+    "input": {
+      "text": "Chase Offers: Get 10% cash back on your next purchase at participating stores. Activate now.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: declined transaction",
+    "input": {
+      "text": "Chase: You made a $50.00 transaction with EXAMPLE GAS 0042 that was declined.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

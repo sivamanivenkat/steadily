@@ -207,6 +207,24 @@ importers:
         specifier: ^0.31.11
         version: 0.31.11
 
+  packages/merchants:
+    dependencies:
+      '@steadily/taxonomy':
+        specifier: workspace:*
+        version: link:../taxonomy
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+
+  packages/rule-packs:
+    dependencies:
+      '@steadily/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+
   packages/shared-types:
     dependencies:
       '@steadily/taxonomy':

@@ -1,0 +1,36 @@
+{
+  "issuerId": "chase",
+  "displayName": "Chase",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.chase.sig.android"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "chase_txn",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Chase[^:(]*(?:\\(\\.\\.\\.(?<last4>[0-9]{4})\\))?: You made an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:online, phone, or mail |debit card )?transaction with (?<merchant>.+?)(?: on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4})(?: at [0-9:]+ ?[AP]M(?: [A-Z]{2,3})?)?)?\\.?$"
+    },
+    {
+      "id": "chase_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Chase[^:(]*(?:\\(\\.\\.\\.(?<last4>[0-9]{4})\\))?: You (?:have|received) an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:refund|credit) from (?<merchant>.+?)(?: on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "chase_push_txn",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^You made an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:online, phone, or mail |debit card )?transaction with (?<merchant>.+?)(?: on (?:your )?[A-Za-z ]*?card ending in (?<last4>[0-9]{4})| on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4})(?: at [0-9:]+ ?[AP]M(?: [A-Z]{2,3})?)?)?\\.?$"
+    }
+  ]
+}

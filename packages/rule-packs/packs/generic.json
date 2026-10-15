@@ -1,0 +1,48 @@
+{
+  "issuerId": "generic",
+  "displayName": "Generic fallback",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": [],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "generic_you_made",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "You made an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:purchase|transaction|payment|charge) (?:with|at) (?<merchant>.+?)(?: (?:was|has been|is) | (?:on|using|with) (?:your|card|account|[A-Za-z]{3} [0-9])|[.,!](?: |$)| *$)(?:.*?ending (?:in )?(?<last4>[0-9]{4}))?"
+    },
+    {
+      "id": "generic_a_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:^|[^A-Za-z])A (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:purchase|transaction|charge) (?:was made )?(?:at|with) (?<merchant>.+?)(?: (?:was|has been|is) | (?:on|using|with) (?:your|card|account|[A-Za-z]{3} [0-9])|[.,!](?: |$)| *$)(?:.*?ending (?:in )?(?<last4>[0-9]{4}))?"
+    },
+    {
+      "id": "generic_spent",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:^|[^A-Za-z])spent (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|on|with) (?<merchant>.+?)(?: (?:was|has been|is) | (?:on|using|with) (?:your|card|account|[A-Za-z]{3} [0-9])|[.,!](?: |$)| *$)(?:.*?ending (?:in )?(?<last4>[0-9]{4}))?"
+    },
+    {
+      "id": "generic_purchase_of",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:^|[^A-Za-z])Purchase of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)(?: (?:was|has been|is) | (?:on|using|with) (?:your|card|account|[A-Za-z]{3} [0-9])|[.,!](?: |$)| *$)(?:.*?ending (?:in )?(?<last4>[0-9]{4}))?"
+    },
+    {
+      "id": "generic_refund_from",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?)(?: (?:was|has been|is) | (?:on|using|with) (?:your|card|account|[A-Za-z]{3} [0-9])|[.,!](?: |$)| *$)(?:.*?ending (?:in )?(?<last4>[0-9]{4}))?"
+    }
+  ]
+}

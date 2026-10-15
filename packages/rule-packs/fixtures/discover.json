@@ -1,0 +1,95 @@
+[
+  {
+    "name": "sms transaction with card ending",
+    "input": {
+      "text": "Discover Card: A transaction of $27.50 at TRADER JOE S #552 was made on your card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2750,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "TRADER JOE S #552",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "discover"
+    }
+  },
+  {
+    "name": "sms purchase with date",
+    "input": {
+      "text": "Discover: Purchase of $6.25 at SQ *SUNRISE CAFE on Oct 14, 2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 625,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *SUNRISE CAFE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "discover"
+    }
+  },
+  {
+    "name": "sms refund credited",
+    "input": {
+      "text": "Discover: A refund of $12.00 from WALGREENS #1234 has been credited to your account ending in 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1200,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "WALGREENS #1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "discover"
+    }
+  },
+  {
+    "name": "sms whole-dollar purchase approved",
+    "input": {
+      "text": "Discover Card: A purchase of $150 with COSTCO WHSE #0123 was approved.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 15000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "COSTCO WHSE #0123",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "discover"
+    }
+  },
+  {
+    "name": "negative: rewards balance",
+    "input": {
+      "text": "Discover: Your Cashback Bonus balance is $52.30. Redeem anytime.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: verification code",
+    "input": {
+      "text": "Discover: Your verification code is 220145.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: promotional",
+    "input": {
+      "text": "Discover: Earn 5% cash back at grocery stores this quarter. Activate today.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

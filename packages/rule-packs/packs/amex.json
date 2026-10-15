@@ -1,0 +1,42 @@
+{
+  "issuerId": "amex",
+  "displayName": "American Express",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.americanexpress.android.acctsvcs.us"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "amex_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:American Express|Amex)[^:]*: (?:A )?(?:purchase|charge) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:was )?(?:approved |made )?(?:at|with) (?<merchant>.+?)(?: on (?:your )?(?:card|account) ending (?:in )?[0-9-]*?(?<last4>[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "amex_charged",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:American Express|Amex)[^:]*: (?:Your )?(?:card|account) ending (?:in )?[0-9-]*?(?<last4>[0-9]{4}) was charged (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|by) (?<merchant>.+?)\\.?$"
+    },
+    {
+      "id": "amex_credit",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "(?:American Express|Amex)[^:]*: (?:A )?(?:credit|refund) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:has been|was) (?:posted|applied)[^.]*?(?:ending (?:in )?[0-9-]*?(?<last4>[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "amex_push_purchase",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^(?:Large )?(?:Purchase|Charge) (?:Approved|Alert):? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)(?: on (?:your )?(?:card|account) ending (?:in )?[0-9-]*?(?<last4>[0-9]{4}))?\\.?$"
+    }
+  ]
+}

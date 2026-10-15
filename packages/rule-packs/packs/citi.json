@@ -1,0 +1,36 @@
+{
+  "issuerId": "citi",
+  "displayName": "Citi",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": [],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "citi_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Citi[^:]*: (?:A )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:purchase|transaction|charge) (?:was )?(?:made )?(?:at|with) (?<merchant>.+?)(?: on (?:your )?(?:card|account) ending in (?<last4>[0-9]{4}))?(?: on (?<date>[0-9]{2}/[0-9]{2}/[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "citi_card_used",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Citi[^:]*: (?:Your )?(?:card|account) ending in (?<last4>[0-9]{4}) was used for (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) at (?<merchant>.+?)(?: on (?<date>[0-9]{2}/[0-9]{2}/[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "citi_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Citi[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:was |has been )?(?:posted|applied)(?: to (?:your )?(?:card|account) ending in (?<last4>[0-9]{4}))?\\.?$"
+    }
+  ]
+}

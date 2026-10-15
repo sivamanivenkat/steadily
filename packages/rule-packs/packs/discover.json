@@ -1,0 +1,30 @@
+{
+  "issuerId": "discover",
+  "displayName": "Discover",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": [],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "discover_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Discover[^:]*: (?:A )?(?:transaction|purchase) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)(?: was (?:made|approved|charged)(?: on (?:your )?(?:card|account) ending in (?<last4>[0-9]{4}))?| on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "discover_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Discover[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:from|by) (?<merchant>.+?) (?:was|has been) (?:posted|applied|credited)[^.]*?(?:ending in (?<last4>[0-9]{4}))?\\.?$"
+    }
+  ]
+}

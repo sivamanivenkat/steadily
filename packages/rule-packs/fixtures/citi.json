@@ -1,0 +1,97 @@
+[
+  {
+    "name": "sms purchase with card ending",
+    "input": {
+      "text": "Citi Alert: A $14.82 purchase at CVS/PHARMACY #01234 on your card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1482,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "CVS/PHARMACY #01234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "sms card used with numeric date",
+    "input": {
+      "text": "Citi: Your card ending in 1234 was used for $2,000 at BESTBUY.COM 00012345 on 10/14/2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 200000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "BESTBUY.COM 00012345",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "sms refund is a credit",
+    "input": {
+      "text": "Citi Alert: A refund of $45.00 from OLD NAVY 1234 was posted to your card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 4500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "OLD NAVY 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "sms transaction made with merchant",
+    "input": {
+      "text": "Citi: A $3.50 transaction was made with DUNKIN #345678 on your account ending in 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 350,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "DUNKIN #345678",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "negative: balance and available credit",
+    "input": {
+      "text": "Citi: Your available credit is $4,812.00. Your balance is $1,188.00.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: verification code",
+    "input": {
+      "text": "Citi: 381920 is your Citi verification code. Do not share it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: declined",
+    "input": {
+      "text": "Citi: Your card ending in 1234 was declined for $82.00 at EXAMPLE STORE.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

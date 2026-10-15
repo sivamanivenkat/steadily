@@ -1,0 +1,54 @@
+{
+  "issuerId": "cash_app",
+  "displayName": "Cash App",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.squareup.cash"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code"
+  ],
+  "rules": [
+    {
+      "id": "cash_app_you_paid",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Cash App[^:]*: You (?:paid|sent) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) to (?<merchant>.+?)(?: for [^.]*)?\\.?$"
+    },
+    {
+      "id": "cash_app_sent_you",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Cash App[^:]*: (?<merchant>[^$:]+?) (?:sent|paid) you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "cash_app_card",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Cash App[^:]*: (?:Your Cash Card was charged |You spent |Cash Card purchase: )(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)\\.?$"
+    },
+    {
+      "id": "cash_app_push_you_paid",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^You (?:paid|sent) (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) to (?<merchant>.+?)(?: for [^.]*)?\\.?$"
+    },
+    {
+      "id": "cash_app_push_sent_you",
+      "channel": "push",
+      "direction": "credit",
+      "pattern": "^(?<merchant>[^$:]+?) (?:sent|paid) you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "cash_app_push_card",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^(?:You spent |Cash Card: )(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)\\.?$"
+    }
+  ]
+}
