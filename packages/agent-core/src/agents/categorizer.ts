@@ -470,25 +470,45 @@ async function askLlm(
   }
 }
 
-type KeywordHint = { pattern: RegExp; categoryId: CategoryId; confidence: number };
+type KeywordHint = {
+  pattern: RegExp;
+  categoryId: CategoryId;
+  confidence: number;
+  /** Small-amount / morning boost (coffee shops only). It can reach the auto-save line. */
+  boost?: boolean;
+};
 
-/** Whole-word keyword hints on the merchant name. First match wins. */
+/**
+ * Whole-word keyword hints on the merchant name. First match wins, so specific
+ * hints come before broad ones. Only the strong coffee words may auto-save; every
+ * other hint stays below AUTO_SAVE_CONFIDENCE so a name match alone is reviewed.
+ */
 const KEYWORD_HINTS: readonly KeywordHint[] = [
   {
-    pattern: /\b(coffee|cafe|espresso|roasters?|coffeehouse)\b/i,
+    pattern: /\b(coffee|espresso|roasters?|coffeehouse)\b/i,
     categoryId: 'food.coffee',
     confidence: 0.75,
+    boost: true,
+  },
+  // Bare "cafe" is also a restaurant ("Tropical Smoothie Cafe"): never auto-saved.
+  { pattern: /\b(cafe|café)\b/i, categoryId: 'food.coffee', confidence: 0.75 },
+  // "gas" with utility context is a bill, not fuel. Must precede the fuel hint.
+  {
+    pattern:
+      /^(?!.*\b(station|fuel|pump|petro(leum)?|mart|stop)\b).*\b(gas\s+(co|company|service|services|works|utility|utilities|bill|(&|and)\s+(electric|power))|(natural|so\s*cal(ifornia)?|washington|piedmont|nicor|atmos|peoples|columbia)\s+gas|national\s+grid|electric\s*(&|and)\s*gas)\b/i,
+    categoryId: 'bills.utilities',
+    confidence: 0.7,
   },
   {
-    pattern: /\b(gas|fuel|petro(leum)?|ev charging)\b/i,
+    pattern: /\b(gas|fuel|petro(leum)?|ev charging|pump)\b/i,
     categoryId: 'transport.gas',
     confidence: 0.75,
   },
   {
     pattern:
-      /\b(restaurant|grill|pizza|pizzeria|sushi|taco|tacos|burgers?|kitchen|diner|bistro|bbq|cantina|ramen|bar|pub|tavern|eatery|deli)\b/i,
+      /\b(restaurant|grill|pizza|pizzeria|trattoria|taqueria|sushi|taco|tacos|burgers?|kitchen|steakhouse|diner|bistro|bbq|cantina|ramen|pho|thai|noodles?|bar|pub|tavern|eatery|deli|bakery)\b/i,
     categoryId: 'food.dining',
-    confidence: 0.75,
+    confidence: 0.7,
   },
   {
     pattern: /\b(grocery|groceries|supermarket|market|foods)\b/i,
@@ -496,9 +516,10 @@ const KEYWORD_HINTS: readonly KeywordHint[] = [
     confidence: 0.65,
   },
   {
-    pattern: /\b(pharmacy|clinic|dental|dentist|medical|hospital|health|optometry|gym|fitness)\b/i,
+    pattern:
+      /\b(pharmacy|clinic|dental|dentist|orthodont\w*|pediatrics?|medical|urgent\s+care|physical\s+therapy|hospital|health|optometry|vision|gym|fitness)\b/i,
     categoryId: 'health.general',
-    confidence: 0.75,
+    confidence: 0.7,
   },
   {
     pattern: /\b(parking|transit|taxi|cab|tolls?|car wash)\b/i,
@@ -553,7 +574,7 @@ export function heuristicCategory(
   const hint = KEYWORD_HINTS.find((h) => h.pattern.test(name));
   if (!hint) return null;
   let confidence = hint.confidence;
-  if (hint.categoryId === 'food.coffee') {
+  if (hint.boost) {
     if (tx.amountMinor <= SMALL_COFFEE_MAX_MINOR) confidence += HINT_BOOST;
     const hour = localHour(tx.occurredAt, timeZone);
     if (hour !== null && hour >= 5 && hour < 11) confidence += HINT_BOOST;

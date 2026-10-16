@@ -205,11 +205,11 @@ describe('Categorizer agent', () => {
     expect(out[0]?.payload).toMatchObject({ categoryId: 'shopping.general', needsReview: true });
   });
 
-  it('auto-saves a small morning café purchase from heuristics', async () => {
+  it('auto-saves a small morning coffee-shop purchase from heuristics', async () => {
     const { ctx, agent, add } = setup();
     // 08:30 in New York.
     await add({
-      merchantName: 'Sunrise Cafe',
+      merchantName: 'Sunrise Coffee',
       amountMinor: 625,
       occurredAt: '2026-10-14T12:30:00.000Z',
     });
@@ -230,6 +230,43 @@ describe('Categorizer agent', () => {
       TZ,
     );
     expect(hint).toEqual({ categoryId: 'food.coffee', confidence: 0.75, source: 'classifier' });
+  });
+
+  it('never auto-saves a bare "cafe" name, even small and in the morning', () => {
+    const morning = '2026-10-14T12:30:00.000Z'; // 08:30 in New York
+    const cafe = heuristicCategory(
+      { merchantName: 'Tropical Smoothie Cafe', amountMinor: 625, occurredAt: morning },
+      TZ,
+    );
+    expect(cafe).toEqual({ categoryId: 'food.coffee', confidence: 0.75, source: 'classifier' });
+    const roaster = heuristicCategory(
+      { merchantName: 'Corner Roasters', amountMinor: 625, occurredAt: morning },
+      TZ,
+    );
+    expect(roaster?.confidence).toBe(0.85);
+  });
+
+  it.each([
+    ['So Cal Gas', 'bills.utilities'],
+    ['Washington Gas', 'bills.utilities'],
+    ['National Grid', 'bills.utilities'],
+    ['Pacific Gas & Electric', 'bills.utilities'],
+    ['Acme Gas Co', 'bills.utilities'],
+    ['Metro Gas Service', 'bills.utilities'],
+    ['Joes Gas Station', 'transport.gas'],
+    ['Corner Gas', 'transport.gas'],
+    ['Peoples Gas Station', 'transport.gas'],
+    ['Luigis Trattoria', 'food.dining'],
+    ['Pho Saigon', 'food.dining'],
+    ['Sunrise Pediatrics', 'health.general'],
+    ['Valley Urgent Care', 'health.general'],
+  ])('hints %s as %s below the auto-save line', (merchantName, categoryId) => {
+    const hint = heuristicCategory(
+      { merchantName, amountMinor: 4200, occurredAt: '2026-10-15T00:30:00.000Z' },
+      TZ,
+    );
+    expect(hint?.categoryId).toBe(categoryId);
+    expect(hint?.confidence).toBeLessThan(0.85);
   });
 
   it('does not call the LLM when no tier is available', async () => {
