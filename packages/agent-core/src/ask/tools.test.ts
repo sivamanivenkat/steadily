@@ -6,6 +6,7 @@ import {
   fitOutput,
   jsonBytes,
   MAX_TOOL_OUTPUT_BYTES,
+  OTHER_MERCHANTS_BUCKET_NAME,
   PEOPLE_BUCKET_NAME,
   resolvePeriod,
   type ToolContext,
@@ -318,6 +319,33 @@ describe('cloud privacy', () => {
     expect(names).toContain('Spotify');
   });
 
+  it('names only well-known chains; local businesses share one bucket', async () => {
+    const repos = createInMemoryRepos();
+    const local = 'Sunrise Pediatrics';
+    for (const t of [
+      tx({ merchantName: local, amountMinor: 8000, occurredAt: '2026-10-10T15:00:00.000Z' }),
+      tx({ merchantName: 'Starbucks', amountMinor: 600, occurredAt: '2026-10-11T15:00:00.000Z' }),
+    ]) {
+      await repos.transactions.insert(t);
+    }
+    const out = await run(
+      'top_merchants',
+      { period: month, limit: 10 },
+      context(repos, { privacy: 'cloud' }),
+    );
+    const names = out['merchants'].map((m: any) => m.name);
+    expect(names).toContain(OTHER_MERCHANTS_BUCKET_NAME);
+    expect(names).toContain('Starbucks');
+    expect(JSON.stringify(out)).not.toContain(local);
+
+    const localOut = await run(
+      'top_merchants',
+      { period: month, limit: 10 },
+      context(repos, { privacy: 'local' }),
+    );
+    expect(localOut['merchants'].map((m: any) => m.name)).toContain(local);
+  });
+
   it('local mode still shows the person', async () => {
     const out = await run('top_merchants', { period: month, limit: 10 }, context(seedRepos()));
     expect(out['merchants'].map((m: any) => m.name)).toContain(PERSON_NAME);
@@ -389,8 +417,13 @@ describe('truncation', () => {
       ctx,
     );
     expect(jsonBytes(cmp)).toBeLessThanOrEqual(MAX_TOOL_OUTPUT_BYTES);
-    const top = await run('top_merchants', { period: month, limit: 10 }, ctx);
+    // Cloud mode buckets unknown merchants into one entry; local mode lists them individually.
+    const topCloud = await run('top_merchants', { period: month, limit: 10 }, ctx);
+    expect(topCloud['merchants'].length).toBe(1);
+    const localCtx = context(repos as never, { privacy: 'local' });
+    const top = await run('top_merchants', { period: month, limit: 10 }, localCtx);
     expect(top['merchants'].length).toBe(10);
+    expect(jsonBytes(top)).toBeLessThanOrEqual(MAX_TOOL_OUTPUT_BYTES);
   });
 
   it('fitOutput drops from the longest list and flags it', () => {

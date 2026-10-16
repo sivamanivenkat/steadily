@@ -13,7 +13,7 @@
  */
 import { z } from 'zod';
 import type { Transaction } from '@steadily/shared-types';
-import { toMerchantKey } from '@steadily/merchants';
+import { lookupMerchant, toMerchantKey } from '@steadily/merchants';
 import { CATEGORIES, type CategoryId } from '@steadily/taxonomy';
 import { isPaymentToPerson } from '../agents/categorizer';
 import {
@@ -32,6 +32,11 @@ import type { Repos } from '../ports';
 export type AskPrivacy = 'local' | 'cloud';
 
 export const PEOPLE_BUCKET_NAME = 'Payments to people';
+/**
+ * Cloud mode only names well-known chains from the merchant dictionary. Local businesses
+ * (a clinic, a small shop) can reveal sensitive details, so they share one bucket (D-011).
+ */
+export const OTHER_MERCHANTS_BUCKET_NAME = 'Other merchants';
 export const DEFAULT_ASK_CURRENCY = 'USD';
 
 /** Tool definition in the shape the proxy `ask` request carries. */
@@ -221,6 +226,9 @@ function merchantLabel(
   }
   const name = tx.merchantName?.trim() || 'Unknown merchant';
   const key = tx.merchantName ? toMerchantKey(tx.merchantName) || name.toLowerCase() : 'unknown';
+  if (privacy === 'cloud' && !lookupMerchant(key)) {
+    return { key: '\u0000other', name: OTHER_MERCHANTS_BUCKET_NAME, people: false };
+  }
   return { key, name: clip(name), people: false };
 }
 
