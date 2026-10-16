@@ -255,14 +255,14 @@ export async function answerWithRules(question: string, base: ToolContext): Prom
   const intent = detectIntent(q);
   const periods = findPeriods(q, ctx.now, ctx.timeZone);
   const first: PeriodInput = periods[0]?.period ?? { kind: 'month', offset: 0 };
-  const label = (p: PeriodInput) => resolvePeriod(p, ctx.now, ctx.timeZone).label;
-
   switch (intent) {
     case 'compare': {
-      const a: PeriodInput = periods[0]?.period ?? { kind: 'month', offset: 0 };
-      const b: PeriodInput =
-        periods[1]?.period ??
-        (isCurrentMonth(a) ? { kind: 'month', offset: -1 } : { kind: 'month', offset: 0 });
+      const thisMonth: PeriodInput = { kind: 'month', offset: 0 };
+      const lastMonth: PeriodInput = { kind: 'month', offset: -1 };
+      const [one, two] = periods.map((p) => p.period);
+      // Two periods compare as written; one non-current period is compared with this month.
+      const a: PeriodInput = two ? (one ?? thisMonth) : thisMonth;
+      const b: PeriodInput = two ?? (one && !isCurrentMonth(one) ? one : lastMonth);
       const out = await comparePeriods(a, b, ctx);
       const pa = phrase(out.periodA.label, a);
       const pb = phrase(out.periodB.label, b);
