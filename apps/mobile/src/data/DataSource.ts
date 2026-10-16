@@ -16,9 +16,9 @@ import type {
 } from './types';
 
 /**
- * Everything the screens read and write. Today it is backed by synthetic in-memory data
- * (`createSyntheticDataSource`); later an implementation over packages/db repositories and the
- * agent-core runtime replaces it without screen changes.
+ * Everything the screens read and write. The app uses `createRepoDataSource` (packages/db
+ * repositories and the agent-core runtime); tests mostly use the in-memory
+ * `createSyntheticDataSource`.
  *
  * Methods are async like the repositories. Implementations call `subscribe` listeners after
  * every write so screens can reload.
@@ -65,4 +65,10 @@ export interface DataSource {
   // Settings
   getSettings(): Promise<Settings>;
   updateSettings(patch: Partial<Settings>): Promise<Settings>;
+
+  /**
+   * Development only: runs synthetic sample alerts through the capture pipeline and returns how
+   * many were captured. Absent in production builds and in the synthetic source.
+   */
+  seedSampleData?: () => Promise<number>;
 }

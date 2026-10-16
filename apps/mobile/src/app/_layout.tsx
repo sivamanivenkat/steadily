@@ -9,19 +9,16 @@ import { Stack } from 'expo-router/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { AppProviders, createSyntheticDataSource, useData } from '@/data';
-import { fontFamily, useTheme } from '@/theme';
+import { AppText } from '@/components';
+import { AppProviders, useData } from '@/data';
+import { useAppDataSource } from '@/data/appDataSource';
+import { fontFamily, space, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Already hidden (e.g. fast refresh): nothing to do.
 });
-
-/**
- * Synthetic in-memory data until packages/db is wired in. Lives for the app session; a cold
- * start begins from the seed (and onboarding) again.
- */
-const dataSource = createSyntheticDataSource();
 
 function RootNavigator() {
   const theme = useTheme();
@@ -68,10 +65,34 @@ function RootNavigator() {
   );
 }
 
-export default function RootLayout() {
+/** Shown if the encrypted database cannot be opened. No details: they could echo data. */
+function StorageError() {
+  const { colors } = useTheme();
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
   return (
-    <AppProviders source={dataSource}>
+    <View style={[styles.error, { backgroundColor: colors.ground }]} accessibilityRole="alert">
+      <AppText variant="heading">Steadily could not open its secure storage</AppText>
+      <AppText variant="body" color={colors.ink2}>
+        Your data stays encrypted on this phone. Close the app and open it again.
+      </AppText>
+    </View>
+  );
+}
+
+export default function RootLayout() {
+  // The encrypted on-device database and agent runtime; the splash stays up while it opens.
+  const data = useAppDataSource();
+  if (data.status === 'loading') return null;
+  if (data.status === 'error') return <StorageError />;
+  return (
+    <AppProviders source={data.source}>
       <RootNavigator />
     </AppProviders>
   );
 }
+
+const styles = StyleSheet.create({
+  error: { flex: 1, justifyContent: 'center', gap: space.sm, padding: space.xl },
+});

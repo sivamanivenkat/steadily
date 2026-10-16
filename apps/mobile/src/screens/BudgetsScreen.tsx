@@ -15,7 +15,13 @@ import {
 import { categoryMeta } from '@/components/CategoryTile';
 import { useData, useNow } from '@/data';
 import type { BudgetWithSpent } from '@/data/types';
-import { categoryBudgets, monthProgress, overallBudget, safeToSpend } from '@/lib/budget';
+import {
+  categoryBudgets,
+  monthProgress,
+  overallBudget,
+  safeToSpend,
+  spentRatio,
+} from '@/lib/budget';
 import { formatMonth, formatShortDate, monthRange } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
 import { layout, radius, space, useTheme } from '@/theme';
@@ -37,10 +43,12 @@ export function budgetStatus(row: BudgetWithSpent): {
 function BudgetRow({
   row,
   monthRatio,
+  now,
   onPress,
 }: {
   row: BudgetWithSpent;
   monthRatio: number;
+  now: Date;
   onPress: () => void;
 }) {
   const { colors } = useTheme();
@@ -48,7 +56,7 @@ function BudgetRow({
   if (categoryId === null) return null;
   const name = categoryMeta(categoryId).name;
   const status = budgetStatus(row);
-  const ratio = row.budget.amountMinor > 0 ? row.spentMinor / row.budget.amountMinor : 0;
+  const ratio = spentRatio(row, now);
 
   return (
     <Pressable
@@ -87,6 +95,7 @@ export function BudgetsScreen() {
   const { colors } = useTheme();
   const now = useNow();
   const { data: rows } = useData((source) => source.listBudgets(monthRange(now)), [now]);
+  const { data: subscriptions } = useData((source) => source.listSubscriptions());
 
   const overall = rows ? overallBudget(rows) : null;
   const categories = rows ? categoryBudgets(rows) : [];
@@ -111,9 +120,13 @@ export function BudgetsScreen() {
         </AppText>
       </View>
 
-      {rows === undefined ? null : overall ? (
+      {rows === undefined || subscriptions === undefined ? null : overall ? (
         (() => {
-          const safe = safeToSpend(overall.budget.amountMinor, overall.spentMinor, now);
+          const safe = safeToSpend(
+            overall,
+            subscriptions.map((s) => s.subscription),
+            now,
+          );
           return (
             <Glass variant="strong" radius={radius.card} contentStyle={styles.overall}>
               <View style={styles.overallHeader}>
@@ -167,6 +180,7 @@ export function BudgetsScreen() {
               <BudgetRow
                 row={row}
                 monthRatio={monthRatio}
+                now={now}
                 onPress={() => edit(row.budget.categoryId)}
               />
             </View>

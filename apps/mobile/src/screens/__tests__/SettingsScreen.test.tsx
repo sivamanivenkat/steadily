@@ -129,4 +129,19 @@ describe('SettingsScreen', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
     expect(mockRouter.back).toHaveBeenCalled();
   });
+
+  it('hides the seed action when the source cannot seed', async () => {
+    await renderWithData(<SettingsScreen />);
+    expect(await screen.findByText('Reopen onboarding')).toBeOnTheScreen();
+    expect(screen.queryByText('Seed sample data')).toBeNull();
+  });
+
+  it('seeds sample data from the developer section', async () => {
+    const source = makeSource();
+    source.seedSampleData = jest.fn(async () => 24);
+    await renderWithData(<SettingsScreen />, source);
+    await fireEvent.press(await screen.findByText('Seed sample data'));
+    expect(source.seedSampleData).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('Added 24 sample alerts.')).toBeOnTheScreen();
+  });
 });
