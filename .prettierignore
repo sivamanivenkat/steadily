@@ -6,3 +6,4 @@ coverage
 pnpm-lock.yaml
 apps/mobile/ios
 apps/mobile/android
+modules/steadily-capture/android/src/test/resources
