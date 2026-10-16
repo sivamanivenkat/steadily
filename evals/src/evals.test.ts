@@ -10,7 +10,7 @@ import { categorizeMarkdown, parserMarkdown } from './report';
  * dictionary improves; a drop below it is a regression.
  */
 const BASELINE = {
-  overallAccuracy: 0.744,
+  overallAccuracy: 0.924, // 246/266 measured 2026-10-16
   autoSavedAccuracy: 0.95,
 };
 
