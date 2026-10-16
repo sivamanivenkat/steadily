@@ -12,7 +12,7 @@ version = '0.0.0'
 def repoRoot = projectDir.canonicalFile.parentFile.parentFile.parentFile
 def rulePacksDir = new File(repoRoot, 'packages/rule-packs/packs')
 def merchantsFile = new File(repoRoot, 'packages/merchants/data/merchants.json')
-def generatedAssets = layout.buildDirectory.dir('generated/steadily-assets')
+def generatedAssets = new File(buildDir, 'generated/steadily-assets')
 
 def syncSteadilyAssets = tasks.register('syncSteadilyAssets', Sync) {
   doFirst {
