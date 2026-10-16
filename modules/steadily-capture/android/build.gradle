@@ -1,0 +1,52 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.0.0'
+
+// Single source of truth for rules and merchants: packages/rule-packs and packages/merchants.
+// Both are copied into the APK assets at build time and read by the Kotlin fast path. The
+// module directory is resolved through any pnpm symlink so the repo root is always found.
+def repoRoot = projectDir.canonicalFile.parentFile.parentFile.parentFile
+def rulePacksDir = new File(repoRoot, 'packages/rule-packs/packs')
+def merchantsFile = new File(repoRoot, 'packages/merchants/data/merchants.json')
+def generatedAssets = new File(buildDir, 'generated/steadily-assets')
+
+def syncSteadilyAssets = tasks.register('syncSteadilyAssets', Sync) {
+  doFirst {
+    if (!rulePacksDir.isDirectory() || !merchantsFile.isFile()) {
+      throw new GradleException(
+        "steadily-capture: expected packages/rule-packs/packs and packages/merchants/data/merchants.json under ${repoRoot}")
+    }
+  }
+  from(rulePacksDir) { into 'steadily/packs' }
+  from(merchantsFile) { into 'steadily' }
+  into generatedAssets
+}
+
+android {
+  namespace "expo.modules.steadilycapture"
+  defaultConfig {
+    versionCode 1
+    versionName '0.0.0'
+  }
+  sourceSets {
+    main.assets.srcDir(generatedAssets)
+  }
+  testOptions {
+    unitTests.all {
+      // The JVM tests read the shared fixtures straight from the repo.
+      systemProperty 'steadily.repoRoot', repoRoot.absolutePath
+    }
+  }
+}
+
+preBuild.dependsOn(syncSteadilyAssets)
+
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
+  // Real org.json for JVM unit tests (the android.jar one is a stub that throws).
+  testImplementation 'org.json:json:20240303'
+}

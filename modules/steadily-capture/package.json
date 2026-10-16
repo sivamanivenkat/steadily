@@ -1,0 +1,24 @@
+{
+  "name": "steadily-capture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Android capture layer: notification listener, fast path and encrypted pending inbox",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@steadily/shared-types": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@steadily/merchants": "workspace:*",
+    "@steadily/rule-packs": "workspace:*",
+    "expo": "~58.0.11"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

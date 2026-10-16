@@ -12,6 +12,7 @@ import {
   StatusPill,
 } from '@/components';
 import type { IconName } from '@/components/Icon';
+import { openBatterySettings, openNotificationAccessSettings } from '@/capture';
 import { guideFor, issuerGuides } from '@/content/issuerGuides';
 import {
   ISSUER_HEALTH_LABEL,
@@ -291,8 +292,10 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
               <Bullet icon="lock" text="Nothing is sent anywhere. It all happens on this phone." />
               <Bullet icon="check" text="Text message alerts work too. No SMS permission needed." />
             </StepCard>
-            {/* TODO: open Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS via the native module. */}
-            <Button label="Open notification access" onPress={() => {}} />
+            <Button
+              label="Open notification access"
+              onPress={() => void openNotificationAccessSettings()}
+            />
             <Button label="Continue" variant="secondary" onPress={next} />
           </>
         ) : (
@@ -339,8 +342,7 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
             <Bullet icon="battery" text="Find Steadily under Battery and choose Unrestricted." />
             <Bullet icon="check" text="You can change this later in your phone's settings." />
           </StepCard>
-          {/* TODO: open ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS via the native module. */}
-          <Button label="Open battery settings" onPress={() => {}} />
+          <Button label="Open battery settings" onPress={() => void openBatterySettings()} />
           <Button label="Continue" variant="secondary" onPress={next} />
         </>
       );
