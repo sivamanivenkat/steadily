@@ -1,0 +1,38 @@
+{
+  "issuerId": "apple_card",
+  "displayName": "Apple Card",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": [],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code",
+    "Daily Cash",
+    "payment (?:of [^ ]+ )?(?:was |has been )?(?:received|scheduled|posted)"
+  ],
+  "rules": [
+    {
+      "id": "apple_card_at",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Apple Card[^:$]*:? (?:Approved |Purchase of |Transaction of )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:at|with) (?<merchant>.+?)(?: (?:was|has been) approved)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "apple_card_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Apple Card[^:$]*:? (?:You (?:received|have) )?an? (?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?)(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "apple_card_merchant_first",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "^(?<merchant>[^$:]+?):? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:with|on) Apple Card(?:\\.(?: .*)?)?$"
+    }
+  ]
+}

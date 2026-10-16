@@ -1,0 +1,115 @@
+[
+  {
+    "name": "sms card used for purchase",
+    "input": {
+      "text": "U.S. Bank: Your debit card ending in 1234 was used for a $14.50 purchase at CHIPOTLE 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1450,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "CHIPOTLE 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "sms without dots in name",
+    "input": {
+      "text": "US Bank Alert: Card ending 4821 was used for $62.00 at KROGER #456 on 10/14/2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 6200,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "KROGER #456",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "sms purchase of",
+    "input": {
+      "text": "U.S. Bank: Purchase of $9.99 at NETFLIX.COM using card ending 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 999,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "NETFLIX.COM",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "sms refund is a credit",
+    "input": {
+      "text": "U.S. Bank: A refund of $25.00 from TARGET T-1234 has been posted to card ending 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "TARGET T-1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "push card used",
+    "input": {
+      "text": "Your credit card ending in 4821 was used for $4.35 at STARBUCKS STORE 12345.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.usbank.mobilebanking"
+    },
+    "expected": {
+      "amountMinor": 435,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "STARBUCKS STORE 12345",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "negative: zelle is left to the zelle pack",
+    "input": {
+      "text": "U.S. Bank: Your Zelle request of $30.00 from Sam Example is pending.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: declined",
+    "input": {
+      "text": "U.S. Bank: Your card ending in 1234 was used for $500.00 at EXAMPLE STORE. Transaction declined.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: login code",
+    "input": {
+      "text": "U.S. Bank: Your login code is 123456.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

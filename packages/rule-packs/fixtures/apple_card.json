@@ -1,0 +1,109 @@
+[
+  {
+    "name": "shared alert with brand prefix",
+    "input": {
+      "text": "Apple Card: $12.34 at Starbucks.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 1234,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Starbucks",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "apple_card"
+    }
+  },
+  {
+    "name": "shared approved alert",
+    "input": {
+      "text": "Apple Card Approved $58.20 at Whole Foods Market",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 5820,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Whole Foods Market",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "apple_card"
+    }
+  },
+  {
+    "name": "shared merchant-first alert",
+    "input": {
+      "text": "Uber Eats $23.75 with Apple Card",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 2375,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Uber Eats",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "apple_card"
+    }
+  },
+  {
+    "name": "shared purchase was approved",
+    "input": {
+      "text": "Apple Card: Purchase of $199.00 at Apple Store was approved.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 19900,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Apple Store",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "apple_card"
+    }
+  },
+  {
+    "name": "shared refund is a credit",
+    "input": {
+      "text": "Apple Card: You received a refund of $15.00 from Target.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 1500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Target",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "apple_card"
+    }
+  },
+  {
+    "name": "negative: daily cash",
+    "input": {
+      "text": "Apple Card: You earned $0.37 Daily Cash at Starbucks.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: payment received",
+    "input": {
+      "text": "Apple Card: Your payment of $500.00 was received.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: declined",
+    "input": {
+      "text": "Apple Card: A $45.00 purchase at Example Store was declined.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": null
+  }
+]

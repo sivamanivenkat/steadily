@@ -32,8 +32,13 @@ describe('rule packs', () => {
       'citi',
       'discover',
       'bank_of_america',
+      'wells_fargo',
+      'us_bank',
+      'apple_card',
       'venmo',
       'cash_app',
+      'zelle',
+      'paypal',
       GENERIC_ISSUER_ID,
     ]);
   });

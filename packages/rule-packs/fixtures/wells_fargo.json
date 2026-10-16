@@ -1,0 +1,130 @@
+[
+  {
+    "name": "sms purchase with card ending",
+    "input": {
+      "text": "Wells Fargo: Purchase of $45.67 on card ending 1234 at TARGET T-1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 4567,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "TARGET T-1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "sms debit card used",
+    "input": {
+      "text": "Wells Fargo Alert: Your debit card ending in 4821 was used for $23.10 at SHELL OIL 57444 on 10/14/26.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2310,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SHELL OIL 57444",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "sms purchase keeps dotted merchant",
+    "input": {
+      "text": "Wells Fargo: Credit card purchase of $1,204.99 at AMAZON.COM*AB12CD34. Reply STOP to end alerts.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 120499,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "AMAZON.COM*AB12CD34",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "sms refund is a credit",
+    "input": {
+      "text": "Wells Fargo: A credit of $19.99 from BESTBUY.COM 00012345 was posted to card ending 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1999,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "BESTBUY.COM 00012345",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "push purchase",
+    "input": {
+      "text": "Purchase of $6.25 at SQ *BLUE BOTTLE COFFEE",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.wf.wellsfargomobile"
+    },
+    "expected": {
+      "amountMinor": 625,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *BLUE BOTTLE COFFEE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "push transaction whole dollars",
+    "input": {
+      "text": "Transaction of $12 with UBER *TRIP on 10/14",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.wf.wellsfargomobile"
+    },
+    "expected": {
+      "amountMinor": 1200,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "UBER *TRIP",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "negative: declined",
+    "input": {
+      "text": "Wells Fargo: A purchase of $80.00 at EXAMPLE STORE was declined.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: balance alert",
+    "input": {
+      "text": "Wells Fargo: Your available balance in account ending 1234 is $1,250.00.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: access code",
+    "input": {
+      "text": "Wells Fargo: Your access code is 482910. Do not share it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]
