@@ -1,0 +1,2007 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "syn-001",
+      "merchantRaw": "KROGER #0456",
+      "amountMinor": 8423,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-002",
+      "merchantRaw": "SAFEWAY #1234",
+      "amountMinor": 6211,
+      "hourLocal": 17,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-003",
+      "merchantRaw": "PUBLIX SUPER MAR 1234",
+      "amountMinor": 5490,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-004",
+      "merchantRaw": "WHOLEFDS MKT 10234",
+      "amountMinor": 7712,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-005",
+      "merchantRaw": "TRADER JOE S #552",
+      "amountMinor": 4388,
+      "hourLocal": 16,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-006",
+      "merchantRaw": "ALDI 72045",
+      "amountMinor": 3910,
+      "hourLocal": 11,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-007",
+      "merchantRaw": "H-E-B #612",
+      "amountMinor": 10245,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-008",
+      "merchantRaw": "WEGMANS #045",
+      "amountMinor": 9120,
+      "hourLocal": 14,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-009",
+      "merchantRaw": "SPROUTS FARMERS MKT #123",
+      "amountMinor": 4120,
+      "hourLocal": 17,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-010",
+      "merchantRaw": "INSTACART*1A2B3C",
+      "amountMinor": 11250,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-011",
+      "merchantRaw": "LIDL US 1234",
+      "amountMinor": 2875,
+      "hourLocal": 10,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-012",
+      "merchantRaw": "FOOD LION #1789",
+      "amountMinor": 5133,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-013",
+      "merchantRaw": "GIANT FOOD #0745",
+      "amountMinor": 6780,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-014",
+      "merchantRaw": "STATER BROS 123",
+      "amountMinor": 4421,
+      "hourLocal": 17,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-015",
+      "merchantRaw": "WINN-DIXIE #1234",
+      "amountMinor": 5310,
+      "hourLocal": 16,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-016",
+      "merchantRaw": "HANNAFORD #8123",
+      "amountMinor": 6022,
+      "hourLocal": 15,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-017",
+      "merchantRaw": "AMAZON FRESH 1234",
+      "amountMinor": 6345,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-018",
+      "merchantRaw": "H MART PALISADES",
+      "amountMinor": 4870,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.groceries"
+    },
+    {
+      "id": "syn-019",
+      "merchantRaw": "SQ *NEIGHBORHOOD MARKET",
+      "amountMinor": 2310,
+      "hourLocal": 11,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-020",
+      "merchantRaw": "GREEN VALLEY FOODS CO-OP",
+      "amountMinor": 3655,
+      "hourLocal": 17,
+      "expectedCategoryId": "food.groceries",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-021",
+      "merchantRaw": "TARGET T-1234",
+      "amountMinor": 8213,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.groceries",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-022",
+      "merchantRaw": "WAL-MART #1234",
+      "amountMinor": 12750,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.groceries",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-023",
+      "merchantRaw": "COSTCO WHSE #0123",
+      "amountMinor": 21480,
+      "hourLocal": 11,
+      "expectedCategoryId": "food.groceries",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-024",
+      "merchantRaw": "TARGET 00012345",
+      "amountMinor": 4599,
+      "hourLocal": 14,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-025",
+      "merchantRaw": "WALMART.COM 8009256278",
+      "amountMinor": 3488,
+      "hourLocal": 21,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-026",
+      "merchantRaw": "AMZN Mktp US*2K4AB1C23",
+      "amountMinor": 2599,
+      "hourLocal": 22,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-027",
+      "merchantRaw": "Amazon.com*AB12CD34",
+      "amountMinor": 1899,
+      "hourLocal": 9,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-028",
+      "merchantRaw": "SAM'S CLUB #6789",
+      "amountMinor": 15620,
+      "hourLocal": 10,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-029",
+      "merchantRaw": "CVS/PHARMACY #01234",
+      "amountMinor": 1849,
+      "hourLocal": 16,
+      "expectedCategoryId": "health.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-030",
+      "merchantRaw": "WALGREENS #1234",
+      "amountMinor": 2210,
+      "hourLocal": 19,
+      "expectedCategoryId": "health.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-031",
+      "merchantRaw": "CVS/PHARMACY #05678",
+      "amountMinor": 1299,
+      "hourLocal": 13,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-032",
+      "merchantRaw": "COSTCO WHSE #0456",
+      "amountMinor": 38999,
+      "hourLocal": 12,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-033",
+      "merchantRaw": "MCDONALD'S F12345",
+      "amountMinor": 1137,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-034",
+      "merchantRaw": "CHIPOTLE 1234",
+      "amountMinor": 1450,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-035",
+      "merchantRaw": "CHICK-FIL-A #01234",
+      "amountMinor": 1288,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-036",
+      "merchantRaw": "TACO BELL #031234",
+      "amountMinor": 899,
+      "hourLocal": 22,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-037",
+      "merchantRaw": "PANERA BREAD #601234",
+      "amountMinor": 1840,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-038",
+      "merchantRaw": "DOMINOS 6789",
+      "amountMinor": 2499,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-039",
+      "merchantRaw": "DD *DOORDASH SHAKESHACK",
+      "amountMinor": 3210,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-040",
+      "merchantRaw": "DOORDASH*SHAKE SHACK",
+      "amountMinor": 2875,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-041",
+      "merchantRaw": "UBER *EATS",
+      "amountMinor": 2645,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-042",
+      "merchantRaw": "GRUBHUB*JOESPIZZA",
+      "amountMinor": 3110,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-043",
+      "merchantRaw": "SWEETGREEN 123 BROADWAY",
+      "amountMinor": 1625,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-044",
+      "merchantRaw": "CAVA 0456",
+      "amountMinor": 1395,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-045",
+      "merchantRaw": "OLIVE GARDEN 0123",
+      "amountMinor": 6840,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-046",
+      "merchantRaw": "RAISING CANE'S #456",
+      "amountMinor": 1165,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-047",
+      "merchantRaw": "FIVE GUYS 1234",
+      "amountMinor": 2290,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-048",
+      "merchantRaw": "DAIRY QUEEN #12345",
+      "amountMinor": 845,
+      "hourLocal": 15,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-049",
+      "merchantRaw": "CHEESECAKE FACTORY 0123",
+      "amountMinor": 9450,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-050",
+      "merchantRaw": "RED ROBIN #345",
+      "amountMinor": 5210,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-051",
+      "merchantRaw": "OUTBACK 4123",
+      "amountMinor": 7325,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-052",
+      "merchantRaw": "WAFFLE HOUSE 1234",
+      "amountMinor": 1845,
+      "hourLocal": 2,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-053",
+      "merchantRaw": "LITTLE CAESARS 1234",
+      "amountMinor": 1199,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-054",
+      "merchantRaw": "TROPICAL SMOOTHIE CAFE 0123",
+      "amountMinor": 1088,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-055",
+      "merchantRaw": "CRUMBL COOKIES 0045",
+      "amountMinor": 1650,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining"
+    },
+    {
+      "id": "syn-056",
+      "merchantRaw": "TST* JOES DINER",
+      "amountMinor": 2475,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-057",
+      "merchantRaw": "TST*THE LOCAL TAVERN",
+      "amountMinor": 5680,
+      "hourLocal": 21,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-058",
+      "merchantRaw": "SQ *EL PASTOR TACOS",
+      "amountMinor": 1475,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-059",
+      "merchantRaw": "SQ *SAKURA SUSHI BAR",
+      "amountMinor": 6210,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-060",
+      "merchantRaw": "TST* LUIGIS TRATTORIA",
+      "amountMinor": 7640,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining",
+      "expectedNeedsReview": true,
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-061",
+      "merchantRaw": "SQ *SMOKEHOUSE BBQ",
+      "amountMinor": 3390,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-062",
+      "merchantRaw": "MARIA S TACOS AUSTIN TX",
+      "amountMinor": 1720,
+      "hourLocal": 12,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-063",
+      "merchantRaw": "TST* PHO SAIGON",
+      "amountMinor": 2860,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining",
+      "expectedNeedsReview": true,
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-064",
+      "merchantRaw": "GOLDEN DRAGON RESTAURANT",
+      "amountMinor": 4210,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-065",
+      "merchantRaw": "STARBUCKS STORE 12345 SEATTLE WA",
+      "amountMinor": 575,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-066",
+      "merchantRaw": "STARBUCKS 01234",
+      "amountMinor": 1225,
+      "hourLocal": 15,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-067",
+      "merchantRaw": "DUNKIN #345678",
+      "amountMinor": 445,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-068",
+      "merchantRaw": "DUTCH BROS #123",
+      "amountMinor": 685,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-069",
+      "merchantRaw": "PEET'S COFFEE #0123",
+      "amountMinor": 590,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-070",
+      "merchantRaw": "SQ *BLUE BOTTLE COFFEE",
+      "amountMinor": 625,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-071",
+      "merchantRaw": "PHILZ COFFEE 12",
+      "amountMinor": 715,
+      "hourLocal": 10,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-072",
+      "merchantRaw": "TIM HORTONS #1234",
+      "amountMinor": 430,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-073",
+      "merchantRaw": "SQ *SUNRISE CAFE",
+      "amountMinor": 475,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-074",
+      "merchantRaw": "SQ *RIVERSIDE ROASTERS",
+      "amountMinor": 550,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-075",
+      "merchantRaw": "TST* MORNING GRIND ESPRESSO",
+      "amountMinor": 640,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-076",
+      "merchantRaw": "SQ *CORNER COFFEE CO",
+      "amountMinor": 1450,
+      "hourLocal": 14,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-077",
+      "merchantRaw": "BIGGBY COFFEE #123",
+      "amountMinor": 525,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-078",
+      "merchantRaw": "SCOOTERS COFFEE 456",
+      "amountMinor": 610,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-079",
+      "merchantRaw": "COFFEE BEAN 0123",
+      "amountMinor": 680,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.coffee"
+    },
+    {
+      "id": "syn-080",
+      "merchantRaw": "UBER *TRIP",
+      "amountMinor": 1842,
+      "hourLocal": 23,
+      "expectedCategoryId": "transport.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-081",
+      "merchantRaw": "UBER* TRIP HELP.UBER.COM",
+      "amountMinor": 2615,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-082",
+      "merchantRaw": "LYFT *RIDE SUN 8AM",
+      "amountMinor": 1975,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-083",
+      "merchantRaw": "PARKMOBILE 1234",
+      "amountMinor": 450,
+      "hourLocal": 10,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-084",
+      "merchantRaw": "SPOTHERO 8005550100",
+      "amountMinor": 1800,
+      "hourLocal": 18,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-085",
+      "merchantRaw": "E-ZPASS NY 1234",
+      "amountMinor": 3500,
+      "hourLocal": 9,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-086",
+      "merchantRaw": "MTA*NYCT PAYGO",
+      "amountMinor": 290,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-087",
+      "merchantRaw": "CLIPPER TRANSIT FARE",
+      "amountMinor": 250,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-088",
+      "merchantRaw": "LIME*RIDE 1A2B",
+      "amountMinor": 512,
+      "hourLocal": 17,
+      "expectedCategoryId": "transport.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-089",
+      "merchantRaw": "DOWNTOWN PARKING GARAGE",
+      "amountMinor": 2400,
+      "hourLocal": 19,
+      "expectedCategoryId": "transport.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-090",
+      "merchantRaw": "SQ *SPARKLE CAR WASH",
+      "amountMinor": 1500,
+      "hourLocal": 11,
+      "expectedCategoryId": "transport.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-091",
+      "merchantRaw": "JIFFY LUBE #1234",
+      "amountMinor": 8999,
+      "hourLocal": 10,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-092",
+      "merchantRaw": "AUTOZONE #4567",
+      "amountMinor": 2414,
+      "hourLocal": 15,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-093",
+      "merchantRaw": "DISCOUNT TIRE 1234",
+      "amountMinor": 64500,
+      "hourLocal": 11,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-094",
+      "merchantRaw": "O'REILLY AUTO PARTS 1234",
+      "amountMinor": 3289,
+      "hourLocal": 16,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-095",
+      "merchantRaw": "WMATA METRO FARE",
+      "amountMinor": 600,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-096",
+      "merchantRaw": "SUNPASS 1234",
+      "amountMinor": 2000,
+      "hourLocal": 12,
+      "expectedCategoryId": "transport.general"
+    },
+    {
+      "id": "syn-097",
+      "merchantRaw": "SHELL OIL 57444 HOUSTON TX",
+      "amountMinor": 4512,
+      "hourLocal": 7,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-098",
+      "merchantRaw": "CHEVRON 0091234",
+      "amountMinor": 5280,
+      "hourLocal": 17,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-099",
+      "merchantRaw": "EXXONMOBIL 4567",
+      "amountMinor": 3960,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-100",
+      "merchantRaw": "BP#1234567",
+      "amountMinor": 4215,
+      "hourLocal": 18,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-101",
+      "merchantRaw": "SPEEDWAY 01234",
+      "amountMinor": 3811,
+      "hourLocal": 6,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-102",
+      "merchantRaw": "VALERO 1234",
+      "amountMinor": 4033,
+      "hourLocal": 12,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-103",
+      "merchantRaw": "MARATHON PETRO123",
+      "amountMinor": 3790,
+      "hourLocal": 16,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-104",
+      "merchantRaw": "COSTCO GAS #0123",
+      "amountMinor": 5122,
+      "hourLocal": 10,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-105",
+      "merchantRaw": "ARCO #42345",
+      "amountMinor": 4620,
+      "hourLocal": 19,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-106",
+      "merchantRaw": "CIRCLE K #2709",
+      "amountMinor": 4100,
+      "hourLocal": 7,
+      "expectedCategoryId": "transport.gas",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-107",
+      "merchantRaw": "WAWA 812",
+      "amountMinor": 3825,
+      "hourLocal": 7,
+      "expectedCategoryId": "transport.gas",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-108",
+      "merchantRaw": "CASEY'S #1234",
+      "amountMinor": 4450,
+      "hourLocal": 17,
+      "expectedCategoryId": "transport.gas",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-109",
+      "merchantRaw": "SUNOCO 0812345",
+      "amountMinor": 3615,
+      "hourLocal": 8,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-110",
+      "merchantRaw": "76 - SAN JOSE",
+      "amountMinor": 5590,
+      "hourLocal": 18,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-111",
+      "merchantRaw": "SQ *MAIN ST FUEL",
+      "amountMinor": 3800,
+      "hourLocal": 9,
+      "expectedCategoryId": "transport.gas",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-112",
+      "merchantRaw": "CHARGEPOINT 1234",
+      "amountMinor": 1240,
+      "hourLocal": 20,
+      "expectedCategoryId": "transport.gas"
+    },
+    {
+      "id": "syn-113",
+      "merchantRaw": "BESTBUY.COM 00012345",
+      "amountMinor": 32999,
+      "hourLocal": 20,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-114",
+      "merchantRaw": "THE HOME DEPOT #1234",
+      "amountMinor": 8745,
+      "hourLocal": 10,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-115",
+      "merchantRaw": "LOWE'S #1234",
+      "amountMinor": 5612,
+      "hourLocal": 11,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-116",
+      "merchantRaw": "IKEA ATLANTA",
+      "amountMinor": 23450,
+      "hourLocal": 14,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-117",
+      "merchantRaw": "TJMAXX #0123",
+      "amountMinor": 4199,
+      "hourLocal": 15,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-118",
+      "merchantRaw": "MARSHALLS #0456",
+      "amountMinor": 3388,
+      "hourLocal": 16,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-119",
+      "merchantRaw": "ROSS STORES #1234",
+      "amountMinor": 2647,
+      "hourLocal": 14,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-120",
+      "merchantRaw": "OLD NAVY US 1234",
+      "amountMinor": 5499,
+      "hourLocal": 13,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-121",
+      "merchantRaw": "NIKE.COM",
+      "amountMinor": 12000,
+      "hourLocal": 21,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-122",
+      "merchantRaw": "ETSY.COM - SAMPLESHOP",
+      "amountMinor": 2850,
+      "hourLocal": 22,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-123",
+      "merchantRaw": "EBAY O*12-34567-89012",
+      "amountMinor": 4599,
+      "hourLocal": 21,
+      "expectedCategoryId": "shopping.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-124",
+      "merchantRaw": "DOLLAR TREE #1234",
+      "amountMinor": 1075,
+      "hourLocal": 15,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-125",
+      "merchantRaw": "FIVE BELOW 0123",
+      "amountMinor": 1600,
+      "hourLocal": 16,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-126",
+      "merchantRaw": "PETSMART #1234",
+      "amountMinor": 4780,
+      "hourLocal": 12,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-127",
+      "merchantRaw": "CHEWY.COM",
+      "amountMinor": 6490,
+      "hourLocal": 20,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-128",
+      "merchantRaw": "STAPLES 00123",
+      "amountMinor": 2318,
+      "hourLocal": 11,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-129",
+      "merchantRaw": "SP * EXAMPLE GOODS",
+      "amountMinor": 3800,
+      "hourLocal": 21,
+      "expectedCategoryId": "shopping.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-130",
+      "merchantRaw": "PAYPAL *EXAMPLESHOP",
+      "amountMinor": 2499,
+      "hourLocal": 22,
+      "expectedCategoryId": "shopping.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-131",
+      "merchantRaw": "BURLINGTON STORES 123",
+      "amountMinor": 5640,
+      "hourLocal": 15,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-132",
+      "merchantRaw": "HOMEGOODS #0456",
+      "amountMinor": 4215,
+      "hourLocal": 16,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-133",
+      "merchantRaw": "ACE HARDWARE 12345",
+      "amountMinor": 1899,
+      "hourLocal": 10,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-134",
+      "merchantRaw": "REI #12 SEATTLE",
+      "amountMinor": 15900,
+      "hourLocal": 13,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-135",
+      "merchantRaw": "ULTA BEAUTY #123",
+      "amountMinor": 4250,
+      "hourLocal": 17,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-136",
+      "merchantRaw": "LULULEMON #1234",
+      "amountMinor": 9800,
+      "hourLocal": 15,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-137",
+      "merchantRaw": "BARNES & NOBLE #2345",
+      "amountMinor": 2799,
+      "hourLocal": 16,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-138",
+      "merchantRaw": "HOBBY LOBBY #456",
+      "amountMinor": 3420,
+      "hourLocal": 14,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-139",
+      "merchantRaw": "TRACTOR SUPPLY #1234",
+      "amountMinor": 6720,
+      "hourLocal": 10,
+      "expectedCategoryId": "shopping.general"
+    },
+    {
+      "id": "syn-140",
+      "merchantRaw": "APPLE STORE #R123",
+      "amountMinor": 129900,
+      "hourLocal": 15,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-141",
+      "merchantRaw": "COMCAST XFINITY 8009346489",
+      "amountMinor": 8999,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-142",
+      "merchantRaw": "VERIZON WIRELESS 8009220204",
+      "amountMinor": 9512,
+      "hourLocal": 8,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-143",
+      "merchantRaw": "AT&T*BILL PAYMENT",
+      "amountMinor": 7500,
+      "hourLocal": 10,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-144",
+      "merchantRaw": "T-MOBILE 1234",
+      "amountMinor": 9000,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-145",
+      "merchantRaw": "SPECTRUM 855-707-7328",
+      "amountMinor": 6999,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-146",
+      "merchantRaw": "PG&E WEB ONLINE",
+      "amountMinor": 14230,
+      "hourLocal": 10,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-147",
+      "merchantRaw": "CON ED OF NY",
+      "amountMinor": 11240,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-148",
+      "merchantRaw": "DUKE ENERGY 800-777-9898",
+      "amountMinor": 13410,
+      "hourLocal": 8,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-149",
+      "merchantRaw": "GEICO *AUTO",
+      "amountMinor": 14500,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-150",
+      "merchantRaw": "PROGRESSIVE INS",
+      "amountMinor": 12300,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-151",
+      "merchantRaw": "STATE FARM INSURANCE",
+      "amountMinor": 18900,
+      "hourLocal": 10,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-152",
+      "merchantRaw": "MINT MOBILE",
+      "amountMinor": 1500,
+      "hourLocal": 11,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-153",
+      "merchantRaw": "SOCALGAS",
+      "amountMinor": 5420,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-154",
+      "merchantRaw": "NATIONAL GRID",
+      "amountMinor": 9870,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-155",
+      "merchantRaw": "CITY OF SPRINGFIELD WATER",
+      "amountMinor": 6450,
+      "hourLocal": 10,
+      "expectedCategoryId": "bills.utilities",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-156",
+      "merchantRaw": "SAMPLE COUNTY ELECTRIC COOP",
+      "amountMinor": 11200,
+      "hourLocal": 10,
+      "expectedCategoryId": "bills.utilities",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-157",
+      "merchantRaw": "XCEL ENERGY",
+      "amountMinor": 8740,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-158",
+      "merchantRaw": "WASTE MANAGEMENT",
+      "amountMinor": 3500,
+      "hourLocal": 9,
+      "expectedCategoryId": "bills.utilities"
+    },
+    {
+      "id": "syn-159",
+      "merchantRaw": "ROCKET MORTGAGE 800-555-0100",
+      "amountMinor": 185000,
+      "hourLocal": 9,
+      "expectedCategoryId": "housing.rent_mortgage"
+    },
+    {
+      "id": "syn-160",
+      "merchantRaw": "MR. COOPER",
+      "amountMinor": 210000,
+      "hourLocal": 9,
+      "expectedCategoryId": "housing.rent_mortgage"
+    },
+    {
+      "id": "syn-161",
+      "merchantRaw": "SUNSET RIDGE APARTMENTS",
+      "amountMinor": 165000,
+      "hourLocal": 10,
+      "expectedCategoryId": "housing.rent_mortgage",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-162",
+      "merchantRaw": "OAKWOOD PROPERTY MANAGEMENT",
+      "amountMinor": 142500,
+      "hourLocal": 9,
+      "expectedCategoryId": "housing.rent_mortgage",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-163",
+      "merchantRaw": "MAPLE COURT HOA",
+      "amountMinor": 32000,
+      "hourLocal": 10,
+      "expectedCategoryId": "housing.rent_mortgage",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-164",
+      "merchantRaw": "Sam Example",
+      "amountMinor": 90000,
+      "hourLocal": 9,
+      "issuerId": "zelle",
+      "expectedCategoryId": "housing.rent_mortgage",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-165",
+      "merchantRaw": "Alex Sample",
+      "amountMinor": 75000,
+      "hourLocal": 9,
+      "issuerId": "venmo",
+      "expectedCategoryId": "housing.rent_mortgage",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-166",
+      "merchantRaw": "LAKESIDE LOFTS RENT",
+      "amountMinor": 180000,
+      "hourLocal": 9,
+      "expectedCategoryId": "housing.rent_mortgage",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-167",
+      "merchantRaw": "NETFLIX.COM",
+      "amountMinor": 1549,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-168",
+      "merchantRaw": "SPOTIFY*P1234ABCD",
+      "amountMinor": 1199,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-169",
+      "merchantRaw": "HULU 800-555-0100",
+      "amountMinor": 1799,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-170",
+      "merchantRaw": "DISNEY PLUS",
+      "amountMinor": 1399,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-171",
+      "merchantRaw": "GOOGLE *YOUTUBEPREMIUM",
+      "amountMinor": 1399,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-172",
+      "merchantRaw": "AMAZON PRIME*1A2B3C",
+      "amountMinor": 1499,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-173",
+      "merchantRaw": "AUDIBLE*1A2B3C",
+      "amountMinor": 1495,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-174",
+      "merchantRaw": "PARAMOUNT+",
+      "amountMinor": 799,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-175",
+      "merchantRaw": "PEACOCK 1234",
+      "amountMinor": 799,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-176",
+      "merchantRaw": "ADOBE *CREATIVE CLD",
+      "amountMinor": 2299,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-177",
+      "merchantRaw": "DROPBOX*1A2B3C",
+      "amountMinor": 1199,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-178",
+      "merchantRaw": "GOOGLE *Google Storage",
+      "amountMinor": 299,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-179",
+      "merchantRaw": "PATREON* MEMBERSHIP",
+      "amountMinor": 500,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-180",
+      "merchantRaw": "NYTIMES*DIGITAL",
+      "amountMinor": 425,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-181",
+      "merchantRaw": "APPLE.COM/BILL",
+      "amountMinor": 299,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-182",
+      "merchantRaw": "PAYPAL *SPOTIFY",
+      "amountMinor": 1199,
+      "hourLocal": 3,
+      "issuerId": "paypal",
+      "expectedCategoryId": "subscriptions.general",
+      "tags": ["p2p_merchant"]
+    },
+    {
+      "id": "syn-183",
+      "merchantRaw": "DUOLINGO",
+      "amountMinor": 1299,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-184",
+      "merchantRaw": "CRUNCHYROLL",
+      "amountMinor": 799,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-185",
+      "merchantRaw": "SLING TV",
+      "amountMinor": 4000,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-186",
+      "merchantRaw": "PELOTON MEMBERSHIP",
+      "amountMinor": 4400,
+      "hourLocal": 3,
+      "expectedCategoryId": "subscriptions.general"
+    },
+    {
+      "id": "syn-187",
+      "merchantRaw": "PLANET FITNESS",
+      "amountMinor": 2499,
+      "hourLocal": 6,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-188",
+      "merchantRaw": "LA FITNESS 1234",
+      "amountMinor": 3999,
+      "hourLocal": 6,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-189",
+      "merchantRaw": "EQUINOX #123",
+      "amountMinor": 26000,
+      "hourLocal": 6,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-190",
+      "merchantRaw": "GOODRX*1A2B",
+      "amountMinor": 1240,
+      "hourLocal": 16,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-191",
+      "merchantRaw": "RITE AID #01234",
+      "amountMinor": 2150,
+      "hourLocal": 17,
+      "expectedCategoryId": "health.general",
+      "expectedNeedsReview": true,
+      "tags": ["multi_category"]
+    },
+    {
+      "id": "syn-192",
+      "merchantRaw": "KAISER PERMANENTE",
+      "amountMinor": 3000,
+      "hourLocal": 10,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-193",
+      "merchantRaw": "QUEST DIAGNOSTICS",
+      "amountMinor": 4500,
+      "hourLocal": 9,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-194",
+      "merchantRaw": "LABCORP",
+      "amountMinor": 3200,
+      "hourLocal": 9,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-195",
+      "merchantRaw": "SMILE BRIGHT DENTAL",
+      "amountMinor": 15000,
+      "hourLocal": 11,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-196",
+      "merchantRaw": "SQ *RIVER CITY CLINIC",
+      "amountMinor": 4000,
+      "hourLocal": 10,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-197",
+      "merchantRaw": "VALLEY OPTOMETRY",
+      "amountMinor": 12500,
+      "hourLocal": 14,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-198",
+      "merchantRaw": "24 HOUR FITNESS 123",
+      "amountMinor": 3699,
+      "hourLocal": 6,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-199",
+      "merchantRaw": "ORANGETHEORY FITNESS 1234",
+      "amountMinor": 15900,
+      "hourLocal": 6,
+      "expectedCategoryId": "health.general"
+    },
+    {
+      "id": "syn-200",
+      "merchantRaw": "SUNRISE PEDIATRICS",
+      "amountMinor": 3000,
+      "hourLocal": 10,
+      "expectedCategoryId": "health.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-201",
+      "merchantRaw": "AMC 1234 ONLINE",
+      "amountMinor": 3250,
+      "hourLocal": 19,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-202",
+      "merchantRaw": "REGAL CINEMAS 0123",
+      "amountMinor": 2880,
+      "hourLocal": 20,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-203",
+      "merchantRaw": "TICKETMASTER 800-653-8000",
+      "amountMinor": 18950,
+      "hourLocal": 21,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-204",
+      "merchantRaw": "STUBHUB 1234",
+      "amountMinor": 21000,
+      "hourLocal": 22,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-205",
+      "merchantRaw": "STEAM PURCHASE",
+      "amountMinor": 5999,
+      "hourLocal": 22,
+      "expectedCategoryId": "entertainment.general",
+      "tags": ["descriptor"]
+    },
+    {
+      "id": "syn-206",
+      "merchantRaw": "PLAYSTATION NETWORK",
+      "amountMinor": 6999,
+      "hourLocal": 21,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-207",
+      "merchantRaw": "NINTENDO CA1234",
+      "amountMinor": 4999,
+      "hourLocal": 18,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-208",
+      "merchantRaw": "TOPGOLF 1234",
+      "amountMinor": 9500,
+      "hourLocal": 20,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-209",
+      "merchantRaw": "DAVE & BUSTER'S #12",
+      "amountMinor": 6200,
+      "hourLocal": 21,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-210",
+      "merchantRaw": "FANDANGO 1234",
+      "amountMinor": 3150,
+      "hourLocal": 19,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-211",
+      "merchantRaw": "SQ *CITY BOWLING LANES",
+      "amountMinor": 4800,
+      "hourLocal": 20,
+      "expectedCategoryId": "entertainment.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-212",
+      "merchantRaw": "SCIENCE MUSEUM GIFT",
+      "amountMinor": 3200,
+      "hourLocal": 13,
+      "expectedCategoryId": "entertainment.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-213",
+      "merchantRaw": "EVENTBRITE*1A2B3C",
+      "amountMinor": 4500,
+      "hourLocal": 21,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-214",
+      "merchantRaw": "SEATGEEK 1234",
+      "amountMinor": 13400,
+      "hourLocal": 21,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-215",
+      "merchantRaw": "CINEMARK 0123",
+      "amountMinor": 2650,
+      "hourLocal": 19,
+      "expectedCategoryId": "entertainment.general"
+    },
+    {
+      "id": "syn-216",
+      "merchantRaw": "GRAND THEATER",
+      "amountMinor": 6000,
+      "hourLocal": 19,
+      "expectedCategoryId": "entertainment.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-217",
+      "merchantRaw": "DELTA AIR LINES 0062345",
+      "amountMinor": 42870,
+      "hourLocal": 21,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-218",
+      "merchantRaw": "UNITED 0161234567",
+      "amountMinor": 38900,
+      "hourLocal": 21,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-219",
+      "merchantRaw": "AMERICAN AIRLINES 001",
+      "amountMinor": 29750,
+      "hourLocal": 22,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-220",
+      "merchantRaw": "SOUTHWES 5261234",
+      "amountMinor": 24800,
+      "hourLocal": 20,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-221",
+      "merchantRaw": "JETBLUE 2791234",
+      "amountMinor": 18900,
+      "hourLocal": 21,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-222",
+      "merchantRaw": "MARRIOTT 33712 DENVER",
+      "amountMinor": 31200,
+      "hourLocal": 15,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-223",
+      "merchantRaw": "HILTON HOTELS",
+      "amountMinor": 26500,
+      "hourLocal": 16,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-224",
+      "merchantRaw": "AIRBNB * HMAB1C2D3",
+      "amountMinor": 54000,
+      "hourLocal": 22,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-225",
+      "merchantRaw": "EXPEDIA 7212345",
+      "amountMinor": 61000,
+      "hourLocal": 21,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-226",
+      "merchantRaw": "HERTZ RENT-A-CAR",
+      "amountMinor": 28700,
+      "hourLocal": 12,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-227",
+      "merchantRaw": "AMTRAK .COM 1234",
+      "amountMinor": 8900,
+      "hourLocal": 20,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-228",
+      "merchantRaw": "SEASIDE INN",
+      "amountMinor": 18900,
+      "hourLocal": 15,
+      "expectedCategoryId": "travel.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-229",
+      "merchantRaw": "HOLIDAY INN EXPRESS",
+      "amountMinor": 15900,
+      "hourLocal": 16,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-230",
+      "merchantRaw": "VRBO 1234",
+      "amountMinor": 72000,
+      "hourLocal": 21,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-231",
+      "merchantRaw": "HOTELS.COM 123",
+      "amountMinor": 21000,
+      "hourLocal": 22,
+      "expectedCategoryId": "travel.general"
+    },
+    {
+      "id": "syn-232",
+      "merchantRaw": "SEPHORA #1234",
+      "amountMinor": 6800,
+      "hourLocal": 16,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-233",
+      "merchantRaw": "GREAT CLIPS #1234",
+      "amountMinor": 2200,
+      "hourLocal": 11,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-234",
+      "merchantRaw": "SUPERCUTS #4567",
+      "amountMinor": 2500,
+      "hourLocal": 10,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-235",
+      "merchantRaw": "BATH & BODY WORKS 1234",
+      "amountMinor": 3450,
+      "hourLocal": 15,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-236",
+      "merchantRaw": "SQ *FRESH CUTS BARBERSHOP",
+      "amountMinor": 3500,
+      "hourLocal": 12,
+      "expectedCategoryId": "personal_care.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-237",
+      "merchantRaw": "TST* GLOW NAILS",
+      "amountMinor": 4500,
+      "hourLocal": 14,
+      "expectedCategoryId": "personal_care.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-238",
+      "merchantRaw": "SQ *SERENITY DAY SPA",
+      "amountMinor": 12000,
+      "hourLocal": 13,
+      "expectedCategoryId": "personal_care.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-239",
+      "merchantRaw": "SPRING ST LAUNDROMAT",
+      "amountMinor": 875,
+      "hourLocal": 10,
+      "expectedCategoryId": "personal_care.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-240",
+      "merchantRaw": "EUROPEAN WAX CENTER 123",
+      "amountMinor": 5500,
+      "hourLocal": 17,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-241",
+      "merchantRaw": "MASSAGE ENVY 0456",
+      "amountMinor": 8900,
+      "hourLocal": 18,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-242",
+      "merchantRaw": "SALLY BEAUTY #1234",
+      "amountMinor": 2299,
+      "hourLocal": 15,
+      "expectedCategoryId": "personal_care.general"
+    },
+    {
+      "id": "syn-243",
+      "merchantRaw": "BELLA HAIR SALON",
+      "amountMinor": 9500,
+      "hourLocal": 11,
+      "expectedCategoryId": "personal_care.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-244",
+      "merchantRaw": "GOFUNDME *SAMPLE FAMILY",
+      "amountMinor": 5000,
+      "hourLocal": 21,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-245",
+      "merchantRaw": "1-800-FLOWERS.COM",
+      "amountMinor": 6499,
+      "hourLocal": 20,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-246",
+      "merchantRaw": "AMERICAN RED CROSS",
+      "amountMinor": 2500,
+      "hourLocal": 20,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-247",
+      "merchantRaw": "EDIBLE ARRANGEMENTS 123",
+      "amountMinor": 5899,
+      "hourLocal": 14,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-248",
+      "merchantRaw": "SQ *PETAL & STEM FLORIST",
+      "amountMinor": 4500,
+      "hourLocal": 12,
+      "expectedCategoryId": "gifts.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-249",
+      "merchantRaw": "HOPE COMMUNITY CHARITY",
+      "amountMinor": 10000,
+      "hourLocal": 20,
+      "expectedCategoryId": "gifts.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-250",
+      "merchantRaw": "PROFLOWERS",
+      "amountMinor": 4999,
+      "hourLocal": 21,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-251",
+      "merchantRaw": "HALLMARK #1234",
+      "amountMinor": 1295,
+      "hourLocal": 15,
+      "expectedCategoryId": "gifts.general"
+    },
+    {
+      "id": "syn-252",
+      "merchantRaw": "Jordan Sample",
+      "amountMinor": 5000,
+      "hourLocal": 18,
+      "issuerId": "venmo",
+      "expectedCategoryId": "gifts.general",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-253",
+      "merchantRaw": "Taylor Example",
+      "amountMinor": 2500,
+      "hourLocal": 20,
+      "issuerId": "paypal",
+      "expectedCategoryId": "gifts.general",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-254",
+      "merchantRaw": "Sam Example",
+      "amountMinor": 2400,
+      "hourLocal": 21,
+      "issuerId": "venmo",
+      "expectedCategoryId": "food.dining",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-255",
+      "merchantRaw": "Alex Sample",
+      "amountMinor": 1850,
+      "hourLocal": 20,
+      "issuerId": "cash_app",
+      "expectedCategoryId": "food.dining",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-256",
+      "merchantRaw": "Riley Sample",
+      "amountMinor": 3200,
+      "hourLocal": 22,
+      "issuerId": "zelle",
+      "expectedCategoryId": "food.dining",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-257",
+      "merchantRaw": "Jordan Sample",
+      "amountMinor": 4500,
+      "hourLocal": 13,
+      "issuerId": "venmo",
+      "expectedCategoryId": "entertainment.general",
+      "expectedNeedsReview": true,
+      "tags": ["p2p"]
+    },
+    {
+      "id": "syn-258",
+      "merchantRaw": "SQ *GREEN LEAF MARKET",
+      "amountMinor": 2310,
+      "hourLocal": 12,
+      "issuerId": "venmo",
+      "expectedCategoryId": "food.groceries",
+      "tags": ["p2p_merchant"]
+    },
+    {
+      "id": "syn-259",
+      "merchantRaw": "USPS PO 0412345678",
+      "amountMinor": 1240,
+      "hourLocal": 12,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-260",
+      "merchantRaw": "MONTHLY SERVICE FEE",
+      "amountMinor": 1200,
+      "hourLocal": 2,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-261",
+      "merchantRaw": "DMV RENEWAL ONLINE",
+      "amountMinor": 5600,
+      "hourLocal": 10,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-262",
+      "merchantRaw": "IRS USATAXPYMT",
+      "amountMinor": 45000,
+      "hourLocal": 10,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-263",
+      "merchantRaw": "CITY OF SAMPLETON PERMIT",
+      "amountMinor": 7500,
+      "hourLocal": 11,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-264",
+      "merchantRaw": "THE UPS STORE 1234",
+      "amountMinor": 1875,
+      "hourLocal": 14,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-265",
+      "merchantRaw": "FOREIGN TRANSACTION FEE",
+      "amountMinor": 135,
+      "hourLocal": 3,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    },
+    {
+      "id": "syn-266",
+      "merchantRaw": "XYZ HOLDINGS 4471",
+      "amountMinor": 2999,
+      "hourLocal": 15,
+      "expectedCategoryId": "other.general",
+      "expectedNeedsReview": true,
+      "tags": ["unknown"]
+    }
+  ]
+}

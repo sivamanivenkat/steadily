@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "merchants": [
     {
       "key": "kroger",
@@ -858,7 +858,7 @@
       "key": "con_edison",
       "name": "Con Edison",
       "categoryId": "bills.utilities",
-      "aliases": ["coned"]
+      "aliases": ["coned", "con_ed", "con_ed_of_ny"]
     },
     {
       "key": "duke_energy",
@@ -1257,6 +1257,1204 @@
     {
       "key": "edible_arrangements",
       "name": "Edible Arrangements",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "giant_food",
+      "name": "Giant Food",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "stater_bros",
+      "name": "Stater Bros.",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "winn_dixie",
+      "name": "Winn-Dixie",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "hannaford",
+      "name": "Hannaford",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "h_mart",
+      "name": "H Mart",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "amazon_fresh",
+      "name": "Amazon Fresh",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "ingles",
+      "name": "Ingles",
+      "categoryId": "food.groceries",
+      "aliases": ["ingles_markets"]
+    },
+    {
+      "key": "weis_markets",
+      "name": "Weis Markets",
+      "categoryId": "food.groceries",
+      "aliases": ["weis"]
+    },
+    {
+      "key": "schnucks",
+      "name": "Schnucks",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "price_chopper",
+      "name": "Price Chopper",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "grocery_outlet",
+      "name": "Grocery Outlet",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "natural_grocers",
+      "name": "Natural Grocers",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "the_fresh_market",
+      "name": "The Fresh Market",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "99_ranch_market",
+      "name": "99 Ranch Market",
+      "categoryId": "food.groceries",
+      "aliases": ["99_ranch"]
+    },
+    {
+      "key": "marianos",
+      "name": "Mariano's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "shaws",
+      "name": "Shaw's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "acme_markets",
+      "name": "Acme Markets",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "qfc",
+      "name": "QFC",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "pavilions",
+      "name": "Pavilions",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "gelsons",
+      "name": "Gelson's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "fresh_thyme",
+      "name": "Fresh Thyme",
+      "categoryId": "food.groceries",
+      "aliases": ["fresh_thyme_market"]
+    },
+    {
+      "key": "dillons",
+      "name": "Dillons",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "tops_markets",
+      "name": "Tops Markets",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "dairy_queen",
+      "name": "Dairy Queen",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "the_cheesecake_factory",
+      "name": "The Cheesecake Factory",
+      "categoryId": "food.dining",
+      "aliases": ["cheesecake_factory"]
+    },
+    {
+      "key": "red_robin",
+      "name": "Red Robin",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "outback_steakhouse",
+      "name": "Outback Steakhouse",
+      "categoryId": "food.dining",
+      "aliases": ["outback"]
+    },
+    {
+      "key": "longhorn_steakhouse",
+      "name": "LongHorn Steakhouse",
+      "categoryId": "food.dining",
+      "aliases": ["longhorn"]
+    },
+    {
+      "key": "red_lobster",
+      "name": "Red Lobster",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "waffle_house",
+      "name": "Waffle House",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "little_caesars",
+      "name": "Little Caesars",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "tropical_smoothie_cafe",
+      "name": "Tropical Smoothie Cafe",
+      "categoryId": "food.dining",
+      "aliases": ["tropical_smoothie"]
+    },
+    {
+      "key": "crumbl",
+      "name": "Crumbl",
+      "categoryId": "food.dining",
+      "aliases": ["crumbl_cookies"]
+    },
+    {
+      "key": "carls_jr",
+      "name": "Carl's Jr.",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "hardees",
+      "name": "Hardee's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "del_taco",
+      "name": "Del Taco",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "el_pollo_loco",
+      "name": "El Pollo Loco",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "pf_changs",
+      "name": "P.F. Chang's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "bojangles",
+      "name": "Bojangles",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "white_castle",
+      "name": "White Castle",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "krispy_kreme",
+      "name": "Krispy Kreme",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "noodles_company",
+      "name": "Noodles & Company",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "firehouse_subs",
+      "name": "Firehouse Subs",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "potbelly",
+      "name": "Potbelly",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "moes_southwest_grill",
+      "name": "Moe's Southwest Grill",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "marcos_pizza",
+      "name": "Marco's Pizza",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "papa_murphys",
+      "name": "Papa Murphy's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "portillos",
+      "name": "Portillo's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "steak_n_shake",
+      "name": "Steak 'n Shake",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "auntie_annes",
+      "name": "Auntie Anne's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "baskin_robbins",
+      "name": "Baskin-Robbins",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cold_stone_creamery",
+      "name": "Cold Stone Creamery",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "daves_hot_chicken",
+      "name": "Dave's Hot Chicken",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "smoothie_king",
+      "name": "Smoothie King",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "jamba",
+      "name": "Jamba",
+      "categoryId": "food.dining",
+      "aliases": ["jamba_juice"]
+    },
+    {
+      "key": "insomnia_cookies",
+      "name": "Insomnia Cookies",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "seamless",
+      "name": "Seamless",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "jollibee",
+      "name": "Jollibee",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "bonchon",
+      "name": "Bonchon",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cinnabon",
+      "name": "Cinnabon",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "churchs_chicken",
+      "name": "Church's Chicken",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "pollo_tropical",
+      "name": "Pollo Tropical",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "tgi_fridays",
+      "name": "TGI Fridays",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "perkins",
+      "name": "Perkins",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "coffee_bean_tea_leaf",
+      "name": "Coffee Bean & Tea Leaf",
+      "categoryId": "food.coffee",
+      "aliases": ["coffee_bean", "the_coffee_bean"]
+    },
+    {
+      "key": "biggby_coffee",
+      "name": "Biggby Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["biggby"]
+    },
+    {
+      "key": "scooters_coffee",
+      "name": "Scooter's Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["scooters"]
+    },
+    {
+      "key": "la_colombe",
+      "name": "La Colombe",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "intelligentsia",
+      "name": "Intelligentsia",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "stumptown_coffee",
+      "name": "Stumptown Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["stumptown"]
+    },
+    {
+      "key": "7_brew",
+      "name": "7 Brew",
+      "categoryId": "food.coffee",
+      "aliases": ["7_brew_coffee"]
+    },
+    {
+      "key": "ziggis_coffee",
+      "name": "Ziggi's Coffee",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "discount_tire",
+      "name": "Discount Tire",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "oreilly_auto_parts",
+      "name": "O'Reilly Auto Parts",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "advance_auto_parts",
+      "name": "Advance Auto Parts",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "pep_boys",
+      "name": "Pep Boys",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "firestone_complete_auto_care",
+      "name": "Firestone Complete Auto Care",
+      "categoryId": "transport.general",
+      "aliases": ["firestone"]
+    },
+    {
+      "key": "midas",
+      "name": "Midas",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "meineke",
+      "name": "Meineke",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "take_5_oil_change",
+      "name": "Take 5 Oil Change",
+      "categoryId": "transport.general",
+      "aliases": ["take_5"]
+    },
+    {
+      "key": "wmata",
+      "name": "WMATA",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "septa",
+      "name": "SEPTA",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "ventra",
+      "name": "Ventra",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "sunpass",
+      "name": "SunPass",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "fastrak",
+      "name": "FasTrak",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "waymo",
+      "name": "Waymo",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "citi_bike",
+      "name": "Citi Bike",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "laz_parking",
+      "name": "LAZ Parking",
+      "categoryId": "transport.general"
+    },
+    {
+      "key": "chargepoint",
+      "name": "ChargePoint",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "electrify_america",
+      "name": "Electrify America",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "tesla_supercharger",
+      "name": "Tesla Supercharger",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "evgo",
+      "name": "EVgo",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "kwik_trip",
+      "name": "Kwik Trip",
+      "categoryId": "transport.gas",
+      "multiCategory": true
+    },
+    {
+      "key": "thorntons",
+      "name": "Thorntons",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "maverik",
+      "name": "Maverik",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "buc_ees",
+      "name": "Buc-ee's",
+      "categoryId": "transport.gas",
+      "multiCategory": true
+    },
+    {
+      "key": "holiday_stationstores",
+      "name": "Holiday Stationstores",
+      "categoryId": "transport.gas"
+    },
+    {
+      "key": "vrbo",
+      "name": "Vrbo",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "hotelscom",
+      "name": "Hotels.com",
+      "categoryId": "travel.general",
+      "aliases": ["hotels"]
+    },
+    {
+      "key": "priceline",
+      "name": "Priceline",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "ihg",
+      "name": "IHG",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "best_western",
+      "name": "Best Western",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "sixt",
+      "name": "Sixt",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "turo",
+      "name": "Turo",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "greyhound",
+      "name": "Greyhound",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "flixbus",
+      "name": "FlixBus",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "hawaiian_airlines",
+      "name": "Hawaiian Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "allegiant_air",
+      "name": "Allegiant Air",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "sun_country_airlines",
+      "name": "Sun Country Airlines",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "national_car_rental",
+      "name": "National Car Rental",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "choice_hotels",
+      "name": "Choice Hotels",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "wyndham",
+      "name": "Wyndham",
+      "categoryId": "travel.general"
+    },
+    {
+      "key": "burlington",
+      "name": "Burlington",
+      "categoryId": "shopping.general",
+      "aliases": ["burlington_stores"]
+    },
+    {
+      "key": "homegoods",
+      "name": "HomeGoods",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "ace_hardware",
+      "name": "Ace Hardware",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "rei",
+      "name": "REI",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "lululemon",
+      "name": "Lululemon",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "barnes_noble",
+      "name": "Barnes & Noble",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "hobby_lobby",
+      "name": "Hobby Lobby",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "tractor_supply",
+      "name": "Tractor Supply",
+      "categoryId": "shopping.general",
+      "aliases": ["tractor_supply_co"]
+    },
+    {
+      "key": "crate_barrel",
+      "name": "Crate & Barrel",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "williams_sonoma",
+      "name": "Williams Sonoma",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "pottery_barn",
+      "name": "Pottery Barn",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "west_elm",
+      "name": "West Elm",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "harbor_freight",
+      "name": "Harbor Freight",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "menards",
+      "name": "Menards",
+      "categoryId": "shopping.general",
+      "multiCategory": true
+    },
+    {
+      "key": "jcpenney",
+      "name": "JCPenney",
+      "categoryId": "shopping.general",
+      "aliases": ["jcpenney_com", "jc_penney"]
+    },
+    {
+      "key": "dillards",
+      "name": "Dillard's",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "bloomingdales",
+      "name": "Bloomingdale's",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "nordstrom_rack",
+      "name": "Nordstrom Rack",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "uniqlo",
+      "name": "Uniqlo",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "foot_locker",
+      "name": "Foot Locker",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "adidas",
+      "name": "Adidas",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "academy_sports",
+      "name": "Academy Sports",
+      "categoryId": "shopping.general",
+      "aliases": ["academy_sports_outdoors"]
+    },
+    {
+      "key": "bass_pro_shops",
+      "name": "Bass Pro Shops",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "cabelas",
+      "name": "Cabela's",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "gamestop",
+      "name": "GameStop",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "joann",
+      "name": "JOANN",
+      "categoryId": "shopping.general",
+      "aliases": ["joann_stores"]
+    },
+    {
+      "key": "office_depot",
+      "name": "Office Depot",
+      "categoryId": "shopping.general",
+      "aliases": ["officemax"]
+    },
+    {
+      "key": "big_lots",
+      "name": "Big Lots",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "victorias_secret",
+      "name": "Victoria's Secret",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "american_eagle",
+      "name": "American Eagle",
+      "categoryId": "shopping.general",
+      "aliases": ["american_eagle_outfitters"]
+    },
+    {
+      "key": "abercrombie_fitch",
+      "name": "Abercrombie & Fitch",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "banana_republic",
+      "name": "Banana Republic",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "carters",
+      "name": "Carter's",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "anthropologie",
+      "name": "Anthropologie",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "urban_outfitters",
+      "name": "Urban Outfitters",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "aliexpress",
+      "name": "AliExpress",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "newegg",
+      "name": "Newegg",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "bh_photo",
+      "name": "B&H Photo",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "micro_center",
+      "name": "Micro Center",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "poshmark",
+      "name": "Poshmark",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "mercari",
+      "name": "Mercari",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "zappos",
+      "name": "Zappos",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "qvc",
+      "name": "QVC",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "container_store",
+      "name": "Container Store",
+      "categoryId": "shopping.general",
+      "aliases": ["the_container_store"]
+    },
+    {
+      "key": "kirklands",
+      "name": "Kirkland's",
+      "categoryId": "shopping.general"
+    },
+    {
+      "key": "world_market",
+      "name": "World Market",
+      "categoryId": "shopping.general",
+      "aliases": ["cost_plus_world_market"]
+    },
+    {
+      "key": "socalgas",
+      "name": "SoCalGas",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "national_grid",
+      "name": "National Grid",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "xcel_energy",
+      "name": "Xcel Energy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "waste_management",
+      "name": "Waste Management",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "southern_california_edison",
+      "name": "Southern California Edison",
+      "categoryId": "bills.utilities",
+      "aliases": ["so_cal_edison", "sce"]
+    },
+    {
+      "key": "dominion_energy",
+      "name": "Dominion Energy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "georgia_power",
+      "name": "Georgia Power",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "florida_power_light",
+      "name": "Florida Power & Light",
+      "categoryId": "bills.utilities",
+      "aliases": ["fpl"]
+    },
+    {
+      "key": "consumers_energy",
+      "name": "Consumers Energy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "dte_energy",
+      "name": "DTE Energy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "eversource",
+      "name": "Eversource",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "ameren",
+      "name": "Ameren",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "entergy",
+      "name": "Entergy",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "frontier_communications",
+      "name": "Frontier Communications",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "google_fiber",
+      "name": "Google Fiber",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "cricket_wireless",
+      "name": "Cricket Wireless",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "boost_mobile",
+      "name": "Boost Mobile",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "metro_by_t_mobile",
+      "name": "Metro by T-Mobile",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "liberty_mutual",
+      "name": "Liberty Mutual",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "farmers_insurance",
+      "name": "Farmers Insurance",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "republic_services",
+      "name": "Republic Services",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "adt",
+      "name": "ADT",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "simplisafe",
+      "name": "SimpliSafe",
+      "categoryId": "bills.utilities"
+    },
+    {
+      "key": "duolingo",
+      "name": "Duolingo",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "crunchyroll",
+      "name": "Crunchyroll",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "sling_tv",
+      "name": "Sling TV",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "youtube_tv",
+      "name": "YouTube TV",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "fubo",
+      "name": "Fubo",
+      "categoryId": "subscriptions.general",
+      "aliases": ["fubotv"]
+    },
+    {
+      "key": "espn",
+      "name": "ESPN+",
+      "categoryId": "subscriptions.general",
+      "aliases": ["espn_plus"]
+    },
+    {
+      "key": "headspace",
+      "name": "Headspace",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "grammarly",
+      "name": "Grammarly",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "canva",
+      "name": "Canva",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "linkedin",
+      "name": "LinkedIn",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "tinder",
+      "name": "Tinder",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "bumble",
+      "name": "Bumble",
+      "categoryId": "subscriptions.general"
+    },
+    {
+      "key": "the_wall_street_journal",
+      "name": "The Wall Street Journal",
+      "categoryId": "subscriptions.general",
+      "aliases": ["wsj"]
+    },
+    {
+      "key": "the_washington_post",
+      "name": "The Washington Post",
+      "categoryId": "subscriptions.general",
+      "aliases": ["washington_post"]
+    },
+    {
+      "key": "kaiser_permanente",
+      "name": "Kaiser Permanente",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "quest_diagnostics",
+      "name": "Quest Diagnostics",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "labcorp",
+      "name": "Labcorp",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "one_medical",
+      "name": "One Medical",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "24_hour_fitness",
+      "name": "24 Hour Fitness",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "orangetheory_fitness",
+      "name": "Orangetheory Fitness",
+      "categoryId": "health.general",
+      "aliases": ["orangetheory"]
+    },
+    {
+      "key": "crunch_fitness",
+      "name": "Crunch Fitness",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "anytime_fitness",
+      "name": "Anytime Fitness",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "golds_gym",
+      "name": "Gold's Gym",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "lenscrafters",
+      "name": "LensCrafters",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "warby_parker",
+      "name": "Warby Parker",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "teladoc",
+      "name": "Teladoc",
+      "categoryId": "health.general"
+    },
+    {
+      "key": "eventbrite",
+      "name": "Eventbrite",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "seatgeek",
+      "name": "SeatGeek",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "vivid_seats",
+      "name": "Vivid Seats",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "cinemark",
+      "name": "Cinemark",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "alamo_drafthouse",
+      "name": "Alamo Drafthouse",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "six_flags",
+      "name": "Six Flags",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "bowlero",
+      "name": "Bowlero",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "round1",
+      "name": "Round1",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "epic_games",
+      "name": "Epic Games",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "roblox",
+      "name": "Roblox",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "twitch",
+      "name": "Twitch",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "chuck_e_cheese",
+      "name": "Chuck E. Cheese",
+      "categoryId": "entertainment.general"
+    },
+    {
+      "key": "european_wax_center",
+      "name": "European Wax Center",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "massage_envy",
+      "name": "Massage Envy",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "hand_stone",
+      "name": "Hand & Stone",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "sally_beauty",
+      "name": "Sally Beauty",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "fantastic_sams",
+      "name": "Fantastic Sams",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "cost_cutters",
+      "name": "Cost Cutters",
+      "categoryId": "personal_care.general"
+    },
+    {
+      "key": "proflowers",
+      "name": "ProFlowers",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "ftd",
+      "name": "FTD",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "hallmark",
+      "name": "Hallmark",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "salvation_army",
+      "name": "Salvation Army",
+      "categoryId": "gifts.general",
+      "aliases": ["the_salvation_army"]
+    },
+    {
+      "key": "feeding_america",
+      "name": "Feeding America",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "unicef",
+      "name": "UNICEF",
+      "categoryId": "gifts.general"
+    },
+    {
+      "key": "habitat_for_humanity",
+      "name": "Habitat for Humanity",
       "categoryId": "gifts.general"
     }
   ]

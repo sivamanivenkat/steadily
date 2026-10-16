@@ -1,0 +1,43 @@
+{
+  "issuerId": "wells_fargo",
+  "displayName": "Wells Fargo",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.wf.wellsfargomobile"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login|access) code",
+    "Zelle"
+  ],
+  "rules": [
+    {
+      "id": "wells_fargo_purchase",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Wells Fargo[^:]*: (?:A )?(?:debit |credit )?(?:card )?(?:purchase|transaction) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:on (?:your )?(?:debit |credit )?card ending (?:in )?(?<last4>[0-9]{4}) )?(?:was made )?(?:at|with) (?<merchant>.+?)(?: on (?<date>[0-9]{2}/[0-9]{2}(?:/[0-9]{2,4})?))?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "wells_fargo_card_used",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Wells Fargo[^:]*: (?:Your )?(?:debit |credit )?card ending (?:in )?(?<last4>[0-9]{4}) was used for (?:a )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:purchase |transaction )?(?:at|with) (?<merchant>.+?)(?: on (?<date>[0-9]{2}/[0-9]{2}(?:/[0-9]{2,4})?))?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "wells_fargo_refund",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Wells Fargo[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:was|has been) (?:posted|credited)[^.]*?(?:ending (?:in )?(?<last4>[0-9]{4}))?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "wells_fargo_push_purchase",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^(?:A )?(?:debit |credit )?(?:card )?(?:purchase|transaction) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:on (?:your )?(?:debit |credit )?card ending (?:in )?(?<last4>[0-9]{4}) )?(?:was made )?(?:at|with) (?<merchant>.+?)(?: on (?<date>[0-9]{2}/[0-9]{2}(?:/[0-9]{2,4})?))?(?:\\.(?: .*)?)?$"
+    }
+  ]
+}

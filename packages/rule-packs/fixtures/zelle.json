@@ -1,0 +1,145 @@
+[
+  {
+    "name": "sms you sent with zelle",
+    "input": {
+      "text": "Chase: You sent $50.00 to Sam Example with Zelle.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 5000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "sms registered mark and memo",
+    "input": {
+      "text": "Wells Fargo: You sent $120.00 to Alex Sample via Zelle® for rent share.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 12000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "sms zelle prefix sent",
+    "input": {
+      "text": "Zelle: You sent $35 to Jordan Sample for dinner.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 3500,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Jordan Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "push someone sent you is a credit",
+    "input": {
+      "text": "Sam Example sent you $25.00 with Zelle",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.chase.sig.android"
+    },
+    "expected": {
+      "amountMinor": 2500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "push received from via zelle",
+    "input": {
+      "text": "You received $40.00 from Alex Sample via Zelle.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.infonow.bofa"
+    },
+    "expected": {
+      "amountMinor": 4000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "push payment was sent",
+    "input": {
+      "text": "Your Zelle payment of $75.50 to Jordan Sample was sent.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.wf.wellsfargomobile"
+    },
+    "expected": {
+      "amountMinor": 7550,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Jordan Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
+  },
+  {
+    "name": "bank purchase push still goes to the bank pack",
+    "input": {
+      "text": "Purchase of $6.25 at SQ *BLUE BOTTLE COFFEE",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.wf.wellsfargomobile"
+    },
+    "expected": {
+      "amountMinor": 625,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *BLUE BOTTLE COFFEE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "negative: request",
+    "input": {
+      "text": "Sam Example requested $20.00 from you with Zelle.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: canceled payment",
+    "input": {
+      "text": "Your Zelle payment of $40.00 to Alex Sample was canceled.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: security code",
+    "input": {
+      "text": "Zelle: Your security code is 551234. Do not share it.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]

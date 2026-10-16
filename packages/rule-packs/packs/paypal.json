@@ -1,0 +1,56 @@
+{
+  "issuerId": "paypal",
+  "displayName": "PayPal",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": ["com.paypal.android.p2pmobile"],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "request",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login) code",
+    "to your bank"
+  ],
+  "rules": [
+    {
+      "id": "paypal_you_sent",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "PayPal[^:$]*: You (?:sent|paid) (?:a payment of )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)(?: USD)? to (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "paypal_received",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "PayPal[^:$]*: You received (?:a payment of )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)(?: USD)? from (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "paypal_sent_you",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "PayPal[^:$]*: (?:You've got money! )?(?<merchant>[^$:!]+?) sent you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    },
+    {
+      "id": "paypal_push_you_sent",
+      "channel": "push",
+      "direction": "debit",
+      "pattern": "^You (?:sent|paid) (?:a payment of )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)(?: USD)? to (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "paypal_push_received",
+      "channel": "push",
+      "direction": "credit",
+      "pattern": "^You received (?:a payment of )?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)(?: USD)? from (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "paypal_push_sent_you",
+      "channel": "push",
+      "direction": "credit",
+      "pattern": "^(?:You've got money! )?(?<merchant>[^$:!]+?) sent you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+    }
+  ]
+}

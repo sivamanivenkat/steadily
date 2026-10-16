@@ -1,0 +1,62 @@
+{
+  "issuerId": "zelle",
+  "displayName": "Zelle",
+  "version": 1,
+  "verified": false,
+  "sources": {
+    "androidPackages": [
+      "com.chase.sig.android",
+      "com.infonow.bofa",
+      "com.wf.wellsfargomobile",
+      "com.usbank.mobilebanking",
+      "com.konylabs.capitalone"
+    ],
+    "smsSenders": []
+  },
+  "exclude": [
+    "declined",
+    "not approved",
+    "request",
+    "cancel",
+    "one-time (?:pass)?code",
+    "(?:verification|security|sign-in|login|access) code"
+  ],
+  "rules": [
+    {
+      "id": "zelle_prefixed_sent",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Zelle[^:$]*: You sent (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) to (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "zelle_prefixed_received",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "Zelle[^:$]*: You received (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?)(?: for [^.]*)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "zelle_you_sent_with",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "You sent (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) to (?<merchant>[^$]+?) (?:with|via|using|through) Zelle"
+    },
+    {
+      "id": "zelle_payment_to",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Zelle[^ ]* payment of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) to (?<merchant>[^$]+?) (?:was|has been|is) (?:sent|completed|delivered)"
+    },
+    {
+      "id": "zelle_received_from_with",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "You received (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>[^$]+?) (?:with|via|using|through) Zelle"
+    },
+    {
+      "id": "zelle_sent_you_with",
+      "channel": "any",
+      "direction": "credit",
+      "pattern": "(?:^|: )(?<merchant>[^$:]+?) sent you (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:with|via|using|through) Zelle"
+    }
+  ]
+}

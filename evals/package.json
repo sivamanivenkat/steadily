@@ -1,0 +1,23 @@
+{
+  "name": "@steadily/evals",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Accuracy evals for the rule-pack parser and the categorizer",
+  "scripts": {
+    "eval": "tsx src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@steadily/agent-core": "workspace:*",
+    "@steadily/merchants": "workspace:*",
+    "@steadily/rule-packs": "workspace:*",
+    "@steadily/shared-types": "workspace:*",
+    "@steadily/taxonomy": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

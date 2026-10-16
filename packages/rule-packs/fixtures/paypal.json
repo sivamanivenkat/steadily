@@ -1,0 +1,128 @@
+[
+  {
+    "name": "sms you sent",
+    "input": {
+      "text": "PayPal: You sent $25.00 USD to Sam Example.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2500,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "sms you paid a merchant",
+    "input": {
+      "text": "PayPal: You paid $45.99 USD to EXAMPLE OUTDOOR GOODS.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 4599,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE OUTDOOR GOODS",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "sms you received",
+    "input": {
+      "text": "PayPal: You received a payment of $60.00 USD from Alex Sample.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 6000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "push got money",
+    "input": {
+      "text": "You've got money! Jordan Sample sent you $15.00 USD",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.paypal.android.p2pmobile"
+    },
+    "expected": {
+      "amountMinor": 1500,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Jordan Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "push you sent with memo",
+    "input": {
+      "text": "You sent $1,200.00 USD to Sam Example for rent.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.paypal.android.p2pmobile"
+    },
+    "expected": {
+      "amountMinor": 120000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Sam Example",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "push you paid",
+    "input": {
+      "text": "You paid $9.99 USD to Spotify",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.paypal.android.p2pmobile"
+    },
+    "expected": {
+      "amountMinor": 999,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "Spotify",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "paypal"
+    }
+  },
+  {
+    "name": "negative: money request",
+    "input": {
+      "text": "PayPal: Alex Sample sent you a request for $30.00 USD.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: transfer to bank",
+    "input": {
+      "text": "PayPal: Your transfer of $100.00 USD to your bank is on its way.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: security code",
+    "input": {
+      "text": "PayPal: Your security code is 482910. It expires in 10 minutes.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  }
+]
