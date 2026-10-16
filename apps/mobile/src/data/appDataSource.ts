@@ -46,9 +46,7 @@ export function getAppDataSource(): Promise<RepoDataSource> {
 }
 
 export type AppDataSourceState =
-  | { status: 'loading' }
-  | { status: 'ready'; source: RepoDataSource }
-  | { status: 'error' };
+  { status: 'loading' } | { status: 'ready'; source: RepoDataSource } | { status: 'error' };
 
 /** Opens the data source and keeps the agents running while the app is in the foreground. */
 export function useAppDataSource(): AppDataSourceState {

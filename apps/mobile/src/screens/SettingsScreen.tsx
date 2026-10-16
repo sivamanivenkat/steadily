@@ -71,11 +71,13 @@ function Divided({ children }: { children: ReactNode[] }) {
   const { colors } = useTheme();
   return (
     <>
-      {children.filter((child) => child !== null && child !== false).map((child, i) => (
-        <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
-          {child}
-        </View>
-      ))}
+      {children
+        .filter((child) => child !== null && child !== false)
+        .map((child, i) => (
+          <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
+            {child}
+          </View>
+        ))}
     </>
   );
 }

@@ -236,9 +236,8 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
     tx: Transaction,
     categorized: EventPayload<'transaction.categorized'> | undefined,
   ): BuiltInCategoryId[] {
-    const fallback = tx.issuerId && P2P_ISSUER_IDS.has(tx.issuerId)
-      ? P2P_SUGGESTIONS
-      : DEFAULT_SUGGESTIONS;
+    const fallback =
+      tx.issuerId && P2P_ISSUER_IDS.has(tx.issuerId) ? P2P_SUGGESTIONS : DEFAULT_SUGGESTIONS;
     const suggested = categorized?.suggestions?.map((s) => s.categoryId) ?? fallback;
     const chips: BuiltInCategoryId[] = [];
     for (const id of [tx.categoryId, ...suggested]) {
