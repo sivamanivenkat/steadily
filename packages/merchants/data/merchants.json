@@ -1258,6 +1258,381 @@
       "key": "edible_arrangements",
       "name": "Edible Arrangements",
       "categoryId": "gifts.general"
+    },
+    {
+      "key": "giant_food",
+      "name": "Giant Food",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "stater_bros",
+      "name": "Stater Bros.",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "winn_dixie",
+      "name": "Winn-Dixie",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "hannaford",
+      "name": "Hannaford",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "h_mart",
+      "name": "H Mart",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "amazon_fresh",
+      "name": "Amazon Fresh",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "ingles",
+      "name": "Ingles",
+      "categoryId": "food.groceries",
+      "aliases": ["ingles_markets"]
+    },
+    {
+      "key": "weis_markets",
+      "name": "Weis Markets",
+      "categoryId": "food.groceries",
+      "aliases": ["weis"]
+    },
+    {
+      "key": "schnucks",
+      "name": "Schnucks",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "price_chopper",
+      "name": "Price Chopper",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "grocery_outlet",
+      "name": "Grocery Outlet",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "natural_grocers",
+      "name": "Natural Grocers",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "the_fresh_market",
+      "name": "The Fresh Market",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "99_ranch_market",
+      "name": "99 Ranch Market",
+      "categoryId": "food.groceries",
+      "aliases": ["99_ranch"]
+    },
+    {
+      "key": "marianos",
+      "name": "Mariano's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "shaws",
+      "name": "Shaw's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "acme_markets",
+      "name": "Acme Markets",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "qfc",
+      "name": "QFC",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "pavilions",
+      "name": "Pavilions",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "gelsons",
+      "name": "Gelson's",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "fresh_thyme",
+      "name": "Fresh Thyme",
+      "categoryId": "food.groceries",
+      "aliases": ["fresh_thyme_market"]
+    },
+    {
+      "key": "dillons",
+      "name": "Dillons",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "tops_markets",
+      "name": "Tops Markets",
+      "categoryId": "food.groceries"
+    },
+    {
+      "key": "dairy_queen",
+      "name": "Dairy Queen",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "the_cheesecake_factory",
+      "name": "The Cheesecake Factory",
+      "categoryId": "food.dining",
+      "aliases": ["cheesecake_factory"]
+    },
+    {
+      "key": "red_robin",
+      "name": "Red Robin",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "outback_steakhouse",
+      "name": "Outback Steakhouse",
+      "categoryId": "food.dining",
+      "aliases": ["outback"]
+    },
+    {
+      "key": "longhorn_steakhouse",
+      "name": "LongHorn Steakhouse",
+      "categoryId": "food.dining",
+      "aliases": ["longhorn"]
+    },
+    {
+      "key": "red_lobster",
+      "name": "Red Lobster",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "waffle_house",
+      "name": "Waffle House",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "little_caesars",
+      "name": "Little Caesars",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "tropical_smoothie_cafe",
+      "name": "Tropical Smoothie Cafe",
+      "categoryId": "food.dining",
+      "aliases": ["tropical_smoothie"]
+    },
+    {
+      "key": "crumbl",
+      "name": "Crumbl",
+      "categoryId": "food.dining",
+      "aliases": ["crumbl_cookies"]
+    },
+    {
+      "key": "carls_jr",
+      "name": "Carl's Jr.",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "hardees",
+      "name": "Hardee's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "del_taco",
+      "name": "Del Taco",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "el_pollo_loco",
+      "name": "El Pollo Loco",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "pf_changs",
+      "name": "P.F. Chang's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "bojangles",
+      "name": "Bojangles",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "white_castle",
+      "name": "White Castle",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "krispy_kreme",
+      "name": "Krispy Kreme",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "noodles_company",
+      "name": "Noodles & Company",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "firehouse_subs",
+      "name": "Firehouse Subs",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "potbelly",
+      "name": "Potbelly",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "moes_southwest_grill",
+      "name": "Moe's Southwest Grill",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "marcos_pizza",
+      "name": "Marco's Pizza",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "papa_murphys",
+      "name": "Papa Murphy's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "portillos",
+      "name": "Portillo's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "steak_n_shake",
+      "name": "Steak 'n Shake",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "auntie_annes",
+      "name": "Auntie Anne's",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "baskin_robbins",
+      "name": "Baskin-Robbins",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cold_stone_creamery",
+      "name": "Cold Stone Creamery",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "daves_hot_chicken",
+      "name": "Dave's Hot Chicken",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "smoothie_king",
+      "name": "Smoothie King",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "jamba",
+      "name": "Jamba",
+      "categoryId": "food.dining",
+      "aliases": ["jamba_juice"]
+    },
+    {
+      "key": "insomnia_cookies",
+      "name": "Insomnia Cookies",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "seamless",
+      "name": "Seamless",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "jollibee",
+      "name": "Jollibee",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "bonchon",
+      "name": "Bonchon",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "cinnabon",
+      "name": "Cinnabon",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "churchs_chicken",
+      "name": "Church's Chicken",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "pollo_tropical",
+      "name": "Pollo Tropical",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "tgi_fridays",
+      "name": "TGI Fridays",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "perkins",
+      "name": "Perkins",
+      "categoryId": "food.dining"
+    },
+    {
+      "key": "coffee_bean_tea_leaf",
+      "name": "Coffee Bean & Tea Leaf",
+      "categoryId": "food.coffee",
+      "aliases": ["coffee_bean", "the_coffee_bean"]
+    },
+    {
+      "key": "biggby_coffee",
+      "name": "Biggby Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["biggby"]
+    },
+    {
+      "key": "scooters_coffee",
+      "name": "Scooter's Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["scooters"]
+    },
+    {
+      "key": "la_colombe",
+      "name": "La Colombe",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "intelligentsia",
+      "name": "Intelligentsia",
+      "categoryId": "food.coffee"
+    },
+    {
+      "key": "stumptown_coffee",
+      "name": "Stumptown Coffee",
+      "categoryId": "food.coffee",
+      "aliases": ["stumptown"]
+    },
+    {
+      "key": "7_brew",
+      "name": "7 Brew",
+      "categoryId": "food.coffee",
+      "aliases": ["7_brew_coffee"]
+    },
+    {
+      "key": "ziggis_coffee",
+      "name": "Ziggi's Coffee",
+      "categoryId": "food.coffee"
     }
   ]
 }
