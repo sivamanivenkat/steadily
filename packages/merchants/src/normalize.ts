@@ -28,7 +28,14 @@ const CANONICAL: ReadonlyArray<readonly [RegExp, string]> = [
   [/^UBER\s*\*?\s*EATS\b.*$/, 'UBER EATS'],
   [/^UBER(?:\s*\*\s*|\s+)(?:TRIP|PENDING|RIDES?)\b.*$/, 'UBER'],
   [/^LYFT\s*\*.*$/, 'LYFT'],
-  [/^APPLE\.COM\/BILL.*$/, 'APPLE.COM/BILL'],
+  [/^APPLE\.?COM[\s/]+BILL\b.*$/, 'APPLE SERVICES'],
+  // Airline ticket descriptors: carrier name + 10 or more digits (ticket number).
+  // No bare "united"/"delta"/"american" aliases: they would capture UNITED HEALTHCARE etc.
+  [/^UNITED(?:\s+AIR\s*LINES?)?\s+[0-9]{10,}\b.*$/, 'UNITED AIRLINES'],
+  [/^DELTA(?:\s+AIR\s*LINES?)?\s+[0-9]{10,}\b.*$/, 'DELTA AIR LINES'],
+  [/^AMERICAN(?:\s+AIR\s*LINES?)?\s+[0-9]{10,}\b.*$/, 'AMERICAN AIRLINES'],
+  [/^SOUTHWEST(?:\s+AIR\s*LINES?)?\s+[0-9]{10,}\b.*$/, 'SOUTHWEST AIRLINES'],
+  [/^JET\s*BLUE\s+[0-9]{10,}\b.*$/, 'JETBLUE'],
 ];
 
 /** Payment processor / aggregator prefixes: "SQ *", "TST* ", "PAYPAL *", ... */

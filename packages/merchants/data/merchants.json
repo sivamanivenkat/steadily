@@ -777,7 +777,19 @@
       "name": "Apple",
       "categoryId": "shopping.general",
       "multiCategory": true,
-      "aliases": ["apple_com", "apple_com_bill", "apple_store"]
+      "aliases": ["apple_com", "apple_store"]
+    },
+    {
+      "key": "apple_services",
+      "name": "Apple Services",
+      "categoryId": "subscriptions.general",
+      "aliases": ["apple_com_bill", "apple_bill"]
+    },
+    {
+      "key": "peloton",
+      "name": "Peloton",
+      "categoryId": "subscriptions.general",
+      "aliases": ["peloton_interactive"]
     },
     {
       "key": "michaels",
@@ -1132,7 +1144,7 @@
       "key": "southwest_airlines",
       "name": "Southwest Airlines",
       "categoryId": "travel.general",
-      "aliases": ["southwest", "southwes"]
+      "aliases": ["southwes"]
     },
     {
       "key": "jetblue",
