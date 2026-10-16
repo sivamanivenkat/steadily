@@ -331,6 +331,18 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
 
+  packages/proxy-core:
+    dependencies:
+      '@steadily/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@steadily/taxonomy':
+        specifier: workspace:*
+        version: link:../taxonomy
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+
   packages/rule-packs:
     dependencies:
       '@steadily/shared-types':
