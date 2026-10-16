@@ -32,7 +32,9 @@
             "image": "./assets/images/splash-icon.png"
           }
         }
-      ]
+      ],
+      ["expo-sqlite", { "useSQLCipher": true }],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
