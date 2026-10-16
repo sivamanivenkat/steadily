@@ -348,6 +348,9 @@ importers:
       '@steadily/taxonomy':
         specifier: workspace:*
         version: link:../taxonomy
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/db:
     dependencies:

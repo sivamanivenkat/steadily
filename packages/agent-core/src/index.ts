@@ -8,3 +8,4 @@ export * from './agents';
 export * from './agents/budget-coach';
 export * from './agents/subscription-watcher';
 export * from './agents/notifier';
+export * from './ask';

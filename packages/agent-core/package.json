@@ -16,6 +16,7 @@
     "@steadily/merchants": "workspace:*",
     "@steadily/rule-packs": "workspace:*",
     "@steadily/shared-types": "workspace:*",
-    "@steadily/taxonomy": "workspace:*"
+    "@steadily/taxonomy": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
