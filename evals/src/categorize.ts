@@ -146,9 +146,7 @@ export async function runCategorizeEval(
   const perCategory = BUILT_IN_CATEGORY_IDS.map((categoryId): CategoryStats => {
     const support = outcomes.filter((o) => o.item.expectedCategoryId === categoryId).length;
     const predicted = outcomes.filter((o) => o.categoryId === categoryId).length;
-    const truePositives = outcomes.filter(
-      (o) => o.correct && o.categoryId === categoryId,
-    ).length;
+    const truePositives = outcomes.filter((o) => o.correct && o.categoryId === categoryId).length;
     return {
       categoryId,
       support,

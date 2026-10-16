@@ -21,9 +21,7 @@
       "amountMinor": 5490,
       "hourLocal": 12,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-004",
@@ -31,9 +29,7 @@
       "amountMinor": 7712,
       "hourLocal": 19,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-005",
@@ -41,9 +37,7 @@
       "amountMinor": 4388,
       "hourLocal": 16,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-006",
@@ -79,9 +73,7 @@
       "amountMinor": 11250,
       "hourLocal": 20,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-011",
@@ -131,9 +123,7 @@
       "amountMinor": 6345,
       "hourLocal": 19,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-018",
@@ -148,9 +138,7 @@
       "amountMinor": 2310,
       "hourLocal": 11,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-020",
@@ -158,9 +146,7 @@
       "amountMinor": 3655,
       "hourLocal": 17,
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-021",
@@ -169,9 +155,7 @@
       "hourLocal": 18,
       "expectedCategoryId": "food.groceries",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-022",
@@ -180,9 +164,7 @@
       "hourLocal": 19,
       "expectedCategoryId": "food.groceries",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-023",
@@ -191,9 +173,7 @@
       "hourLocal": 11,
       "expectedCategoryId": "food.groceries",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-024",
@@ -202,9 +182,7 @@
       "hourLocal": 14,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-025",
@@ -213,9 +191,7 @@
       "hourLocal": 21,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-026",
@@ -224,9 +200,7 @@
       "hourLocal": 22,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-027",
@@ -235,9 +209,7 @@
       "hourLocal": 9,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-028",
@@ -246,9 +218,7 @@
       "hourLocal": 10,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-029",
@@ -257,9 +227,7 @@
       "hourLocal": 16,
       "expectedCategoryId": "health.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-030",
@@ -268,9 +236,7 @@
       "hourLocal": 19,
       "expectedCategoryId": "health.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-031",
@@ -279,9 +245,7 @@
       "hourLocal": 13,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-032",
@@ -290,9 +254,7 @@
       "hourLocal": 12,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-033",
@@ -342,9 +304,7 @@
       "amountMinor": 3210,
       "hourLocal": 20,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-040",
@@ -352,9 +312,7 @@
       "amountMinor": 2875,
       "hourLocal": 19,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-041",
@@ -362,9 +320,7 @@
       "amountMinor": 2645,
       "hourLocal": 20,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-042",
@@ -372,9 +328,7 @@
       "amountMinor": 3110,
       "hourLocal": 19,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-043",
@@ -473,9 +427,7 @@
       "amountMinor": 2475,
       "hourLocal": 9,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-057",
@@ -483,9 +435,7 @@
       "amountMinor": 5680,
       "hourLocal": 21,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-058",
@@ -493,9 +443,7 @@
       "amountMinor": 1475,
       "hourLocal": 13,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-059",
@@ -503,9 +451,7 @@
       "amountMinor": 6210,
       "hourLocal": 19,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-060",
@@ -514,9 +460,7 @@
       "hourLocal": 20,
       "expectedCategoryId": "food.dining",
       "expectedNeedsReview": true,
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-061",
@@ -524,9 +468,7 @@
       "amountMinor": 3390,
       "hourLocal": 18,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-062",
@@ -534,9 +476,7 @@
       "amountMinor": 1720,
       "hourLocal": 12,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-063",
@@ -545,9 +485,7 @@
       "hourLocal": 13,
       "expectedCategoryId": "food.dining",
       "expectedNeedsReview": true,
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-064",
@@ -555,9 +493,7 @@
       "amountMinor": 4210,
       "hourLocal": 19,
       "expectedCategoryId": "food.dining",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-065",
@@ -621,9 +557,7 @@
       "amountMinor": 475,
       "hourLocal": 7,
       "expectedCategoryId": "food.coffee",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-074",
@@ -631,9 +565,7 @@
       "amountMinor": 550,
       "hourLocal": 8,
       "expectedCategoryId": "food.coffee",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-075",
@@ -641,9 +573,7 @@
       "amountMinor": 640,
       "hourLocal": 9,
       "expectedCategoryId": "food.coffee",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-076",
@@ -651,9 +581,7 @@
       "amountMinor": 1450,
       "hourLocal": 14,
       "expectedCategoryId": "food.coffee",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-077",
@@ -682,9 +610,7 @@
       "amountMinor": 1842,
       "hourLocal": 23,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-081",
@@ -692,9 +618,7 @@
       "amountMinor": 2615,
       "hourLocal": 8,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-082",
@@ -702,9 +626,7 @@
       "amountMinor": 1975,
       "hourLocal": 8,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-083",
@@ -733,9 +655,7 @@
       "amountMinor": 290,
       "hourLocal": 8,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-087",
@@ -750,9 +670,7 @@
       "amountMinor": 512,
       "hourLocal": 17,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-089",
@@ -760,9 +678,7 @@
       "amountMinor": 2400,
       "hourLocal": 19,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-090",
@@ -770,9 +686,7 @@
       "amountMinor": 1500,
       "hourLocal": 11,
       "expectedCategoryId": "transport.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-091",
@@ -886,9 +800,7 @@
       "hourLocal": 7,
       "expectedCategoryId": "transport.gas",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-107",
@@ -897,9 +809,7 @@
       "hourLocal": 7,
       "expectedCategoryId": "transport.gas",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-108",
@@ -908,9 +818,7 @@
       "hourLocal": 17,
       "expectedCategoryId": "transport.gas",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-109",
@@ -932,9 +840,7 @@
       "amountMinor": 3800,
       "hourLocal": 9,
       "expectedCategoryId": "transport.gas",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-112",
@@ -1019,9 +925,7 @@
       "amountMinor": 4599,
       "hourLocal": 21,
       "expectedCategoryId": "shopping.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-124",
@@ -1064,9 +968,7 @@
       "amountMinor": 3800,
       "hourLocal": 21,
       "expectedCategoryId": "shopping.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-130",
@@ -1074,9 +976,7 @@
       "amountMinor": 2499,
       "hourLocal": 22,
       "expectedCategoryId": "shopping.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-131",
@@ -1148,9 +1048,7 @@
       "hourLocal": 15,
       "expectedCategoryId": "shopping.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-141",
@@ -1256,9 +1154,7 @@
       "amountMinor": 6450,
       "hourLocal": 10,
       "expectedCategoryId": "bills.utilities",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-156",
@@ -1266,9 +1162,7 @@
       "amountMinor": 11200,
       "hourLocal": 10,
       "expectedCategoryId": "bills.utilities",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-157",
@@ -1304,9 +1198,7 @@
       "amountMinor": 165000,
       "hourLocal": 10,
       "expectedCategoryId": "housing.rent_mortgage",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-162",
@@ -1314,9 +1206,7 @@
       "amountMinor": 142500,
       "hourLocal": 9,
       "expectedCategoryId": "housing.rent_mortgage",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-163",
@@ -1324,9 +1214,7 @@
       "amountMinor": 32000,
       "hourLocal": 10,
       "expectedCategoryId": "housing.rent_mortgage",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-164",
@@ -1336,9 +1224,7 @@
       "issuerId": "zelle",
       "expectedCategoryId": "housing.rent_mortgage",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-165",
@@ -1348,9 +1234,7 @@
       "issuerId": "venmo",
       "expectedCategoryId": "housing.rent_mortgage",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-166",
@@ -1358,9 +1242,7 @@
       "amountMinor": 180000,
       "hourLocal": 9,
       "expectedCategoryId": "housing.rent_mortgage",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-167",
@@ -1467,9 +1349,7 @@
       "hourLocal": 3,
       "expectedCategoryId": "subscriptions.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-182",
@@ -1478,9 +1358,7 @@
       "hourLocal": 3,
       "issuerId": "paypal",
       "expectedCategoryId": "subscriptions.general",
-      "tags": [
-        "p2p_merchant"
-      ]
+      "tags": ["p2p_merchant"]
     },
     {
       "id": "syn-183",
@@ -1545,9 +1423,7 @@
       "hourLocal": 17,
       "expectedCategoryId": "health.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "multi_category"
-      ]
+      "tags": ["multi_category"]
     },
     {
       "id": "syn-192",
@@ -1576,9 +1452,7 @@
       "amountMinor": 15000,
       "hourLocal": 11,
       "expectedCategoryId": "health.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-196",
@@ -1586,9 +1460,7 @@
       "amountMinor": 4000,
       "hourLocal": 10,
       "expectedCategoryId": "health.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-197",
@@ -1596,9 +1468,7 @@
       "amountMinor": 12500,
       "hourLocal": 14,
       "expectedCategoryId": "health.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-198",
@@ -1621,9 +1491,7 @@
       "hourLocal": 10,
       "expectedCategoryId": "health.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-201",
@@ -1659,9 +1527,7 @@
       "amountMinor": 5999,
       "hourLocal": 22,
       "expectedCategoryId": "entertainment.general",
-      "tags": [
-        "descriptor"
-      ]
+      "tags": ["descriptor"]
     },
     {
       "id": "syn-206",
@@ -1704,9 +1570,7 @@
       "amountMinor": 4800,
       "hourLocal": 20,
       "expectedCategoryId": "entertainment.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-212",
@@ -1714,9 +1578,7 @@
       "amountMinor": 3200,
       "hourLocal": 13,
       "expectedCategoryId": "entertainment.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-213",
@@ -1745,9 +1607,7 @@
       "amountMinor": 6000,
       "hourLocal": 19,
       "expectedCategoryId": "entertainment.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-217",
@@ -1832,9 +1692,7 @@
       "amountMinor": 18900,
       "hourLocal": 15,
       "expectedCategoryId": "travel.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-229",
@@ -1891,9 +1749,7 @@
       "amountMinor": 3500,
       "hourLocal": 12,
       "expectedCategoryId": "personal_care.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-237",
@@ -1901,9 +1757,7 @@
       "amountMinor": 4500,
       "hourLocal": 14,
       "expectedCategoryId": "personal_care.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-238",
@@ -1911,9 +1765,7 @@
       "amountMinor": 12000,
       "hourLocal": 13,
       "expectedCategoryId": "personal_care.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-239",
@@ -1921,9 +1773,7 @@
       "amountMinor": 875,
       "hourLocal": 10,
       "expectedCategoryId": "personal_care.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-240",
@@ -1952,9 +1802,7 @@
       "amountMinor": 9500,
       "hourLocal": 11,
       "expectedCategoryId": "personal_care.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-244",
@@ -1990,9 +1838,7 @@
       "amountMinor": 4500,
       "hourLocal": 12,
       "expectedCategoryId": "gifts.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-249",
@@ -2000,9 +1846,7 @@
       "amountMinor": 10000,
       "hourLocal": 20,
       "expectedCategoryId": "gifts.general",
-      "tags": [
-        "local_business"
-      ]
+      "tags": ["local_business"]
     },
     {
       "id": "syn-250",
@@ -2026,9 +1870,7 @@
       "issuerId": "venmo",
       "expectedCategoryId": "gifts.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-253",
@@ -2038,9 +1880,7 @@
       "issuerId": "paypal",
       "expectedCategoryId": "gifts.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-254",
@@ -2050,9 +1890,7 @@
       "issuerId": "venmo",
       "expectedCategoryId": "food.dining",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-255",
@@ -2062,9 +1900,7 @@
       "issuerId": "cash_app",
       "expectedCategoryId": "food.dining",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-256",
@@ -2074,9 +1910,7 @@
       "issuerId": "zelle",
       "expectedCategoryId": "food.dining",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-257",
@@ -2086,9 +1920,7 @@
       "issuerId": "venmo",
       "expectedCategoryId": "entertainment.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "p2p"
-      ]
+      "tags": ["p2p"]
     },
     {
       "id": "syn-258",
@@ -2097,9 +1929,7 @@
       "hourLocal": 12,
       "issuerId": "venmo",
       "expectedCategoryId": "food.groceries",
-      "tags": [
-        "p2p_merchant"
-      ]
+      "tags": ["p2p_merchant"]
     },
     {
       "id": "syn-259",
@@ -2108,9 +1938,7 @@
       "hourLocal": 12,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-260",
@@ -2119,9 +1947,7 @@
       "hourLocal": 2,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-261",
@@ -2130,9 +1956,7 @@
       "hourLocal": 10,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-262",
@@ -2141,9 +1965,7 @@
       "hourLocal": 10,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-263",
@@ -2152,9 +1974,7 @@
       "hourLocal": 11,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-264",
@@ -2163,9 +1983,7 @@
       "hourLocal": 14,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-265",
@@ -2174,9 +1992,7 @@
       "hourLocal": 3,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     },
     {
       "id": "syn-266",
@@ -2185,9 +2001,7 @@
       "hourLocal": 15,
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
-      "tags": [
-        "unknown"
-      ]
+      "tags": ["unknown"]
     }
   ]
 }
