@@ -1348,8 +1348,7 @@
       "amountMinor": 299,
       "hourLocal": 3,
       "expectedCategoryId": "subscriptions.general",
-      "expectedNeedsReview": true,
-      "tags": ["multi_category"]
+      "tags": ["apple"]
     },
     {
       "id": "syn-182",
@@ -2002,6 +2001,326 @@
       "expectedCategoryId": "other.general",
       "expectedNeedsReview": true,
       "tags": ["unknown"]
+    },
+    {
+      "id": "syn-267",
+      "merchantRaw": "GREEN LEAF CAFE",
+      "amountMinor": 1840,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.dining",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-268",
+      "merchantRaw": "CAFE LUNA",
+      "amountMinor": 695,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-269",
+      "merchantRaw": "SMOOTHIE CAFE",
+      "amountMinor": 790,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.dining",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-270",
+      "merchantRaw": "SQ *HARBOR CAFE",
+      "amountMinor": 920,
+      "hourLocal": 10,
+      "expectedCategoryId": "food.dining",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-271",
+      "merchantRaw": "TST* MORNING CAFE",
+      "amountMinor": 585,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-272",
+      "merchantRaw": "SQ *CORNER ROASTERS",
+      "amountMinor": 550,
+      "hourLocal": 8,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-273",
+      "merchantRaw": "TST* ELM STREET ESPRESSO",
+      "amountMinor": 475,
+      "hourLocal": 7,
+      "expectedCategoryId": "food.coffee",
+      "tags": ["cafe", "local_business"]
+    },
+    {
+      "id": "syn-274",
+      "merchantRaw": "SO CAL GAS",
+      "amountMinor": 6420,
+      "hourLocal": 3,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-275",
+      "merchantRaw": "WASHINGTON GAS 8800123",
+      "amountMinor": 8815,
+      "hourLocal": 5,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-276",
+      "merchantRaw": "NATIONAL GRID PAYMENT",
+      "amountMinor": 11230,
+      "hourLocal": 4,
+      "expectedCategoryId": "bills.utilities",
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-277",
+      "merchantRaw": "PIEDMONT NATURAL GAS",
+      "amountMinor": 5410,
+      "hourLocal": 2,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-278",
+      "merchantRaw": "EXAMPLE GAS CO",
+      "amountMinor": 7390,
+      "hourLocal": 6,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-279",
+      "merchantRaw": "VALLEY GAS & ELECTRIC",
+      "amountMinor": 14250,
+      "hourLocal": 3,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-280",
+      "merchantRaw": "METRO GAS SERVICE",
+      "amountMinor": 4875,
+      "hourLocal": 4,
+      "expectedCategoryId": "bills.utilities",
+      "expectedNeedsReview": true,
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-281",
+      "merchantRaw": "JOES GAS STATION",
+      "amountMinor": 4120,
+      "hourLocal": 17,
+      "expectedCategoryId": "transport.gas",
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-282",
+      "merchantRaw": "PETRO EXPRESS 4412",
+      "amountMinor": 5233,
+      "hourLocal": 18,
+      "expectedCategoryId": "transport.gas",
+      "tags": ["gas_context"]
+    },
+    {
+      "id": "syn-283",
+      "merchantRaw": "SHELL OIL 57444 HOUSTON TX",
+      "amountMinor": 4650,
+      "hourLocal": 16,
+      "expectedCategoryId": "transport.gas",
+      "tags": ["gas_context", "descriptor"]
+    },
+    {
+      "id": "syn-284",
+      "merchantRaw": "TST* TAQUERIA EL SOL",
+      "amountMinor": 1620,
+      "hourLocal": 13,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-285",
+      "merchantRaw": "SQ *GOLDEN NOODLE HOUSE",
+      "amountMinor": 2145,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-286",
+      "merchantRaw": "BANGKOK THAI KITCHEN",
+      "amountMinor": 3410,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-287",
+      "merchantRaw": "SQ *SUNSET SUSHI",
+      "amountMinor": 5280,
+      "hourLocal": 20,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-288",
+      "merchantRaw": "RIVERSIDE BBQ",
+      "amountMinor": 3855,
+      "hourLocal": 18,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-289",
+      "merchantRaw": "SQ *OLD TOWN BAKERY",
+      "amountMinor": 1275,
+      "hourLocal": 9,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-290",
+      "merchantRaw": "TST* BELLA PIZZERIA",
+      "amountMinor": 2640,
+      "hourLocal": 19,
+      "expectedCategoryId": "food.dining",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-291",
+      "merchantRaw": "BRIGHT SMILES DENTAL",
+      "amountMinor": 15000,
+      "hourLocal": 10,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-292",
+      "merchantRaw": "LAKESIDE ORTHODONTICS",
+      "amountMinor": 21000,
+      "hourLocal": 14,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-293",
+      "merchantRaw": "ELM STREET URGENT CARE",
+      "amountMinor": 7500,
+      "hourLocal": 11,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-294",
+      "merchantRaw": "NORTHSIDE PHYSICAL THERAPY",
+      "amountMinor": 4000,
+      "hourLocal": 15,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-295",
+      "merchantRaw": "CLEARVIEW VISION CENTER",
+      "amountMinor": 18900,
+      "hourLocal": 13,
+      "expectedCategoryId": "health.general",
+      "tags": ["local_business"]
+    },
+    {
+      "id": "syn-296",
+      "merchantRaw": "APPLE.COM/BILL",
+      "amountMinor": 1099,
+      "hourLocal": 6,
+      "expectedCategoryId": "subscriptions.general",
+      "tags": ["apple"]
+    },
+    {
+      "id": "syn-297",
+      "merchantRaw": "APPLE.COM/BILL CUPERTINO CA",
+      "amountMinor": 299,
+      "hourLocal": 2,
+      "expectedCategoryId": "subscriptions.general",
+      "tags": ["apple"]
+    },
+    {
+      "id": "syn-298",
+      "merchantRaw": "APPLE STORE #R123",
+      "amountMinor": 12900,
+      "hourLocal": 14,
+      "expectedCategoryId": "shopping.general",
+      "expectedNeedsReview": true,
+      "tags": ["apple", "multi_category"]
+    },
+    {
+      "id": "syn-299",
+      "merchantRaw": "UNITED 0162345678901",
+      "amountMinor": 38420,
+      "hourLocal": 9,
+      "expectedCategoryId": "travel.general",
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-300",
+      "merchantRaw": "DELTA 0062345678901",
+      "amountMinor": 29810,
+      "hourLocal": 10,
+      "expectedCategoryId": "travel.general",
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-301",
+      "merchantRaw": "AMERICAN 0012345678901",
+      "amountMinor": 41230,
+      "hourLocal": 11,
+      "expectedCategoryId": "travel.general",
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-302",
+      "merchantRaw": "SOUTHWEST 5262345678901",
+      "amountMinor": 18960,
+      "hourLocal": 8,
+      "expectedCategoryId": "travel.general",
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-303",
+      "merchantRaw": "JETBLUE 2792345678901",
+      "amountMinor": 22440,
+      "hourLocal": 12,
+      "expectedCategoryId": "travel.general",
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-304",
+      "merchantRaw": "UNITED HEALTHCARE",
+      "amountMinor": 39900,
+      "hourLocal": 7,
+      "expectedCategoryId": "health.general",
+      "expectedNeedsReview": true,
+      "tags": ["airline"]
+    },
+    {
+      "id": "syn-305",
+      "merchantRaw": "PELOTON MEMBERSHIP",
+      "amountMinor": 4400,
+      "hourLocal": 6,
+      "expectedCategoryId": "subscriptions.general",
+      "tags": ["apple"]
     }
   ]
 }

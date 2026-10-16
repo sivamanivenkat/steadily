@@ -10,8 +10,8 @@ import { categorizeMarkdown, parserMarkdown } from './report';
  * dictionary improves; a drop below it is a regression.
  */
 const BASELINE = {
-  overallAccuracy: 0.924, // 246/266 measured 2026-10-16
-  autoSavedAccuracy: 0.95,
+  overallAccuracy: 0.94, // 287/305 measured 2026-10-16 (was 246/266 = 92.5%)
+  autoSavedAccuracy: 0.99, // measured 204/204; a wrong silent auto-save is the worst failure
 };
 
 describe('parser eval', () => {
@@ -44,7 +44,7 @@ describe('categorizer eval (synthetic)', () => {
     expect([...used].sort()).toEqual([...BUILT_IN_CATEGORY_IDS].sort());
   });
 
-  it('is at least 95% accurate on what it auto-saves', () => {
+  it('is at least 99% accurate on what it auto-saves', () => {
     expect(report.autoSavedAccuracy).toBeGreaterThanOrEqual(BASELINE.autoSavedAccuracy);
   });
 
