@@ -65,7 +65,14 @@ export function HomeScreen() {
   const { data: subscriptions } = useData((s) => s.listSubscriptions());
 
   const overall = budgets ? overallBudget(budgets) : null;
-  const safe = overall ? safeToSpend(overall.budget.amountMinor, overall.spentMinor, now) : null;
+  const safe =
+    overall && subscriptions
+      ? safeToSpend(
+          overall,
+          subscriptions.map((s) => s.subscription),
+          now,
+        )
+      : null;
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const toReview = review?.length ?? 0;
   const recentRows = (recent ?? []).slice(0, RECENT_COUNT);
@@ -88,7 +95,7 @@ export function HomeScreen() {
         />
       </View>
 
-      {budgets === undefined ? null : safe && overall ? (
+      {budgets === undefined || subscriptions === undefined ? null : safe && overall ? (
         <>
           <SafeToSpendCard
             amountCents={safe.amountMinor}

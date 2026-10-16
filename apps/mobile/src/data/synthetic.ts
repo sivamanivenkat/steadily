@@ -1,7 +1,7 @@
+import { spendingTotals, spentForBudget } from '@steadily/agent-core';
 import { DEFAULT_SETTINGS } from '@steadily/shared-types';
 import { CATEGORIES, type BuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
 
-import { spentByCategory, totalSpent } from '@/lib/budget';
 import { addDays, startOfDay } from '@/lib/dates';
 
 import type { DataSource } from './DataSource';
@@ -44,7 +44,7 @@ type Options = {
 
 /**
  * In-memory `DataSource` over synthetic data. Nothing is written to disk; a cold start begins
- * from the seed again. Used by the app until packages/db is wired in, and by tests.
+ * from the seed again. Used by tests; the app uses the database-backed source.
  */
 export function createSyntheticDataSource(options: Options = {}): DataSource {
   const clock = options.now ?? (() => new Date());
@@ -223,9 +223,7 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
     },
 
     async listBudgets(range): Promise<BudgetWithSpent[]> {
-      const txs = inRange(range);
-      const byCategory = spentByCategory(txs);
-      const overall = totalSpent(txs);
+      const totals = spendingTotals(inRange(range));
       return [...budgets.values()]
         .filter((b) => b.deletedAt === null)
         .sort((a, b) => {
@@ -233,11 +231,7 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
           const bi = b.categoryId === null ? -1 : (categoryOrder.get(b.categoryId) ?? 99);
           return ai - bi;
         })
-        .map((budget) => ({
-          budget: { ...budget },
-          spentMinor:
-            budget.categoryId === null ? overall : (byCategory.get(budget.categoryId) ?? 0),
-        }));
+        .map((budget) => ({ budget: { ...budget }, spentMinor: spentForBudget(budget, totals) }));
     },
 
     async setBudget(input: BudgetInput) {
