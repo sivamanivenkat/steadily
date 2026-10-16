@@ -98,7 +98,7 @@ Response `200`:
 }
 ```
 
-The model is forced to call a tool whose `categoryId` is an enum of exactly `allowed`. The output is validated again; if the model returns anything outside `allowed` or an invalid confidence, `result` is `null`.
+The model is asked to call a strict-schema tool whose `categoryId` is an enum of exactly `allowed` (tool choice is `auto`, because the newest models reject forced tool use). The output is validated again; if the model replies without the tool call, returns anything outside `allowed`, or gives an invalid confidence, `result` is `null`.
 
 ### `ask` (Claude Sonnet 5.5): one step of the on-device tool loop
 

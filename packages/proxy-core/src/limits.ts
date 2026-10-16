@@ -29,9 +29,11 @@ export interface LimitsConfig {
 export const DEFAULT_LIMITS: LimitsConfig = {
   dailyRequestsPerUser: { categorize: 300, ask: 30 },
   dailySpendCapMicroUsd: 5_000_000,
+  // Claude Haiku 5.5: $0.10 in / $0.50 out per MTok (prompts up to 100K tokens; ours are tiny).
+  // Claude Sonnet 5.5: $2 in / $10 out per MTok. Update here if pricing or the models change.
   prices: {
-    categorize: { inputPerMTok: 1, outputPerMTok: 5 },
-    ask: { inputPerMTok: 3, outputPerMTok: 15 },
+    categorize: { inputPerMTok: 0.1, outputPerMTok: 0.5 },
+    ask: { inputPerMTok: 2, outputPerMTok: 10 },
   },
 };
 

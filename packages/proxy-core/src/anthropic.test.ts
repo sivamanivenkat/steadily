@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildAskRequest,
+  thinkingFor,
   buildCategorizeRequest,
   CATEGORIZE_TOOL_NAME,
   DEFAULT_MODELS,
@@ -13,16 +14,53 @@ import { askBody, categorizeBody, toolUse } from './test-helpers.ts';
 
 const res = (content: MessagesResponse['content']): MessagesResponse => ({ content });
 
+describe('thinkingFor', () => {
+  it('uses between_tools only on Sonnet 5.5, which is the only model that accepts it', () => {
+    expect(thinkingFor('claude-sonnet-5-5')).toEqual({ type: 'between_tools' });
+    expect(thinkingFor('claude-haiku-5-5')).toBeUndefined();
+    expect(thinkingFor('some-overridden-model')).toBeUndefined();
+  });
+
+  it('is applied to ask requests for the default model and omitted for overrides', () => {
+    expect(buildAskRequest(askBody(), DEFAULT_MODELS.ask).thinking).toEqual({
+      type: 'between_tools',
+    });
+    expect(buildAskRequest(askBody(), 'other-model')).not.toHaveProperty('thinking');
+    expect(buildAskRequest(askBody(), DEFAULT_MODELS.ask).output_config).toEqual({
+      effort: 'medium',
+    });
+  });
+});
+
 describe('buildCategorizeRequest', () => {
-  it('forces the choose_category tool with an enum of exactly the allowed ids', () => {
+  it('offers a strict choose_category tool with an enum of exactly the allowed ids', () => {
     const body = categorizeBody();
     const req = buildCategorizeRequest(body, DEFAULT_MODELS.categorize);
     expect(req.model).toBe('claude-haiku-5-5');
-    expect(req.tool_choice).toEqual({ type: 'tool', name: CATEGORIZE_TOOL_NAME });
+    expect(req.tools?.[0]?.['name']).toBe(CATEGORIZE_TOOL_NAME);
+    expect(req.tools?.[0]?.['strict']).toBe(true);
     const schema = req.tools?.[0]?.['input_schema'] as {
       properties: { categoryId: { enum: string[] } };
     };
     expect(schema.properties.categoryId.enum).toEqual(body.allowed);
+  });
+
+  it('never forces a tool (newer models reject it) and keeps strict schemas free of numeric bounds', () => {
+    const req = buildCategorizeRequest(categorizeBody(), DEFAULT_MODELS.categorize);
+    expect(req.tool_choice).toEqual({ type: 'auto' });
+    expect(JSON.stringify(req.tools)).not.toMatch(/"(minimum|maximum)"/);
+  });
+
+  it('uses low effort, leaves headroom for thinking and sets no sampling or thinking fields', () => {
+    const req = buildCategorizeRequest(
+      categorizeBody(),
+      DEFAULT_MODELS.categorize,
+    ) as unknown as Record<string, unknown>;
+    expect(req['output_config']).toEqual({ effort: 'low' });
+    expect(req['max_tokens']).toBeGreaterThanOrEqual(1024);
+    for (const key of ['temperature', 'top_p', 'top_k', 'thinking']) {
+      expect(req).not.toHaveProperty(key);
+    }
   });
 
   it('sends only merchant and amount in the prompt', () => {

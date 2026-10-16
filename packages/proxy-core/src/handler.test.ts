@@ -171,8 +171,8 @@ describe('rate limit and spend cap', () => {
         }),
     });
     await call(categorizeBody());
-    // Haiku defaults: 1 + 5 micro-USD per token.
-    expect(await store.getSpendMicroUsd('2026-10-15')).toBe(1000 * 1 + 100 * 5);
+    // Haiku 5.5 defaults: $0.10 in / $0.50 out per MTok = 0.1 / 0.5 micro-USD per token.
+    expect(await store.getSpendMicroUsd('2026-10-15')).toBe(1000 * 0.1 + 100 * 0.5);
   });
 
   it('returns 503 once the global daily spend cap is reached, for every user', async () => {
