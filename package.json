@@ -10,8 +10,8 @@
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "lint": "prettier --check apps packages .github README.md package.json turbo.json tsconfig.base.json pnpm-workspace.yaml .prettierrc.json",
-    "format": "prettier --write apps packages .github README.md package.json turbo.json tsconfig.base.json pnpm-workspace.yaml .prettierrc.json"
+    "lint": "prettier --check apps packages evals .github README.md package.json turbo.json tsconfig.base.json pnpm-workspace.yaml .prettierrc.json",
+    "format": "prettier --write apps packages evals .github README.md package.json turbo.json tsconfig.base.json pnpm-workspace.yaml .prettierrc.json"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
