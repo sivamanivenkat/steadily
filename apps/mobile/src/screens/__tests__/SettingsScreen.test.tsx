@@ -85,20 +85,42 @@ describe('SettingsScreen', () => {
     expect(await screen.findByText('No notifications from 10:00 PM to 7:00 AM.')).toBeOnTheScreen();
   });
 
-  it('keeps cloud AI off by default and explains what would be sent', async () => {
-    const source = await setup();
-    const toggle = screen.getByRole('switch', { name: 'Use cloud AI for unclear merchants' });
+  it('keeps cloud AI off by default and explains exactly what would be sent', async () => {
+    await setup();
+    const toggle = screen.getByRole('switch', { name: 'Use cloud AI' });
     expect(toggle).not.toBeChecked();
     expect(screen.getByText(/^Off\. Everything is worked out on this phone\./)).toBeOnTheScreen();
+    expect(screen.getByText(/the text of your question plus totals only/)).toBeOnTheScreen();
+    expect(screen.getByText(/no individual transactions, no notes/)).toBeOnTheScreen();
+    expect(screen.getByText(/grouped as “Other merchants”/)).toBeOnTheScreen();
     expect(
       screen.getByText(
         'Never sent: alert text, screenshots, card numbers, account details or your name.',
       ),
     ).toBeOnTheScreen();
+  });
 
+  it('asks for confirmation before turning cloud AI on', async () => {
+    const source = await setup();
+    const toggle = screen.getByRole('switch', { name: 'Use cloud AI' });
+
+    // Cancel: nothing changes.
     await fireEvent.press(toggle);
+    expect(await screen.findByText('Turn on cloud AI?')).toBeOnTheScreen();
+    expect((await source.getSettings()).cloudAiOptIn).toBe(false);
+    await fireEvent.press(screen.getByRole('button', { name: 'Keep it on this phone' }));
+    expect((await source.getSettings()).cloudAiOptIn).toBe(false);
+
+    // Confirm: now on.
+    await fireEvent.press(toggle);
+    await fireEvent.press(await screen.findByRole('button', { name: 'Turn on cloud AI' }));
     expect(await screen.findByText(/^On\./)).toBeOnTheScreen();
     expect((await source.getSettings()).cloudAiOptIn).toBe(true);
+
+    // Turning it off needs no confirmation.
+    await fireEvent.press(screen.getByRole('switch', { name: 'Use cloud AI' }));
+    expect(await screen.findByText(/^Off\./)).toBeOnTheScreen();
+    expect((await source.getSettings()).cloudAiOptIn).toBe(false);
   });
 
   it('applies the theme override app-wide', async () => {

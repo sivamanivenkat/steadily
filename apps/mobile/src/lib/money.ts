@@ -26,6 +26,21 @@ export function formatMoney(amountCents: number, opts: { cents?: 'auto' | 'alway
     : withCents.format(dollars);
 }
 
+/**
+ * Screen-reader version of free text: every "$1,234.56" becomes "1,234 dollars and 56 cents" so
+ * answers are voiced as currency rather than digits and symbols.
+ */
+export function spokenText(text: string): string {
+  return text.replace(
+    /(-)?\$(\d[\d,]*)(?:\.(\d{1,2}))?/g,
+    (_match, minus: string | undefined, whole: string, frac: string | undefined) => {
+      const cents =
+        Number(whole.replace(/,/g, '')) * 100 + Number((frac ?? '').padEnd(2, '0') || 0);
+      return spokenMoney(minus ? -cents : cents);
+    },
+  );
+}
+
 /** Largest whole-dollar part accepted by `parseAmountInput` (keeps budgets sane). */
 const MAX_INPUT_DOLLAR_DIGITS = 7;
 

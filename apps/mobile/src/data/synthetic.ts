@@ -1,9 +1,10 @@
-import { spendingTotals, spentForBudget } from '@steadily/agent-core';
+import { randomId, spendingTotals, spentForBudget } from '@steadily/agent-core';
 import { DEFAULT_SETTINGS } from '@steadily/shared-types';
 import { CATEGORIES, type BuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
 
 import { addDays, startOfDay } from '@/lib/dates';
 
+import { runAsk, type AskRepos } from './ask';
 import type { DataSource } from './DataSource';
 import { ISSUER_IDS, type IssuerId } from './issuers';
 import { defaultSeed, type SyntheticSeed } from './syntheticSeed';
@@ -155,7 +156,7 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
 
   const merchantKey = (tx: Transaction) => (tx.merchantName ?? tx.merchantRaw ?? '').toLowerCase();
 
-  return {
+  const source: DataSource = {
     now: clock,
 
     subscribe(listener) {
@@ -326,4 +327,31 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
       return { ...settings };
     },
   };
+
+  // Ask runs the real engine over the in-memory rows. No event bus here, so nothing is published.
+  source.ask = (question) =>
+    runAsk(question, settings, {
+      repos: {
+        transactions: {
+          listBetween: async (from, to) =>
+            inRange({ from, to })
+              .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
+              .map((t) => ({ ...t })),
+        },
+        budgets: {
+          listActive: async () =>
+            [...budgets.values()].filter((b) => b.deletedAt === null).map((b) => ({ ...b })),
+        },
+        subscriptions: {
+          listActive: async () =>
+            [...subscriptions.values()]
+              .filter((s) => s.subscription.deletedAt === null && !s.subscription.dismissed)
+              .map((s) => ({ ...s.subscription })),
+        },
+      } as AskRepos,
+      now: clock,
+      newId: randomId,
+    });
+
+  return source;
 }

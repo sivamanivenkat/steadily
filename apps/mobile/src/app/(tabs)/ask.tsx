@@ -1,12 +1,3 @@
-import { OnDeviceBadge, PlaceholderScreen } from '@/components';
+import { AskScreen } from '@/screens/AskScreen';
 
-export default function AskScreen() {
-  return (
-    <PlaceholderScreen
-      title="Ask"
-      heading="Ask about your money"
-      body="Questions like “How much did I spend on dining this month?” are answered on this phone."
-      footer={<OnDeviceBadge />}
-    />
-  );
-}
+export default AskScreen;
