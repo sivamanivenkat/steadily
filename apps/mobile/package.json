@@ -39,6 +39,7 @@
     "@steadily/agent-core": "workspace:*",
     "@steadily/db": "workspace:*",
     "@steadily/merchants": "workspace:*",
+    "@steadily/proxy-core": "workspace:*",
     "@steadily/rule-packs": "workspace:*",
     "@steadily/shared-types": "workspace:*",
     "@steadily/taxonomy": "workspace:*",

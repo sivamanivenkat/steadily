@@ -61,4 +61,15 @@ export type OnboardingProgress = {
   step: OnboardingStep;
 };
 
+/** One question and its answer in the Ask tab. Kept in memory only. */
+export type AskTurn = {
+  id: string;
+  question: string;
+  text: string;
+  /** Where the answer was worked out: rules and on-device model stay on the phone. */
+  answeredBy: 'rules' | 'on_device_llm' | 'cloud_llm';
+  /** ISO timestamp. */
+  at: string;
+};
+
 export type BudgetInput = { categoryId: CategoryId | null; amountMinor: number };

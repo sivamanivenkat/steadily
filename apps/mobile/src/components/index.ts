@@ -12,6 +12,7 @@ export { TransactionRow, type TransactionBadge } from './TransactionRow';
 export { PlaceholderScreen } from './PlaceholderScreen';
 export { Screen } from './Screen';
 export { Button, type ButtonVariant } from './Button';
+export { ConfirmSheet } from './ConfirmSheet';
 export { CategoryPickerSheet } from './CategoryPickerSheet';
 export { CategoryTile, categoryMeta, CATEGORY_TILE_SIZE } from './CategoryTile';
 export { EntranceView } from './EntranceView';

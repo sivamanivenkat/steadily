@@ -196,6 +196,9 @@ importers:
       '@steadily/merchants':
         specifier: workspace:*
         version: link:../../packages/merchants
+      '@steadily/proxy-core':
+        specifier: workspace:*
+        version: link:../../packages/proxy-core
       '@steadily/rule-packs':
         specifier: workspace:*
         version: link:../../packages/rule-packs

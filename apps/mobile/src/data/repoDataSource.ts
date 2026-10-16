@@ -41,6 +41,7 @@ import {
 } from '@steadily/taxonomy';
 import { and, asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 
+import { runAsk, type AskDeps } from './ask';
 import { APP_KEYS, readAppValue, writeAppValue } from './appSettings';
 import type { DataSource } from './DataSource';
 import { ISSUER_IDS, isIssuerId, type IssuerId } from './issuers';
@@ -101,6 +102,8 @@ export type RepoDataSourceOptions = AppRuntime & {
   now?: () => Date;
   /** Development only: synthetic alerts for the "Seed sample data" action in Settings. */
   sampleAlerts?: () => readonly AlertCapture[];
+  /** Tests: stands in for the cloud Ask model (only used when the user opted in). */
+  cloudModel?: AskDeps['cloudModel'];
 };
 
 export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSource {
@@ -573,6 +576,17 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
       return repos.settings.get();
     },
   };
+
+  source.ask = async (question) =>
+    runAsk(question, await repos.settings.get(), {
+      repos,
+      now: clock,
+      newId,
+      publish: async (events) => {
+        await runtime.bus.publish(events, null);
+      },
+      ...(options.cloudModel ? { cloudModel: options.cloudModel } : {}),
+    });
 
   const { sampleAlerts } = options;
   if (sampleAlerts) {

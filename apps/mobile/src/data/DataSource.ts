@@ -2,6 +2,7 @@ import type { CategoryId } from '@steadily/taxonomy';
 
 import type { IssuerId } from './issuers';
 import type {
+  AskTurn,
   Budget,
   BudgetInput,
   BudgetWithSpent,
@@ -65,6 +66,13 @@ export interface DataSource {
   // Settings
   getSettings(): Promise<Settings>;
   updateSettings(patch: Partial<Settings>): Promise<Settings>;
+
+  /**
+   * Answers a question about the user's money (Ask tab). Rules on this phone by default; a cloud
+   * model only when the user opted in and the build is configured for it. Optional: sources
+   * without an engine leave it out and the Ask tab says so.
+   */
+  ask?: (question: string) => Promise<AskTurn>;
 
   /**
    * Development only: runs synthetic sample alerts through the capture pipeline and returns how

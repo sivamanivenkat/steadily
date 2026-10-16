@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import {
   AppText,
   Button,
+  ConfirmSheet,
   Glass,
   OnDeviceBadge,
   RadioRow,
@@ -59,6 +60,11 @@ function clockLabel(hhmm: string): string {
 
 const DEFAULT_QUIET_HOURS = { start: '22:00', end: '07:00' };
 
+const CLOUD_SENT_SUMMARY =
+  'When on, Steadily sends the text of your question plus totals only: no individual transactions, no notes, no names of people you paid. Local business names are grouped as “Other merchants”. For an unclear charge, the merchant name and amount are sent. All of it goes through Steadily’s server to a cloud AI model.';
+const CLOUD_NEVER_SENT =
+  'Never sent: alert text, screenshots, card numbers, account details or your name.';
+
 function Card({ children }: { children: ReactNode }) {
   return (
     <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
@@ -91,6 +97,7 @@ export function SettingsScreen() {
   const { data: setups } = useData((s) => s.listIssuerSetup());
 
   const [seedStatus, setSeedStatus] = useState<string | null>(null);
+  const [confirmCloud, setConfirmCloud] = useState(false);
 
   const update = (patch: Partial<Settings>) => void source.updateSettings(patch);
   const seed = source.seedSampleData;
@@ -198,18 +205,18 @@ export function SettingsScreen() {
           <SectionLabel>Cloud AI</SectionLabel>
           <Card>
             <ToggleRow
-              label="Use cloud AI for unclear merchants"
+              label="Use cloud AI"
+              description="For unclear merchants and your questions in Ask."
               value={settings.cloudAiOptIn}
-              onValueChange={(cloudAiOptIn) => update({ cloudAiOptIn })}
+              onValueChange={(on) => (on ? setConfirmCloud(true) : update({ cloudAiOptIn: false }))}
             />
             <View style={styles.explain}>
               <AppText variant="caption" color={colors.ink2}>
-                {settings.cloudAiOptIn
-                  ? 'On. When Steadily cannot tell a category on this phone, it sends only the merchant name and the amount, through Steadily’s server, to a cloud AI model.'
-                  : 'Off. Everything is worked out on this phone. If you turn this on, only the merchant name and the amount of an unclear charge would be sent, through Steadily’s server, to a cloud AI model.'}
+                {settings.cloudAiOptIn ? 'On. ' : 'Off. Everything is worked out on this phone. '}
+                {CLOUD_SENT_SUMMARY}
               </AppText>
               <AppText variant="caption" color={colors.ink2}>
-                Never sent: alert text, screenshots, card numbers, account details or your name.
+                {CLOUD_NEVER_SENT}
               </AppText>
             </View>
           </Card>
@@ -231,6 +238,22 @@ export function SettingsScreen() {
           </Card>
         </>
       ) : null}
+
+      <ConfirmSheet
+        visible={confirmCloud}
+        title="Turn on cloud AI?"
+        body={[
+          'What is sent: the text of your question, plus totals only. No individual transactions, no notes, no names of people you paid. Local business names are grouped as “Other merchants”.',
+          'It goes through Steadily’s server to a cloud AI model. You can turn this off at any time, and answers then stay on this phone.',
+        ]}
+        confirmLabel="Turn on cloud AI"
+        cancelLabel="Keep it on this phone"
+        onConfirm={() => {
+          setConfirmCloud(false);
+          update({ cloudAiOptIn: true });
+        }}
+        onCancel={() => setConfirmCloud(false)}
+      />
 
       <SectionLabel>Privacy</SectionLabel>
       <Card>
