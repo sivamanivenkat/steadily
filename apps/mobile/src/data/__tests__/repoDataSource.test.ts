@@ -1,4 +1,4 @@
-import { userRules } from '@steadily/db';
+import { inbox, userRules } from '@steadily/db';
 import { createTestDb, type NodeDb } from '@steadily/db/node';
 import { Transaction } from '@steadily/shared-types';
 import { isBuiltInCategoryId } from '@steadily/taxonomy';
@@ -78,7 +78,7 @@ describe('repo data source', () => {
       expect.arrayContaining(['housing.rent_mortgage']),
     );
     // Raw alert text is gone once parsed (D-011).
-    expect(db.$client.prepare('SELECT count(*) AS n FROM inbox').get()).toEqual({ n: 0 });
+    expect(db.select().from(inbox).all()).toEqual([]);
   });
 
   it('confirms a category: confirmed, rule learned, budget spent updated', async () => {

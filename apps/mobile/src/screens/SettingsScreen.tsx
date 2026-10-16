@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -71,7 +71,7 @@ function Divided({ children }: { children: ReactNode[] }) {
   const { colors } = useTheme();
   return (
     <>
-      {children.map((child, i) => (
+      {children.filter((child) => child !== null && child !== false).map((child, i) => (
         <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
           {child}
         </View>
@@ -88,7 +88,19 @@ export function SettingsScreen() {
   const { data: settings } = useData((s) => s.getSettings());
   const { data: setups } = useData((s) => s.listIssuerSetup());
 
+  const [seedStatus, setSeedStatus] = useState<string | null>(null);
+
   const update = (patch: Partial<Settings>) => void source.updateSettings(patch);
+  const seed = source.seedSampleData;
+  const seedSampleData = seed
+    ? () => {
+        setSeedStatus('Adding sample alerts…');
+        seed().then(
+          (count) => setSeedStatus(`Added ${count} sample alerts.`),
+          () => setSeedStatus('Could not add sample alerts.'),
+        );
+      }
+    : null;
   const selected = setups?.filter((s) => s.selected) ?? [];
 
   return (
@@ -246,6 +258,27 @@ export function SettingsScreen() {
                 onPress={() => void source.saveOnboarding({ completed: false, step: 'welcome' })}
                 style={styles.linkStart}
               />
+              {seedSampleData ? (
+                <View>
+                  <Button
+                    label="Seed sample data"
+                    variant="link"
+                    onPress={seedSampleData}
+                    accessibilityHint="Runs made-up bank alerts through the on-device pipeline"
+                    style={styles.linkStart}
+                  />
+                  {seedStatus ? (
+                    <AppText
+                      variant="caption"
+                      color={colors.ink2}
+                      accessibilityLiveRegion="polite"
+                      style={styles.seedStatus}
+                    >
+                      {seedStatus}
+                    </AppText>
+                  ) : null}
+                </View>
+              ) : null}
             </Divided>
           </Card>
         </>
@@ -270,4 +303,5 @@ const styles = StyleSheet.create({
   explain: { gap: space.sm, paddingBottom: space.md },
   privacy: { gap: space.sm, paddingVertical: space.md },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
+  seedStatus: { paddingBottom: space.md },
 });
