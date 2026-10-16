@@ -50,7 +50,9 @@ describe('createSupabaseUserResolver', () => {
     createSupabaseUserResolver({ url: URL_BASE, apiKey: 'anon', fetch: async () => respond() });
 
   it('returns the auth user id for a valid token', async () => {
-    const resolve = resolver(() => new Response(JSON.stringify({ id: 'anon-1', is_anonymous: true })));
+    const resolve = resolver(
+      () => new Response(JSON.stringify({ id: 'anon-1', is_anonymous: true })),
+    );
     expect(await resolve('Bearer token')).toBe('anon-1');
   });
 
@@ -81,7 +83,8 @@ describe('readProxyEnv', () => {
   });
 
   it('throws without echoing values when a secret is missing', () => {
-    expect(() => readProxyEnv((name) => (name === 'ANTHROPIC_API_KEY' ? undefined : env[name])))
-      .toThrow('Missing required environment variable ANTHROPIC_API_KEY');
+    expect(() =>
+      readProxyEnv((name) => (name === 'ANTHROPIC_API_KEY' ? undefined : env[name])),
+    ).toThrow('Missing required environment variable ANTHROPIC_API_KEY');
   });
 });

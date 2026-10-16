@@ -31,7 +31,10 @@ describe('createProxyLlmClient', () => {
     const { port, fetchMock } = client(() =>
       json({ type: 'categorize', result: { categoryId: 'food.dining', confidence: 0.7 } }),
     );
-    expect(await port.chooseCategory(input)).toEqual({ categoryId: 'food.dining', confidence: 0.7 });
+    expect(await port.chooseCategory(input)).toEqual({
+      categoryId: 'food.dining',
+      confidence: 0.7,
+    });
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(url).toBe(ENDPOINT);
     expect(JSON.parse(String(init?.body))).toEqual({
@@ -58,9 +61,18 @@ describe('createProxyLlmClient', () => {
     ['HTTP 429', () => json({ error: 'rate_limited' }, 429)],
     ['HTTP 503', () => json({ error: 'spend_cap_reached' }, 503)],
     ['null result', () => json({ type: 'categorize', result: null })],
-    ['id outside allowed', () => json({ type: 'categorize', result: { categoryId: 'travel.general', confidence: 0.9 } })],
-    ['invalid id', () => json({ type: 'categorize', result: { categoryId: 'nope', confidence: 0.9 } })],
-    ['bad confidence', () => json({ type: 'categorize', result: { categoryId: 'food.dining', confidence: 3 } })],
+    [
+      'id outside allowed',
+      () => json({ type: 'categorize', result: { categoryId: 'travel.general', confidence: 0.9 } }),
+    ],
+    [
+      'invalid id',
+      () => json({ type: 'categorize', result: { categoryId: 'nope', confidence: 0.9 } }),
+    ],
+    [
+      'bad confidence',
+      () => json({ type: 'categorize', result: { categoryId: 'food.dining', confidence: 3 } }),
+    ],
     ['non-JSON', () => new Response('oops', { status: 200 })],
     [
       'network error',

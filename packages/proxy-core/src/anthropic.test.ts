@@ -44,7 +44,10 @@ describe('mapCategorizeResponse', () => {
 
   it('returns the chosen allowed id and confidence', () => {
     expect(
-      mapCategorizeResponse(res([toolUse({ categoryId: 'food.coffee', confidence: 0.9 })]), allowed),
+      mapCategorizeResponse(
+        res([toolUse({ categoryId: 'food.coffee', confidence: 0.9 })]),
+        allowed,
+      ),
     ).toEqual({ type: 'categorize', result: { categoryId: 'food.coffee', confidence: 0.9 } });
   });
 
@@ -61,9 +64,9 @@ describe('mapCategorizeResponse', () => {
   });
 
   it('returns null when the model answered with text or another tool', () => {
-    expect(mapCategorizeResponse(res([{ type: 'text', text: 'food.coffee' }]), allowed).result).toBe(
-      null,
-    );
+    expect(
+      mapCategorizeResponse(res([{ type: 'text', text: 'food.coffee' }]), allowed).result,
+    ).toBe(null);
     expect(
       mapCategorizeResponse(
         res([toolUse({ categoryId: 'food.coffee', confidence: 1 }, 'other_tool')]),
@@ -114,7 +117,10 @@ describe('ask', () => {
   it('maps tool_use to tool calls and text to an answer', () => {
     const body = askBody();
     expect(
-      mapAskResponse(res([toolUse({ categoryId: 'food.coffee' }, 'category_total', 'toolu_9')]), body),
+      mapAskResponse(
+        res([toolUse({ categoryId: 'food.coffee' }, 'category_total', 'toolu_9')]),
+        body,
+      ),
     ).toEqual({
       type: 'ask',
       kind: 'tool_calls',

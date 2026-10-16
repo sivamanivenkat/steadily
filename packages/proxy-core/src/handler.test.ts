@@ -114,7 +114,10 @@ describe('handleProxyRequest', () => {
     const { call } = setup({
       upstream: () => new Response('{"error":{"message":"secret detail"}}', { status: 529 }),
     });
-    expect(await call(categorizeBody())).toEqual({ status: 502, body: { error: 'upstream_error' } });
+    expect(await call(categorizeBody())).toEqual({
+      status: 502,
+      body: { error: 'upstream_error' },
+    });
   });
 
   it('maps a thrown fetch to 502', async () => {
@@ -206,7 +209,9 @@ describe('logging', () => {
     const consoleLines: string[] = [];
     for (const level of ['log', 'info', 'warn', 'error', 'debug'] as const) {
       vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
-        consoleLines.push(args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' '));
+        consoleLines.push(
+          args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' '),
+        );
       });
     }
     const written: string[] = [];

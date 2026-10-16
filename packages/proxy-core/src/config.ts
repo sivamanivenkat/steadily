@@ -39,7 +39,10 @@ export function readProxyEnv(get: (name: string) => string | undefined): ProxyEn
           get('PROXY_DAILY_CATEGORIZE_PER_USER'),
           DEFAULT_LIMITS.dailyRequestsPerUser.categorize,
         ),
-        ask: positiveNumber(get('PROXY_DAILY_ASK_PER_USER'), DEFAULT_LIMITS.dailyRequestsPerUser.ask),
+        ask: positiveNumber(
+          get('PROXY_DAILY_ASK_PER_USER'),
+          DEFAULT_LIMITS.dailyRequestsPerUser.ask,
+        ),
       },
       dailySpendCapMicroUsd: Math.round(
         positiveNumber(

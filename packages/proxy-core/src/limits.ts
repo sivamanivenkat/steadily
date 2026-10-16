@@ -44,10 +44,13 @@ export function estimateCostMicroUsd(
   price: ModelPrice,
   usage: { inputTokens: number; outputTokens: number },
 ): number {
-  return Math.ceil(usage.inputTokens * price.inputPerMTok + usage.outputTokens * price.outputPerMTok);
+  return Math.ceil(
+    usage.inputTokens * price.inputPerMTok + usage.outputTokens * price.outputPerMTok,
+  );
 }
 
-export type LimitDecision = { ok: true } | { ok: false; reason: 'rate_limited' | 'spend_cap_reached' };
+export type LimitDecision =
+  { ok: true } | { ok: false; reason: 'rate_limited' | 'spend_cap_reached' };
 
 /**
  * Checked before every upstream call. The spend cap is checked first so a capped
