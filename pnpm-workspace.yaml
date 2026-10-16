@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  - 'modules/*'
   - 'evals'
 allowBuilds:
   '@parcel/watcher': true

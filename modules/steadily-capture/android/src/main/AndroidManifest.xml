@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!--
+    No permissions are declared here on purpose: in particular no INTERNET. The capture layer
+    never touches the network (D-011). Notification access is granted by the user in system
+    settings, not through a manifest permission.
+  -->
+  <application>
+    <service
+      android:name=".SteadilyNotificationListener"
+      android:exported="true"
+      android:label="Steadily"
+      android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+      <intent-filter>
+        <action android:name="android.service.notification.NotificationListenerService" />
+      </intent-filter>
+    </service>
+  </application>
+</manifest>
