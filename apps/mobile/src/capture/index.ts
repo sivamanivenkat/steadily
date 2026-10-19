@@ -5,6 +5,8 @@
 import { Platform } from 'react-native';
 import type { CaptureHealth } from 'steadily-capture';
 
+import type { PendingCaptureStore } from './drain';
+
 type CaptureApi = typeof import('steadily-capture');
 
 let cached: CaptureApi | null | undefined;
@@ -47,3 +49,56 @@ export const peekPending = (limit?: number) => api()?.peekPending(limit) ?? Prom
 
 export const acknowledgePending = (ids: readonly string[]) =>
   api()?.acknowledgePending(ids) ?? Promise.resolve(0);
+
+type RawNative = { peekPending(limit: number): Promise<unknown> };
+
+/**
+ * The staging store for `drainPendingCaptures`, or null when capture is unavailable.
+ *
+ * Reads raw records instead of using the module's `peekPending`, which silently skips records
+ * that fail validation: those would never be acknowledged and would sit at the head of the queue
+ * forever. The drain validates with the module's `PendingCapture` schema itself.
+ */
+export function getPendingCaptureStore(): PendingCaptureStore | null {
+  const loaded = api();
+  if (!loaded) return null;
+  let native: RawNative | null;
+  try {
+    const nativeApi =
+      require('steadily-capture/src/native') as typeof import('steadily-capture/src/native');
+    native = nativeApi.getNativeModule();
+  } catch {
+    native = null;
+  }
+  if (!native) return null;
+  const raw = native;
+  return {
+    async peekRaw(limit) {
+      const batch = await raw.peekPending(limit);
+      return Array.isArray(batch) ? batch.filter((json) => typeof json === 'string') : [];
+    },
+    acknowledge: (ids) => loaded.acknowledgePending(ids),
+  };
+}
+
+type Unsubscribe = () => void;
+
+/**
+ * Calls `listener` when the native layer stages a new capture. Uses `addPendingCaptureListener`
+ * only if this build of the module exports it; returns null otherwise (the app still drains on
+ * start and on foreground).
+ */
+export function subscribeToPendingCaptures(listener: () => void): Unsubscribe | null {
+  const loaded = api() as (CaptureApi & { addPendingCaptureListener?: unknown }) | null;
+  const add = loaded?.addPendingCaptureListener;
+  if (typeof add !== 'function') return null;
+  try {
+    const subscription: unknown = add(() => listener());
+    if (typeof subscription === 'function') return subscription as Unsubscribe;
+    const remove = (subscription as { remove?: unknown } | null)?.remove;
+    if (typeof remove === 'function') return () => remove.call(subscription);
+    return () => {};
+  } catch {
+    return null;
+  }
+}
