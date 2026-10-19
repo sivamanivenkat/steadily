@@ -46,3 +46,5 @@ minimumReleaseAgeExclude:
   - jest-expo@58.0.11
   - '@expo/package-manager@1.14.2'
   - '@react-native/babel-plugin-codegen@0.88.0'
+
+nodeLinker: hoisted
