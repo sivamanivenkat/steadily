@@ -12,6 +12,8 @@ export const APP_KEYS = {
   onboarding: 'app.onboarding',
   issuerSetup: 'app.issuerSetup',
   lastCheckin: 'app.lastCheckin',
+  /** Counts only: staged captures dropped by the drain (see `capture/drain.ts`). */
+  captureDrain: 'app.captureDrain',
 } as const;
 
 export type AppKey = (typeof APP_KEYS)[keyof typeof APP_KEYS];
