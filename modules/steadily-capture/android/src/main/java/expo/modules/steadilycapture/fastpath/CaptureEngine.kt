@@ -25,6 +25,19 @@ class CaptureResult(
   val json: String,
   /** Hash of package and extracted fields, used only to skip duplicate re-posts of one alert. */
   val dedupeKey: String,
+  /** The same fields as [json], typed, for the local confirmation notification. */
+  val summary: CaptureSummary,
+)
+
+/** What the confirmation notification shows. Extracted fields only, held in memory. */
+class CaptureSummary(
+  val amountMinor: Long,
+  val currency: String,
+  /** "debit" or "credit". */
+  val direction: String,
+  val merchantName: String?,
+  val categoryId: String?,
+  val confidence: Double?,
 )
 
 /**
@@ -74,8 +87,31 @@ class CaptureEngine(
     val merchant = extracted.merchantRaw?.let { normalizer.normalize(it) }?.takeIf { it.name.isNotEmpty() }
     val entry = merchant?.let { dictionary.lookup(it.key) }
     val id = newId()
-    return CaptureResult(id, toJson(id, nowMs, extracted, merchant, entry), dedupeKey(n.packageName, extracted))
+    val category = quickCategory(extracted, entry)
+    val summary = CaptureSummary(
+      amountMinor = extracted.amountMinor,
+      currency = extracted.currency,
+      direction = extracted.direction,
+      merchantName = merchant?.name,
+      categoryId = category?.first,
+      confidence = category?.second,
+    )
+    return CaptureResult(
+      id,
+      toJson(id, nowMs, extracted, merchant, category),
+      dedupeKey(n.packageName, extracted),
+      summary,
+    )
   }
+
+  /** Category id and confidence from the dictionary, debits only. */
+  private fun quickCategory(f: ExtractedFields, entry: MerchantEntry?): Pair<String, Double>? =
+    // Refunds and income are classified by the TypeScript categorizer, not guessed here.
+    if (entry != null && f.direction == "debit") {
+      entry.categoryId to if (entry.multiCategory) CONFIDENCE_MULTI else CONFIDENCE_SINGLE
+    } else {
+      null
+    }
 
   private fun dedupeKey(pkg: String, f: ExtractedFields): String {
     val joined = listOf(pkg, f.amountMinor, f.direction, f.merchantRaw, f.accountLast4, f.txnRef).joinToString("|")
@@ -88,7 +124,7 @@ class CaptureEngine(
     nowMs: Long,
     f: ExtractedFields,
     merchant: NormalizedMerchant?,
-    entry: MerchantEntry?,
+    category: Pair<String, Double>?,
   ): String {
     val extracted =
       JSONObject()
@@ -109,13 +145,12 @@ class CaptureEngine(
         .put("capturedAt", isoUtc(nowMs))
         .put("extracted", extracted)
     merchant?.let { root.put("merchantName", it.name) }
-    // Refunds and income are classified by the TypeScript categorizer, not guessed here.
-    if (entry != null && f.direction == "debit") {
+    category?.let { (categoryId, confidence) ->
       root.put(
         "quickCategory",
         JSONObject()
-          .put("categoryId", entry.categoryId)
-          .put("confidence", if (entry.multiCategory) CONFIDENCE_MULTI else CONFIDENCE_SINGLE)
+          .put("categoryId", categoryId)
+          .put("confidence", confidence)
           .put("source", "dictionary"),
       )
     }

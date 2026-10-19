@@ -35,6 +35,15 @@ class SteadilyCaptureModule : Module() {
 
     Function("getPendingCount") { PendingStore(context).count() }
 
+    Function("setCaptureNotificationsEnabled") { enabled: Boolean ->
+      CaptureSettings(context).notificationsEnabled = enabled
+    }
+
+    Function("getCaptureNotificationsEnabled") { CaptureSettings(context).notificationsEnabled }
+
+    // False on Android 13+ until POST_NOTIFICATIONS is granted, or when the user blocked them.
+    Function("canPostCaptureNotifications") { CaptureNotifier.canPost(context) }
+
     Function("getHealth") {
       val state = CaptureState(context)
       mapOf(

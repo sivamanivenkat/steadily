@@ -35,6 +35,30 @@ export function openBatterySettings(native: Native = getNativeModule()): boolean
   return z.boolean().catch(false).parse(native?.openBatterySettings());
 }
 
+/**
+ * Turns the native "Logged $12.40 at Starbucks · Coffee" confirmation on or off. Stored natively
+ * so the listener can read it while the app is closed. Defaults to on.
+ */
+export function setCaptureNotificationsEnabled(
+  enabled: boolean,
+  native: Native = getNativeModule(),
+): void {
+  native?.setCaptureNotificationsEnabled(z.boolean().parse(enabled));
+}
+
+/** Whether capture confirmations are turned on. False when unavailable. */
+export function getCaptureNotificationsEnabled(native: Native = getNativeModule()): boolean {
+  return z.boolean().catch(false).parse(native?.getCaptureNotificationsEnabled());
+}
+
+/**
+ * Whether the system lets Steadily post notifications at all. On Android 13+ this stays false
+ * until the app is granted POST_NOTIFICATIONS; confirmations are skipped silently until then.
+ */
+export function canPostCaptureNotifications(native: Native = getNativeModule()): boolean {
+  return z.boolean().catch(false).parse(native?.canPostCaptureNotifications());
+}
+
 /** Number of staged captures waiting to be drained into the inbox. */
 export function getPendingInboxCount(native: Native = getNativeModule()): number {
   return z.number().int().nonnegative().catch(0).parse(native?.getPendingCount());

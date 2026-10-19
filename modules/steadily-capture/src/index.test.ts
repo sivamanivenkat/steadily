@@ -8,12 +8,15 @@ const {
   CAPTURE_DRAIN_TASK,
   addPendingCaptureListener,
   acknowledgePending,
+  canPostCaptureNotifications,
   getCaptureHealth,
+  getCaptureNotificationsEnabled,
   getPendingInboxCount,
   isCaptureAvailable,
   isListenerEnabled,
   openListenerSettings,
   peekPending,
+  setCaptureNotificationsEnabled,
 } = await import('./index');
 
 const ID = '3f2b8c1e-5a41-4d7e-9c3a-1b2c3d4e5f60';
@@ -34,6 +37,9 @@ function fake(overrides: Partial<SteadilyCaptureNative> = {}): SteadilyCaptureNa
     }),
     peekPending: async () => [],
     ackPending: async () => 0,
+    setCaptureNotificationsEnabled: () => undefined,
+    getCaptureNotificationsEnabled: () => true,
+    canPostCaptureNotifications: () => true,
     ...overrides,
   };
 }
@@ -49,6 +55,9 @@ describe('without the native module', () => {
     expect(await acknowledgePending([ID], null)).toBe(0);
     const sub = addPendingCaptureListener(() => undefined, null);
     expect(() => sub.remove()).not.toThrow();
+    expect(getCaptureNotificationsEnabled(null)).toBe(false);
+    expect(canPostCaptureNotifications(null)).toBe(false);
+    expect(() => setCaptureNotificationsEnabled(true, null)).not.toThrow();
   });
 });
 
@@ -131,5 +140,21 @@ describe('pending capture events', () => {
   it('is a no-op when the module has no event support', () => {
     const sub = addPendingCaptureListener(() => undefined, fake());
     expect(() => sub.remove()).not.toThrow();
+  });
+});
+
+describe('capture notification setting', () => {
+  it('stores the flag natively and reads it back', () => {
+    let stored = true;
+    const native = fake({
+      setCaptureNotificationsEnabled: (enabled) => {
+        stored = enabled;
+      },
+      getCaptureNotificationsEnabled: () => stored,
+      canPostCaptureNotifications: () => 'no' as unknown as boolean,
+    });
+    setCaptureNotificationsEnabled(false, native);
+    expect(getCaptureNotificationsEnabled(native)).toBe(false);
+    expect(canPostCaptureNotifications(native)).toBe(false);
   });
 });

@@ -14,6 +14,9 @@ export interface SteadilyCaptureNative {
   getHealth(): unknown;
   peekPending(limit: number): Promise<string[]>;
   ackPending(ids: string[]): Promise<number>;
+  setCaptureNotificationsEnabled(enabled: boolean): void;
+  getCaptureNotificationsEnabled(): boolean;
+  canPostCaptureNotifications(): boolean;
   /** Event emitter surface of Expo native modules. Payloads are validated in `index.ts`. */
   addListener?(
     eventName: 'onPendingCapture',

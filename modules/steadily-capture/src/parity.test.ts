@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DICTIONARY, lookupMerchant, normalizeMerchant } from '@steadily/merchants';
 import { BUILT_IN_PACKS } from '@steadily/rule-packs';
@@ -18,6 +18,11 @@ const KOTLIN_ENGINE = join(
   here,
   '../android/src/main/java/expo/modules/steadilycapture/fastpath/CaptureEngine.kt',
 );
+const KOTLIN_TEXT = join(
+  here,
+  '../android/src/main/java/expo/modules/steadilycapture/CaptureText.kt',
+);
+const TAXONOMY = join(root, 'packages/taxonomy/src/index.ts');
 
 type Case = { raw: string; name: string; key: string; categoryId: string | null; multi: boolean };
 
@@ -123,5 +128,17 @@ describe('Kotlin bundle order', () => {
     const block = /BUNDLE_ORDER\s*=\s*listOf\(([^)]*)\)/.exec(src)?.[1] ?? '';
     const kotlin = [...block.matchAll(/"([a-z0-9_]+)"/g)].map((m) => m[1]);
     expect(kotlin).toEqual(BUILT_IN_PACKS.map((p) => p.issuerId));
+  });
+});
+
+describe('Kotlin category labels', () => {
+  it('match packages/taxonomy exactly and in order', async () => {
+    const { CATEGORIES } = (await import(pathToFileURL(TAXONOMY).href)) as {
+      CATEGORIES: readonly { id: string; name: string }[];
+    };
+    const src = readFileSync(KOTLIN_TEXT, 'utf8');
+    const block = /BY_ID[^=]*=\s*linkedMapOf\(([^)]*)\)/.exec(src)?.[1] ?? '';
+    const kotlin = [...block.matchAll(/"([^"]+)" to "([^"]+)"/g)].map((m) => [m[1], m[2]]);
+    expect(kotlin).toEqual(CATEGORIES.map((c) => [c.id, c.name]));
   });
 });

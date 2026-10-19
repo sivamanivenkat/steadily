@@ -54,6 +54,11 @@ class SteadilyNotificationListener : NotificationListenerService() {
 
     PendingStore(applicationContext).put(result.id, result.json)
     state.markCaptured(System.currentTimeMillis())
+    try {
+      CaptureNotifier.post(applicationContext, result.id, result.summary)
+    } catch (_: Exception) {
+      // The capture is already staged; a failed confirmation must not stop the drain.
+    }
     DrainTrigger.onStaged(applicationContext)
   }
 

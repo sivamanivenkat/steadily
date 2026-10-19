@@ -3,8 +3,10 @@
     No INTERNET permission, on purpose: the capture layer never touches the network (D-011).
     Notification access is granted by the user in system settings, not through a manifest
     permission. WAKE_LOCK keeps the device awake while the Headless JS drain starts.
+    POST_NOTIFICATIONS (Android 13+) lets the app show its local "Logged ..." confirmation.
   -->
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <application>
     <service
