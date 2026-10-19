@@ -142,3 +142,17 @@ describe('Kotlin category labels', () => {
     expect(kotlin).toEqual(CATEGORIES.map((c) => [c.id, c.name]));
   });
 });
+
+describe('Headless JS task name', () => {
+  it('is the same in Kotlin and TypeScript', () => {
+    const kotlin = readFileSync(
+      join(here, '../android/src/main/java/expo/modules/steadilycapture/CaptureDrainService.kt'),
+      'utf8',
+    );
+    const ts = readFileSync(join(here, 'index.ts'), 'utf8');
+    const k = /TASK_NAME\s*=\s*"([^"]+)"/.exec(kotlin)?.[1];
+    const t = /CAPTURE_DRAIN_TASK\s*=\s*'([^']+)'/.exec(ts)?.[1];
+    expect(k).toBe('SteadilyCaptureDrain');
+    expect(t).toBe(k);
+  });
+});

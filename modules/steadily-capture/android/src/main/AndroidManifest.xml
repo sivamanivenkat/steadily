@@ -23,5 +23,17 @@
     <service
       android:name=".CaptureDrainService"
       android:exported="false" />
+
+    <!-- Quick Settings tile "Log expense": opens the app. -->
+    <service
+      android:name=".LogExpenseTileService"
+      android:exported="true"
+      android:icon="@drawable/steadily_capture_tile"
+      android:label="Log expense"
+      android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+      <intent-filter>
+        <action android:name="android.service.quicksettings.action.QS_TILE" />
+      </intent-filter>
+    </service>
   </application>
 </manifest>
