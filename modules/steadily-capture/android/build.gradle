@@ -46,6 +46,9 @@ android {
 preBuild.dependsOn(syncSteadilyAssets)
 
 dependencies {
+  // HeadlessJsTaskService for the background drain. The app pins the version.
+  implementation 'com.facebook.react:react-android'
+
   testImplementation 'junit:junit:4.13.2'
   // Real org.json for JVM unit tests (the android.jar one is a stub that throws).
   testImplementation 'org.json:json:20240303'

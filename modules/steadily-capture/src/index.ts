@@ -1,10 +1,17 @@
 import { Id } from '@steadily/shared-types';
 import { z } from 'zod';
-import { getNativeModule, type SteadilyCaptureNative } from './native';
-import { CaptureHealth, PendingBatch, PendingCapture } from './schemas';
+import { getNativeModule, type CaptureSubscription, type SteadilyCaptureNative } from './native';
+import { CaptureHealth, PendingBatch, PendingCapture, PendingCaptureEvent } from './schemas';
 
-export { CaptureHealth, PendingCapture } from './schemas';
-export type { SteadilyCaptureNative } from './native';
+export { CaptureHealth, PendingCapture, PendingCaptureEvent } from './schemas';
+export type { CaptureSubscription, SteadilyCaptureNative } from './native';
+
+/**
+ * Name of the Headless JS task the native side starts after staging captures in the background.
+ * Register it with `AppRegistry.registerHeadlessTask(CAPTURE_DRAIN_TASK, ...)`. The task data is
+ * `{ pendingCount }` only; read the records with `peekPending`.
+ */
+export const CAPTURE_DRAIN_TASK = 'SteadilyCaptureDrain';
 
 type Native = SteadilyCaptureNative | null;
 
@@ -26,6 +33,30 @@ export function openListenerSettings(native: Native = getNativeModule()): boolea
 /** Opens the battery settings where the user can set Steadily to Unrestricted. */
 export function openBatterySettings(native: Native = getNativeModule()): boolean {
   return z.boolean().catch(false).parse(native?.openBatterySettings());
+}
+
+/**
+ * Turns the native "Logged $12.40 at Starbucks · Coffee" confirmation on or off. Stored natively
+ * so the listener can read it while the app is closed. Defaults to on.
+ */
+export function setCaptureNotificationsEnabled(
+  enabled: boolean,
+  native: Native = getNativeModule(),
+): void {
+  native?.setCaptureNotificationsEnabled(z.boolean().parse(enabled));
+}
+
+/** Whether capture confirmations are turned on. False when unavailable. */
+export function getCaptureNotificationsEnabled(native: Native = getNativeModule()): boolean {
+  return z.boolean().catch(false).parse(native?.getCaptureNotificationsEnabled());
+}
+
+/**
+ * Whether the system lets Steadily post notifications at all. On Android 13+ this stays false
+ * until the app is granted POST_NOTIFICATIONS; confirmations are skipped silently until then.
+ */
+export function canPostCaptureNotifications(native: Native = getNativeModule()): boolean {
+  return z.boolean().catch(false).parse(native?.canPostCaptureNotifications());
 }
 
 /** Number of staged captures waiting to be drained into the inbox. */
@@ -75,4 +106,20 @@ export async function acknowledgePending(
     .nonnegative()
     .catch(0)
     .parse(await native.ackPending(valid));
+}
+
+/**
+ * Calls `listener` when captures were staged while the app is in the foreground, so JS can drain
+ * right away (in the background the `CAPTURE_DRAIN_TASK` Headless JS task runs instead). Bursts
+ * are debounced natively. Returns a subscription; a no-op one when the module is unavailable.
+ */
+export function addPendingCaptureListener(
+  listener: (event: PendingCaptureEvent) => void,
+  native: Native = getNativeModule(),
+): CaptureSubscription {
+  if (!native?.addListener) return { remove: () => undefined };
+  return native.addListener('onPendingCapture', (raw) => {
+    const parsed = PendingCaptureEvent.safeParse(raw);
+    listener(parsed.success ? parsed.data : { pendingCount: 0 });
+  });
 }

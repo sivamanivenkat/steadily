@@ -29,6 +29,8 @@ class PendingStore(context: Context) {
 
   /** Seals and stores one record. Drops the oldest records beyond [MAX_RECORDS]. */
   fun put(id: String, json: String) {
+    // JS acknowledges by the id inside the JSON, so it must equal the file name.
+    require(ID_PATTERN.matches(id) && idOf(json) == id) { "record id mismatch" }
     val cipher = Cipher.getInstance(TRANSFORM)
     cipher.init(Cipher.ENCRYPT_MODE, key())
     cipher.updateAAD(id.toByteArray(Charsets.UTF_8))
@@ -50,7 +52,8 @@ class PendingStore(context: Context) {
       if (out.size >= limit) break
       val id = file.name.removeSuffix(EXT)
       val json = open(id, file)
-      if (json == null) file.delete() else out.add(Record(id, json))
+      // A record whose JSON id differs from its file name could never be acknowledged.
+      if (json == null || idOf(json) != id) file.delete() else out.add(Record(id, json))
     }
     return out
   }
@@ -123,5 +126,13 @@ class PendingStore(context: Context) {
     private val ID_PATTERN = Regex("^[0-9a-fA-F-]{36}$")
 
     fun newId(): String = UUID.randomUUID().toString()
+
+    /** The `id` field of a record, or null if it is not readable JSON. */
+    fun idOf(json: String): String? =
+      try {
+        org.json.JSONObject(json).optString("id").takeIf { it.isNotEmpty() }
+      } catch (_: Exception) {
+        null
+      }
   }
 }
