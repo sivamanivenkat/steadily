@@ -1,10 +1,17 @@
 import { Id } from '@steadily/shared-types';
 import { z } from 'zod';
-import { getNativeModule, type SteadilyCaptureNative } from './native';
-import { CaptureHealth, PendingBatch, PendingCapture } from './schemas';
+import { getNativeModule, type CaptureSubscription, type SteadilyCaptureNative } from './native';
+import { CaptureHealth, PendingBatch, PendingCapture, PendingCaptureEvent } from './schemas';
 
-export { CaptureHealth, PendingCapture } from './schemas';
-export type { SteadilyCaptureNative } from './native';
+export { CaptureHealth, PendingCapture, PendingCaptureEvent } from './schemas';
+export type { CaptureSubscription, SteadilyCaptureNative } from './native';
+
+/**
+ * Name of the Headless JS task the native side starts after staging captures in the background.
+ * Register it with `AppRegistry.registerHeadlessTask(CAPTURE_DRAIN_TASK, ...)`. The task data is
+ * `{ pendingCount }` only; read the records with `peekPending`.
+ */
+export const CAPTURE_DRAIN_TASK = 'SteadilyCaptureDrain';
 
 type Native = SteadilyCaptureNative | null;
 
@@ -75,4 +82,20 @@ export async function acknowledgePending(
     .nonnegative()
     .catch(0)
     .parse(await native.ackPending(valid));
+}
+
+/**
+ * Calls `listener` when captures were staged while the app is in the foreground, so JS can drain
+ * right away (in the background the `CAPTURE_DRAIN_TASK` Headless JS task runs instead). Bursts
+ * are debounced natively. Returns a subscription; a no-op one when the module is unavailable.
+ */
+export function addPendingCaptureListener(
+  listener: (event: PendingCaptureEvent) => void,
+  native: Native = getNativeModule(),
+): CaptureSubscription {
+  if (!native?.addListener) return { remove: () => undefined };
+  return native.addListener('onPendingCapture', (raw) => {
+    const parsed = PendingCaptureEvent.safeParse(raw);
+    listener(parsed.success ? parsed.data : { pendingCount: 0 });
+  });
 }

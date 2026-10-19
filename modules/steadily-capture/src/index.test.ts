@@ -5,6 +5,8 @@ import type { SteadilyCaptureNative } from './native';
 vi.mock('expo', () => ({ requireOptionalNativeModule: () => null }));
 
 const {
+  CAPTURE_DRAIN_TASK,
+  addPendingCaptureListener,
   acknowledgePending,
   getCaptureHealth,
   getPendingInboxCount,
@@ -45,6 +47,8 @@ describe('without the native module', () => {
     expect(getCaptureHealth(null)).toBeNull();
     expect(await peekPending(10, null)).toEqual([]);
     expect(await acknowledgePending([ID], null)).toBe(0);
+    const sub = addPendingCaptureListener(() => undefined, null);
+    expect(() => sub.remove()).not.toThrow();
   });
 });
 
@@ -99,5 +103,33 @@ describe('with the native module', () => {
 
   it('rejects non-uuid ids on acknowledge', async () => {
     await expect(acknowledgePending(['../etc'], fake())).rejects.toThrow();
+  });
+});
+
+describe('pending capture events', () => {
+  it('uses the task name the native service starts', () => {
+    expect(CAPTURE_DRAIN_TASK).toBe('SteadilyCaptureDrain');
+  });
+
+  it('subscribes to onPendingCapture and validates the payload', () => {
+    let emit: (event: unknown) => void = () => undefined;
+    const remove = vi.fn();
+    const addListener = vi.fn((name: 'onPendingCapture', cb: (event: unknown) => void) => {
+      expect(name).toBe('onPendingCapture');
+      emit = cb;
+      return { remove };
+    });
+    const seen: number[] = [];
+    const sub = addPendingCaptureListener((e) => seen.push(e.pendingCount), fake({ addListener }));
+    emit({ pendingCount: 3 });
+    emit({ pendingCount: 'many' });
+    expect(seen).toEqual([3, 0]);
+    sub.remove();
+    expect(remove).toHaveBeenCalledOnce();
+  });
+
+  it('is a no-op when the module has no event support', () => {
+    const sub = addPendingCaptureListener(() => undefined, fake());
+    expect(() => sub.remove()).not.toThrow();
   });
 });

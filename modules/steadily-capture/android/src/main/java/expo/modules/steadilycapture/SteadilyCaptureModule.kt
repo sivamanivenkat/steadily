@@ -13,6 +13,20 @@ class SteadilyCaptureModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("SteadilyCapture")
 
+    // Emitted when captures were staged while the app is in the foreground and JS listens.
+    // Payload: { pendingCount } only, never record contents.
+    Events(EVENT_PENDING_CAPTURE)
+
+    OnStartObserving(EVENT_PENDING_CAPTURE) {
+      DrainTrigger.foregroundEmitter = { count ->
+        sendEvent(EVENT_PENDING_CAPTURE, mapOf("pendingCount" to count))
+      }
+    }
+
+    OnStopObserving(EVENT_PENDING_CAPTURE) { DrainTrigger.foregroundEmitter = null }
+
+    OnDestroy { DrainTrigger.foregroundEmitter = null }
+
     Function("isListenerEnabled") { SystemAccess.isListenerEnabled(context) }
 
     Function("openListenerSettings") { SystemAccess.openListenerSettings(context) }
@@ -39,5 +53,9 @@ class SteadilyCaptureModule : Module() {
     }
 
     AsyncFunction("ackPending") { ids: List<String> -> PendingStore(context).ack(ids) }
+  }
+
+  private companion object {
+    const val EVENT_PENDING_CAPTURE = "onPendingCapture"
   }
 }

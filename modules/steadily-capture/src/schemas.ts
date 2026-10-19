@@ -44,3 +44,9 @@ export type CaptureHealth = z.infer<typeof CaptureHealth>;
 
 /** What the native module returns for `peekPending`: JSON strings, validated here. */
 export const PendingBatch = z.array(z.string());
+
+/** Payload of the `onPendingCapture` event. Carries a count only, never capture contents. */
+export const PendingCaptureEvent = z.object({
+  pendingCount: z.number().int().nonnegative(),
+});
+export type PendingCaptureEvent = z.infer<typeof PendingCaptureEvent>;

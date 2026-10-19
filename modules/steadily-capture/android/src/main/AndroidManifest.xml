@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <!--
-    No permissions are declared here on purpose: in particular no INTERNET. The capture layer
-    never touches the network (D-011). Notification access is granted by the user in system
-    settings, not through a manifest permission.
+    No INTERNET permission, on purpose: the capture layer never touches the network (D-011).
+    Notification access is granted by the user in system settings, not through a manifest
+    permission. WAKE_LOCK keeps the device awake while the Headless JS drain starts.
   -->
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+
   <application>
     <service
       android:name=".SteadilyNotificationListener"
@@ -14,5 +16,10 @@
         <action android:name="android.service.notification.NotificationListenerService" />
       </intent-filter>
     </service>
+
+    <!-- Runs the JS task "SteadilyCaptureDrain" after captures are staged. -->
+    <service
+      android:name=".CaptureDrainService"
+      android:exported="false" />
   </application>
 </manifest>

@@ -1,5 +1,10 @@
 import { requireOptionalNativeModule } from 'expo';
 
+/** Returned by `addListener`; call `remove` to unsubscribe. */
+export interface CaptureSubscription {
+  remove(): void;
+}
+
 /** The raw native surface. Every call returns plain values; validation happens in `index.ts`. */
 export interface SteadilyCaptureNative {
   isListenerEnabled(): boolean;
@@ -9,6 +14,11 @@ export interface SteadilyCaptureNative {
   getHealth(): unknown;
   peekPending(limit: number): Promise<string[]>;
   ackPending(ids: string[]): Promise<number>;
+  /** Event emitter surface of Expo native modules. Payloads are validated in `index.ts`. */
+  addListener?(
+    eventName: 'onPendingCapture',
+    listener: (event: unknown) => void,
+  ): CaptureSubscription;
 }
 
 /** The module, or null when it is not linked (iOS, web, Jest, Expo Go). */

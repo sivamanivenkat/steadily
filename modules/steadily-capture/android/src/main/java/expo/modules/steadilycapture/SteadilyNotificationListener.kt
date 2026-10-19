@@ -54,6 +54,7 @@ class SteadilyNotificationListener : NotificationListenerService() {
 
     PendingStore(applicationContext).put(result.id, result.json)
     state.markCaptured(System.currentTimeMillis())
+    DrainTrigger.onStaged(applicationContext)
   }
 
   /** Expanded text, else normal text, else the newest message of a messaging-style alert. */
