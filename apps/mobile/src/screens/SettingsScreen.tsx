@@ -286,6 +286,17 @@ export function SettingsScreen() {
         onCancel={() => setConfirmCloud(false)}
       />
 
+      <SectionLabel>Your data</SectionLabel>
+      <Card>
+        <Button
+          label="Import from CSV"
+          variant="link"
+          onPress={() => router.push('/import-csv')}
+          accessibilityHint="Adds past transactions from a bank's CSV export, read on this phone"
+          style={styles.linkStart}
+        />
+      </Card>
+
       <SectionLabel>Privacy</SectionLabel>
       <Card>
         <View style={styles.privacy}>

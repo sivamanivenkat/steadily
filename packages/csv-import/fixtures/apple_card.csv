@@ -1,0 +1,4 @@
+Transaction Date,Clearing Date,Description,Merchant,Category,Type,Amount (USD),Purchased By
+10/14/2026,10/15/2026,"EXAMPLE TEA HOUSE 123 MAIN ST SPRINGFIELD",Example Tea House,Restaurants,Purchase,6.50,Alex Sample
+10/12/2026,10/12/2026,ACH DEPOSIT INTERNET TRANSFER FROM ACCOUNT ENDING IN 0000,Payment,Payment,Payment,-150.00,Alex Sample
+10/11/2026,10/12/2026,EXAMPLE APPAREL,Example Apparel,Clothing,Credit,-20.00,Alex Sample

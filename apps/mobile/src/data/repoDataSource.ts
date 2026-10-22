@@ -43,6 +43,7 @@ import { and, asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 
 import { runAsk, type AskDeps } from './ask';
 import { APP_KEYS, readAppValue, writeAppValue } from './appSettings';
+import { createCsvImporter } from './csvImport';
 import type { DataSource } from './DataSource';
 import { cleanManualInput } from './manual';
 import { ISSUER_IDS, isIssuerId, type IssuerId } from './issuers';
@@ -640,6 +641,10 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
       },
       ...(options.cloudModel ? { cloudModel: options.cloudModel } : {}),
     });
+
+  const csvImporter = createCsvImporter({ db, runtime, repos, now: clock, notify });
+  source.checkImport = csvImporter.check;
+  source.importRows = csvImporter.run;
 
   const { sampleAlerts } = options;
   if (sampleAlerts) {

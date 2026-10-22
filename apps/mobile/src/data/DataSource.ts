@@ -1,5 +1,7 @@
+import type { ImportRow } from '@steadily/csv-import';
 import type { CategoryId } from '@steadily/taxonomy';
 
+import type { ImportCheck, ImportProgress, ImportResult } from './csvImport';
 import type { IssuerId } from './issuers';
 import type {
   AskTurn,
@@ -80,6 +82,18 @@ export interface DataSource {
    * without an engine leave it out and the Ask tab says so.
    */
   ask?: (question: string) => Promise<AskTurn>;
+
+  /**
+   * CSV import (Settings). Sorts rows parsed on this phone into new, already imported and likely
+   * duplicates of transactions Steadily has. Optional: sources without the agent pipeline leave
+   * it and `importRows` out, and the import screen says so.
+   */
+  checkImport?: (rows: readonly ImportRow[]) => Promise<ImportCheck>;
+  /**
+   * Runs the new rows through the pipeline as `csv_import` captures, in batches, reporting
+   * progress. Re-importing the same rows adds nothing.
+   */
+  importRows?: (rows: readonly ImportRow[], onProgress?: ImportProgress) => Promise<ImportResult>;
 
   /**
    * Development only: runs synthetic sample alerts through the capture pipeline and returns how
