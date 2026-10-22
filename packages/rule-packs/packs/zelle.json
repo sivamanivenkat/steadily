@@ -1,7 +1,7 @@
 {
   "issuerId": "zelle",
   "displayName": "Zelle",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": [
@@ -9,7 +9,8 @@
       "com.infonow.bofa",
       "com.wf.wellsfargomobile",
       "com.usbank.mobilebanking",
-      "com.konylabs.capitalone"
+      "com.konylabs.capitalone",
+      "com.citi.citimobile"
     ],
     "smsSenders": []
   },
