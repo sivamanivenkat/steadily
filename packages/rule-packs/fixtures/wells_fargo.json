@@ -126,5 +126,40 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "sms from published short code 93557 is claimed",
+    "input": {
+      "text": "Wells Fargo: Purchase of $3.75 on card ending 4821 at EXAMPLE BAGELS.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut",
+      "smsSender": "93557"
+    },
+    "expected": {
+      "amountMinor": 375,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE BAGELS",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "wells_fargo"
+    }
+  },
+  {
+    "name": "documented layout: shared alert email with merchant detail",
+    "input": {
+      "text": "Wells Fargo Online\nCredit card ending 4821\nAmount\n$56.20\nMerchant detail\nEXAMPLE HARDWARE 0042\nDate\n10/14/2026\nIf you have questions, call the number on the back of your card.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 5620,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE HARDWARE 0042",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "wells_fargo"
+    }
   }
 ]

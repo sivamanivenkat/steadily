@@ -101,5 +101,23 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "negative: documented security check for a declined card use",
+    "input": {
+      "text": "BofA Security: Did you use your debit card ending in 1234 at: EXAMPLE SHOP, $46.94, Declined, 10/14? If you recognize this activity, reply YES.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
+    "name": "negative: security check question is not a transaction",
+    "input": {
+      "text": "BofA Security: Did you use your credit card ending in 1234 at: EXAMPLE SHOP, $46.94, 10/14? If you recognize this activity, reply YES.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
   }
 ]
