@@ -142,7 +142,7 @@ export function createReconcilerAgent(deps: ReconcilerAgentDeps): Agent {
     }
 
     const current = (await transactions.get(tx.id)) ?? tx;
-    return [reconciled(tx.id, outcome, relatedId), notifyFor(current)];
+    return [reconciled(tx.id, outcome, relatedId), ...notifyFor(current)];
   }
 
   return {
@@ -167,16 +167,22 @@ function reconciled(transactionId: string, outcome: Outcome, relatedTransactionI
   return { type: 'transaction.reconciled', payload } satisfies NewEvent;
 }
 
-function notifyFor(tx: Transaction): NewEvent {
-  return tx.status === 'needs_review'
-    ? {
-        type: 'notify.request',
-        payload: { kind: 'transaction_needs_review', urgency: 'instant', transactionId: tx.id },
-      }
-    : {
-        type: 'notify.request',
-        payload: { kind: 'transaction_logged', urgency: 'summary', transactionId: tx.id },
-      };
+/** Bulk imports and entries the user typed in themselves don't ping the user. */
+const QUIET_SOURCES: ReadonlySet<Transaction['source']> = new Set(['csv_import', 'manual']);
+
+function notifyFor(tx: Transaction): NewEvent[] {
+  if (QUIET_SOURCES.has(tx.source)) return [];
+  return [
+    tx.status === 'needs_review'
+      ? {
+          type: 'notify.request',
+          payload: { kind: 'transaction_needs_review', urgency: 'instant', transactionId: tx.id },
+        }
+      : {
+          type: 'notify.request',
+          payload: { kind: 'transaction_logged', urgency: 'summary', transactionId: tx.id },
+        },
+  ];
 }
 
 /** Kept row = created first (ties broken by id), so replays pick the same one. */

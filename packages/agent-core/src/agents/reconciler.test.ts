@@ -96,6 +96,20 @@ describe('Reconciler agent', () => {
     });
   });
 
+  it.each(['csv_import', 'manual'] as const)(
+    'does not ask for a notification for %s entries',
+    async (source) => {
+      const { ctx, agent, add } = setup();
+      await add({ source, status: 'needs_review' });
+
+      const out = await agent.handle(categorized(TX_1), ctx);
+
+      expect(out).toEqual([
+        { type: 'transaction.reconciled', payload: { transactionId: TX_1, outcome: 'new' } },
+      ]);
+    },
+  );
+
   it('soft-deletes a newer transaction with the same issuer reference', async () => {
     const { repos, ctx, agent, add } = setup();
     await add({ txnRef: 'REF-1' });
