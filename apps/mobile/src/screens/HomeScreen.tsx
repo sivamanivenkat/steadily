@@ -5,6 +5,7 @@ import {
   AppText,
   BudgetRow,
   Button,
+  CategoryTile,
   Glass,
   Icon,
   IconButton,
@@ -25,11 +26,13 @@ import {
   recentRange,
   relativeTimeLabel,
 } from '@/lib/dates';
-import { formatMoney } from '@/lib/money';
+import { formatMoney, spokenMoney } from '@/lib/money';
+import { nextDueDate, sortByNextDue } from '@/lib/subscriptions';
 import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 const RECENT_COUNT = 4;
 const BUDGET_COUNT = 3;
+const UPCOMING_COUNT = 3;
 const CATEGORY_BASIS_LABEL = 'Based on your category budgets';
 
 function greetingFor(date: Date): string {
@@ -82,6 +85,7 @@ export function HomeScreen() {
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const toReview = review?.length ?? 0;
   const recentRows = (recent ?? []).slice(0, RECENT_COUNT);
+  const upcoming = sortByNextDue(subscriptions ?? [], now).slice(0, UPCOMING_COUNT);
 
   return (
     <Screen>
@@ -98,6 +102,11 @@ export function HomeScreen() {
           icon="plus"
           accessibilityLabel="Add transaction"
           onPress={() => router.push('/add')}
+        />
+        <IconButton
+          icon="chart"
+          accessibilityLabel="Spending trends"
+          onPress={() => router.push('/trends')}
         />
         <IconButton
           icon="settings"
@@ -191,6 +200,53 @@ export function HomeScreen() {
         </>
       ) : null}
 
+      {upcoming.length > 0 ? (
+        <>
+          <View style={styles.sectionRow}>
+            <View style={styles.flex}>
+              <SectionLabel>Upcoming charges</SectionLabel>
+            </View>
+            <Button
+              label="See all"
+              variant="link"
+              accessibilityLabel="See all subscriptions"
+              onPress={() => router.push('/subscriptions')}
+              style={styles.edgeRight}
+            />
+          </View>
+          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
+            {upcoming.map(({ subscription: sub }, i) => {
+              const due = formatShortDate(nextDueDate(sub, now));
+              return (
+                <Pressable
+                  key={sub.id}
+                  onPress={() => router.push('/subscriptions')}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${sub.merchantName}, ${spokenMoney(sub.amountMinor)}, due ${due}`}
+                  accessibilityHint="Opens subscriptions"
+                  style={({ pressed }) => [
+                    styles.upcomingRow,
+                    i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <CategoryTile categoryId={sub.categoryId} />
+                  <View style={styles.reviewText}>
+                    <AppText variant="bodyStrong" numberOfLines={2}>
+                      {sub.merchantName}
+                    </AppText>
+                    <AppText variant="caption" color={colors.ink2}>
+                      Due {due}
+                    </AppText>
+                  </View>
+                  <AppText variant="amount">{formatMoney(sub.amountMinor)}</AppText>
+                </Pressable>
+              );
+            })}
+          </Glass>
+        </>
+      ) : null}
+
       {recentRows.length > 0 ? (
         <>
           <SectionLabel>Recent</SectionLabel>
@@ -254,5 +310,12 @@ const styles = StyleSheet.create({
   },
   reviewText: { flex: 1, gap: 2 },
   list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
+  upcomingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    minHeight: layout.touchTarget + layout.rowPaddingVertical,
+    paddingVertical: layout.rowPaddingVertical,
+  },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
 });

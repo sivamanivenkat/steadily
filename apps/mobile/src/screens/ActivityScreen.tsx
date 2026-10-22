@@ -1,6 +1,6 @@
-import { CATEGORIES, type CategoryId } from '@steadily/taxonomy';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { CATEGORIES, isBuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import {
@@ -59,22 +59,44 @@ function rowProps(tx: Transaction) {
   return {};
 }
 
+/**
+ * Opening Activity for a category (e.g. from Trends): `category` picks the filter, `since`
+ * (ISO) reaches back to an older month when it is before the usual window.
+ */
+export type ActivityParams = { category?: string; since?: string };
+
 /** Activity tab: every transaction by day, with search and category filters. */
 export function ActivityScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const now = useNow();
+  const params = useLocalSearchParams<ActivityParams>();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<CategoryId | null>(null);
 
+  const paramCategory =
+    typeof params.category === 'string' && isBuiltInCategoryId(params.category)
+      ? params.category
+      : null;
+  useEffect(() => {
+    if (paramCategory) setCategory(paramCategory);
+  }, [paramCategory, params.since]);
+
+  const recent = recentRange(now);
+  const since =
+    typeof params.since === 'string' && !Number.isNaN(Date.parse(params.since))
+      ? params.since
+      : null;
+  const from = since && Date.parse(since) < Date.parse(recent.from) ? since : recent.from;
   const { data: transactions } = useData(
-    (source) => source.listTransactions(recentRange(now)),
-    [now],
+    (source) => source.listTransactions({ from, to: recent.to }),
+    [now, from],
   );
   const { data: review } = useData((source) => source.listNeedsReview());
 
   const all = transactions ?? [];
-  const present = new Set(all.map((tx) => tx.categoryId));
+  const present = new Set<CategoryId>(all.map((tx) => tx.categoryId));
+  if (category !== null) present.add(category);
   const filterIds = CATEGORIES.filter((c) => present.has(c.id)).map((c) => c.id);
   const groups = groupByDay(filterTransactions(all, query, category));
   const reviewCount = review?.length ?? 0;

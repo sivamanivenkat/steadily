@@ -11,6 +11,7 @@ type IconButtonProps = {
   accessibilityLabel: string;
   accessibilityHint?: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
 /** 44x44 circular glass button for icon-only actions. */
@@ -19,6 +20,7 @@ export function IconButton({
   accessibilityLabel,
   accessibilityHint,
   onPress,
+  disabled = false,
 }: IconButtonProps) {
   const { colors } = useTheme();
   return (
@@ -27,8 +29,14 @@ export function IconButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       hitSlop={4}
-      style={({ pressed }) => [styles.target, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.target,
+        disabled && styles.disabled,
+        pressed && !disabled && styles.pressed,
+      ]}
     >
       <Glass variant="light" radius={radius.pill} fixed contentStyle={styles.circle}>
         <Icon name={icon} size={iconSize.md} color={colors.ink} />
@@ -49,4 +57,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { opacity: 0.7 },
+  disabled: { opacity: 0.4 },
 });

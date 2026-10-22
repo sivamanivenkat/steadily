@@ -161,6 +161,25 @@ export function SettingsScreen() {
         />
       </Card>
 
+      <SectionLabel>Money</SectionLabel>
+      <Card>
+        <Divided>
+          <Button
+            label="Subscriptions"
+            variant="link"
+            accessibilityHint="Repeating charges found on this phone"
+            onPress={() => router.push('/subscriptions')}
+            style={styles.linkStart}
+          />
+          <Button
+            label="Spending trends"
+            variant="link"
+            onPress={() => router.push('/trends')}
+            style={styles.linkStart}
+          />
+        </Divided>
+      </Card>
+
       {settings ? (
         <>
           <SectionLabel>Notifications</SectionLabel>

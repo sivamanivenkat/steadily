@@ -9,6 +9,7 @@ import type { DataSource } from './DataSource';
 import { ISSUER_IDS, type IssuerId } from './issuers';
 import { cleanManualInput } from './manual';
 import { defaultSeed, type SyntheticSeed } from './syntheticSeed';
+import { computeTrends, trendsWindow } from './trends';
 import type {
   Budget,
   BudgetInput,
@@ -303,6 +304,36 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
       return [...subscriptions.values()]
         .filter((s) => s.subscription.deletedAt === null && !s.subscription.dismissed)
         .map((s) => ({ ...s, subscription: { ...s.subscription } }));
+    },
+
+    async setSubscriptionDismissed(id, dismissed) {
+      const entry = subscriptions.get(id);
+      if (!entry || entry.subscription.deletedAt !== null) return;
+      subscriptions.set(id, {
+        ...entry,
+        subscription: { ...entry.subscription, dismissed, updatedAt: nowIso() },
+      });
+      notify();
+    },
+
+    async listSubscriptionCharges(id, limit = 6) {
+      const sub = subscriptions.get(id)?.subscription;
+      if (!sub) return [];
+      return alive()
+        .filter(
+          (t) =>
+            t.merchantName === sub.merchantName &&
+            t.kind === 'expense' &&
+            t.linkedTransactionId === null &&
+            t.currency === sub.currency,
+        )
+        .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
+        .slice(0, limit)
+        .map((t) => ({ ...t }));
+    },
+
+    async getTrends(month) {
+      return computeTrends(inRange(trendsWindow(month)), month);
     },
 
     async listIssuerSetup(): Promise<IssuerSetup[]> {

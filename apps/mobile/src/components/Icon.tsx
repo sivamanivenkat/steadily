@@ -16,6 +16,9 @@ type UiIcon =
   | 'chevronRight'
   | 'chevronLeft'
   | 'arrowUp'
+  | 'arrowDown'
+  | 'chart'
+  | 'repeat'
   | 'inbox'
   | 'lock'
   | 'search'
@@ -109,6 +112,14 @@ const shapes: Record<IconName, readonly Shape[]> = {
   chevronRight: ['M9.5 6l6 6-6 6'],
   chevronLeft: ['M14.5 6l-6 6 6 6'],
   arrowUp: ['M12 19V5.5', 'M6.5 11 12 5.5l5.5 5.5'],
+  arrowDown: ['M12 5v13.5', 'M6.5 13 12 18.5l5.5-5.5'],
+  chart: ['M4 20h16', 'M7 16.5V11', 'M12 16.5V6.5', 'M17 16.5v-3.5'],
+  repeat: [
+    'M4.5 11V9.5a3 3 0 0 1 3-3h12',
+    'M16.5 3.5l3 3-3 3',
+    'M19.5 13v1.5a3 3 0 0 1-3 3h-12',
+    'M7.5 20.5l-3-3 3-3',
+  ],
   inbox: [
     'M4 13l2.4-6.6A1 1 0 0 1 7.3 5.8h9.4a1 1 0 0 1 .9.6L20 13v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z',
     'M4 13h4.5a3.5 3.5 0 0 0 7 0H20',

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
-import { renderWithData } from '@/testing/render';
-import { mockRouter, resetRouter } from '@/testing/router';
+import { emptySeed, makeSource, renderWithData } from '@/testing/render';
+import { mockParams, mockRouter, resetRouter } from '@/testing/router';
 
 import { ActivityScreen } from '../ActivityScreen';
 
@@ -54,6 +54,43 @@ describe('ActivityScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'All categories' }));
     expect(screen.getAllByText('Chipotle').length).toBeGreaterThan(0);
+  });
+
+  it('opens on a category and reaches back to an older month (from Trends)', async () => {
+    mockParams.category = 'food.groceries';
+    mockParams.since = new Date(2026, 6, 1).toISOString();
+    const source = makeSource({
+      ...emptySeed,
+      transactions: [
+        {
+          daysAgo: 1,
+          at: [9, 0],
+          merchant: 'Corner Market',
+          amountMinor: 900,
+          category: 'food.groceries',
+        },
+        {
+          daysAgo: 2,
+          at: [9, 0],
+          merchant: 'Chipotle',
+          amountMinor: 1_000,
+          category: 'food.dining',
+        },
+        {
+          daysAgo: 100,
+          at: [9, 0],
+          merchant: 'Old Market',
+          amountMinor: 800,
+          category: 'food.groceries',
+        },
+      ],
+    });
+    await renderWithData(<ActivityScreen />, source);
+
+    expect(await screen.findByText('Old Market')).toBeOnTheScreen();
+    expect(screen.getByText('Corner Market')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Groceries' })).toBeSelected();
+    expect(screen.queryByText('Chipotle')).toBeNull();
   });
 
   it('only offers filters for categories that have transactions', async () => {

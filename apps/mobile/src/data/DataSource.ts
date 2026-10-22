@@ -17,6 +17,7 @@ import type {
   Settings,
   SubscriptionSummary,
   Transaction,
+  Trends,
 } from './types';
 
 /**
@@ -62,6 +63,17 @@ export interface DataSource {
 
   // Subscriptions
   listSubscriptions(): Promise<SubscriptionSummary[]>;
+  /**
+   * "Not a subscription": drops it from the list and from safe-to-spend, and the Subscription
+   * Watcher leaves the merchant alone. `false` undoes it.
+   */
+  setSubscriptionDismissed(id: string, dismissed: boolean): Promise<void>;
+  /** Recent charges at the subscription's merchant (expenses, duplicates left out), newest first. */
+  listSubscriptionCharges(id: string, limit?: number): Promise<Transaction[]>;
+
+  // Trends
+  /** Spending trends for the local month containing `month` (see `computeTrends`). */
+  getTrends(month: Date): Promise<Trends>;
 
   // Issuers and onboarding (D-014). Stored on this phone only.
   listIssuerSetup(): Promise<IssuerSetup[]>;

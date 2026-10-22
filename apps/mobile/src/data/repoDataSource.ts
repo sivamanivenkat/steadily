@@ -23,6 +23,7 @@ import {
   insertInboxItem,
   issuers as issuersTable,
   saveSettings,
+  subscriptions as subscriptionsTable,
   transactions as transactionsTable,
   userRules as userRulesTable,
   type SteadilyDb,
@@ -48,6 +49,7 @@ import type { DataSource } from './DataSource';
 import { cleanManualInput } from './manual';
 import { ISSUER_IDS, isIssuerId, type IssuerId } from './issuers';
 import type { AppRuntime } from './runtime';
+import { computeTrends, trendsWindow } from './trends';
 import type {
   Budget,
   BudgetInput,
@@ -69,6 +71,8 @@ const ALERT_SOURCES: CaptureSource[] = [
 ];
 
 const MAX_CHIPS = 3;
+/** Charges shown in a subscription's detail sheet. */
+const SUBSCRIPTION_CHARGES = 6;
 const ONBOARDING_STEPS: readonly OnboardingStep[] = [
   'welcome',
   'issuers',
@@ -556,6 +560,40 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
             : null;
         return { subscription, previousAmountMinor: previous };
       });
+    },
+
+    async setSubscriptionDismissed(id, dismissed) {
+      db.update(subscriptionsTable)
+        .set({ dismissed, updatedAt: nowIso() })
+        .where(and(eq(subscriptionsTable.id, id), isNull(subscriptionsTable.deletedAt)))
+        .run();
+      notify();
+    },
+
+    async listSubscriptionCharges(id, limit = SUBSCRIPTION_CHARGES) {
+      const sub = db
+        .select({
+          merchantName: subscriptionsTable.merchantName,
+          currency: subscriptionsTable.currency,
+        })
+        .from(subscriptionsTable)
+        .where(eq(subscriptionsTable.id, id))
+        .get();
+      if (!sub) return [];
+      const rows = await repos.transactions.listByMerchant(sub.merchantName);
+      return rows
+        .filter(
+          (t) =>
+            t.kind === 'expense' && t.linkedTransactionId === null && t.currency === sub.currency,
+        )
+        .slice(0, limit);
+    },
+
+    // -- Trends -------------------------------------------------------------
+
+    async getTrends(month) {
+      const window = trendsWindow(month);
+      return computeTrends(await repos.transactions.listBetween(window.from, window.to), month);
     },
 
     // -- Issuers and onboarding ---------------------------------------------
