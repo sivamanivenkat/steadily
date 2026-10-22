@@ -93,5 +93,22 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "sms from published short code 227898 is claimed",
+    "input": {
+      "text": "Capital One: A purchase of $9.45 was made at SQ *EXAMPLE BAKERY.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut",
+      "smsSender": "227898"
+    },
+    "expected": {
+      "amountMinor": 945,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "SQ *EXAMPLE BAKERY",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "capital_one"
+    }
   }
 ]

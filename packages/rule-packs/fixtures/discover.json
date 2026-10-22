@@ -91,5 +91,39 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "documented layout: shared alert email with labeled fields",
+    "input": {
+      "text": "Discover Card\nTransaction Alert\nAccount ending in 4821\nTransaction Date: October 14, 2026\nMerchant: EXAMPLE PIZZA 0042\nAmount: $23.18",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 2318,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE PIZZA 0042",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "discover"
+    }
+  },
+  {
+    "name": "sms from published short code 347268 is claimed",
+    "input": {
+      "text": "Discover: Purchase of $4.10 at EXAMPLE COFFEE CO on Oct 14, 2026.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut",
+      "smsSender": "347268"
+    },
+    "expected": {
+      "amountMinor": 410,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE COFFEE CO",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "discover"
+    }
   }
 ]

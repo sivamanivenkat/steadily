@@ -1,11 +1,11 @@
 {
   "issuerId": "capital_one",
   "displayName": "Capital One",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": ["com.konylabs.capitalone"],
-    "smsSenders": []
+    "smsSenders": ["227898"]
   },
   "exclude": [
     "declined",

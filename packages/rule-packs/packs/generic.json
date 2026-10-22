@@ -1,7 +1,7 @@
 {
   "issuerId": "generic",
   "displayName": "Generic fallback",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": [],
@@ -10,6 +10,7 @@
   "exclude": [
     "declined",
     "not approved",
+    "did you (?:use|attempt|make|authorize|try)",
     "one-time (?:pass)?code",
     "(?:verification|security|sign-in|login) code"
   ],

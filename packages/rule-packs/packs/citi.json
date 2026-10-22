@@ -1,15 +1,16 @@
 {
   "issuerId": "citi",
   "displayName": "Citi",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
-    "androidPackages": [],
+    "androidPackages": ["com.citi.citimobile"],
     "smsSenders": []
   },
   "exclude": [
     "declined",
     "not approved",
+    "did you (?:use|attempt|make|authorize|try)",
     "one-time (?:pass)?code",
     "(?:verification|security|sign-in|login) code"
   ],
@@ -31,6 +32,12 @@
       "channel": "any",
       "direction": "credit",
       "pattern": "Citi[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:was |has been )?(?:posted|applied)(?: to (?:your )?(?:card|account) ending in (?<last4>[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "citi_email_fields",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Citi[^$]*?(?:Account ending in (?<last4>[0-9]{4})[^$]*?)?A transaction of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) was made on your account\\.?(?: Merchant:? (?<merchant>[^$]+?) Date)?"
     }
   ]
 }

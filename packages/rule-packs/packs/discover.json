@@ -1,11 +1,11 @@
 {
   "issuerId": "discover",
   "displayName": "Discover",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
-    "androidPackages": [],
-    "smsSenders": []
+    "androidPackages": ["com.discoverfinancial.mobile"],
+    "smsSenders": ["347268"]
   },
   "exclude": [
     "declined",
@@ -25,6 +25,12 @@
       "channel": "any",
       "direction": "credit",
       "pattern": "Discover[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:from|by) (?<merchant>.+?) (?:was|has been) (?:posted|applied|credited)[^.]*?(?:ending in (?<last4>[0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "discover_email_fields",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Discover[^$]*?(?:Account ending in (?<last4>[0-9]{4})[^$]*?)?Merchant: (?<merchant>[^$]+?) Amount: (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
     }
   ]
 }

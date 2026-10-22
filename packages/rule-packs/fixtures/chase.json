@@ -84,6 +84,65 @@
     }
   },
   {
+    "name": "documented legacy wording: charge has been authorized (sms)",
+    "input": {
+      "text": "Chase Freedom: A charge of ($USD) 25.40 at STARBUCKS STORE 1234 has been authorized on Oct 14, 2026 at 8:12 AM ET.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 2540,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "STARBUCKS STORE 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "documented legacy wording: charge has been authorized (push, no brand)",
+    "input": {
+      "text": "A charge of ($USD) 1,050.00 at EXAMPLE AIRLINES 0042 has been authorized on Oct 14, 2026 at 8:12 AM ET.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.chase.sig.android"
+    },
+    "expected": {
+      "amountMinor": 105000,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "EXAMPLE AIRLINES 0042",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "documented layout: shared alert email with field table",
+    "input": {
+      "text": "Chase Freedom Unlimited\nAccount\nChase Freedom Unlimited (...4821)\nDate\nOct 14, 2026 at 8:12 AM ET\nMerchant\nTST* EXAMPLE CAFE\nAmount\n$18.07\nYou are receiving this alert because you chose to get transaction alerts.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 1807,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "TST* EXAMPLE CAFE",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "chase"
+    }
+  },
+  {
+    "name": "negative: fraud check question",
+    "input": {
+      "text": "Chase Fraud Alert: Did you attempt a $50.00 purchase at EXAMPLE ELECTRONICS 0042 on card ending in 1234? Reply YES or NO.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": null
+  },
+  {
     "name": "negative: one-time code",
     "input": {
       "text": "Chase: Your one-time code is 482913. Don't share it. We'll never call to ask for it.",
