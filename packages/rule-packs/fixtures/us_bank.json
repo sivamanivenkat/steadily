@@ -111,5 +111,39 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "documented wording: card was charged at merchant",
+    "input": {
+      "text": "U.S. Bank: Your credit card ending in 4821 was charged $18.40 at CHIPOTLE 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 1840,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "CHIPOTLE 1234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "us_bank"
+    }
+  },
+  {
+    "name": "documented layout: shared new transaction email",
+    "input": {
+      "text": "Your U.S. Bank credit card has a new transaction\nYour card was charged $25.40 at AMAZON.COM*AB12CD34.\nThis transaction was made on your card ending in 4821.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 2540,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "AMAZON.COM*AB12CD34",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "us_bank"
+    }
   }
 ]

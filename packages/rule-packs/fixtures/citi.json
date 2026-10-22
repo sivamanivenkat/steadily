@@ -93,5 +93,65 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "documented layout: shared alert email with merchant and date fields",
+    "input": {
+      "text": "Citi Double Cash Card\nAccount ending in 4821\nA transaction of $25.40 was made on your account.\nMerchant\nWHOLEFDS MKT 10234\nDate\n10/14/2026\nTime\n8:12 AM ET",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "share_text"
+    },
+    "expected": {
+      "amountMinor": 2540,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "WHOLEFDS MKT 10234",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "4821",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "documented layout: transaction sentence without merchant",
+    "input": {
+      "text": "Citi Alert: A transaction of $1,234.56 was made on your account.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut"
+    },
+    "expected": {
+      "amountMinor": 123456,
+      "currency": "USD",
+      "direction": "debit",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "push from Citi Mobile app with Citi wording is attributed to citi",
+    "input": {
+      "text": "Citi Alert: A $7.25 purchase at MARIA S TACOS on your card ending in 1234.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.citi.citimobile"
+    },
+    "expected": {
+      "amountMinor": 725,
+      "currency": "USD",
+      "direction": "debit",
+      "merchantRaw": "MARIA S TACOS",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "accountLast4": "1234",
+      "issuerId": "citi"
+    }
+  },
+  {
+    "name": "negative: fraud early warning question",
+    "input": {
+      "text": "Citi Fraud Alert: Did you use card ending in 1234 for $310.00 at EXAMPLE ELECTRONICS? Reply Y or N.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "ios_sms_shortcut",
+      "smsSender": "95686"
+    },
+    "expected": null
   }
 ]

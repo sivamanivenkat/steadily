@@ -1,7 +1,7 @@
 {
   "issuerId": "bank_of_america",
   "displayName": "Bank of America",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": ["com.infonow.bofa"],
@@ -10,6 +10,7 @@
   "exclude": [
     "declined",
     "not approved",
+    "did you (?:use|attempt|make|authorize|try)",
     "one-time (?:pass)?code",
     "(?:verification|security|sign-in|login) code"
   ],

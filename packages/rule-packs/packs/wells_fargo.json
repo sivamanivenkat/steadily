@@ -1,11 +1,11 @@
 {
   "issuerId": "wells_fargo",
   "displayName": "Wells Fargo",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": ["com.wf.wellsfargomobile"],
-    "smsSenders": []
+    "smsSenders": ["93557"]
   },
   "exclude": [
     "declined",
@@ -32,6 +32,12 @@
       "channel": "any",
       "direction": "credit",
       "pattern": "Wells Fargo[^:]*: (?:A )?(?:refund|credit) of (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) from (?<merchant>.+?) (?:was|has been) (?:posted|credited)[^.]*?(?:ending (?:in )?(?<last4>[0-9]{4}))?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "wells_fargo_email_fields",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Wells Fargo[^$]*?(?:credit|debit) card ending (?:in )?(?:\\.\\.\\.)?(?<last4>[0-9]{4})[^$]*?(?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)[^$]*? Merchant detail (?<merchant>[^$]+?) Date"
     },
     {
       "id": "wells_fargo_push_purchase",

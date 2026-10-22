@@ -1,7 +1,7 @@
 {
   "issuerId": "chase",
   "displayName": "Chase",
-  "version": 1,
+  "version": 2,
   "verified": false,
   "sources": {
     "androidPackages": ["com.chase.sig.android"],
@@ -10,6 +10,7 @@
   "exclude": [
     "declined",
     "not approved",
+    "did you (?:use|attempt|make|authorize|try)",
     "one-time (?:pass)?code",
     "(?:verification|security|sign-in|login) code"
   ],
@@ -25,6 +26,18 @@
       "channel": "any",
       "direction": "credit",
       "pattern": "Chase[^:(]*(?:\\(\\.\\.\\.(?<last4>[0-9]{4})\\))?: You (?:have|received) an? (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) (?:refund|credit) from (?<merchant>.+?)(?: on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}))?\\.?$"
+    },
+    {
+      "id": "chase_charge_authorized",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "(?:^|: )A charge of \\(\\$USD\\) (?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?) at (?<merchant>.+?) has been authorized(?: on (?<date>[A-Za-z]{3} [0-9]{1,2}, [0-9]{4})(?: at [0-9:]+ ?[AP]M(?: [A-Z]{2,3})?)?)?(?:\\.(?: .*)?)?$"
+    },
+    {
+      "id": "chase_email_fields",
+      "channel": "any",
+      "direction": "debit",
+      "pattern": "Chase[^$]*?\\(\\.\\.\\.(?<last4>[0-9]{4})\\)[^$]*? Merchant (?<merchant>[^$]+?) Amount (?:\\$|USD ?)(?<amount>[0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
     },
     {
       "id": "chase_push_txn",

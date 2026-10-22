@@ -141,5 +141,22 @@
       "source": "ios_sms_shortcut"
     },
     "expected": null
+  },
+  {
+    "name": "push from Citi Mobile app is claimed for zelle",
+    "input": {
+      "text": "You received $40.00 from Alex Sample with Zelle.",
+      "receivedAt": "2026-10-14T15:12:00.000Z",
+      "source": "android_notification",
+      "androidPackage": "com.citi.citimobile"
+    },
+    "expected": {
+      "amountMinor": 4000,
+      "currency": "USD",
+      "direction": "credit",
+      "merchantRaw": "Alex Sample",
+      "occurredAt": "2026-10-14T15:12:00.000Z",
+      "issuerId": "zelle"
+    }
   }
 ]
