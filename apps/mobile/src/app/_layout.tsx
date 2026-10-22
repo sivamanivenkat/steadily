@@ -58,6 +58,7 @@ function RootNavigator() {
           <Stack.Screen name="budget-edit" options={{ presentation: 'modal' }} />
           <Stack.Screen name="add" options={{ presentation: 'modal' }} />
           <Stack.Screen name="import-csv" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="export-csv" options={{ presentation: 'modal' }} />
         </Stack.Protected>
         <Stack.Protected guard={!onboarded}>
           <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />

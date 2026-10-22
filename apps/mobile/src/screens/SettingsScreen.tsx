@@ -288,13 +288,22 @@ export function SettingsScreen() {
 
       <SectionLabel>Your data</SectionLabel>
       <Card>
-        <Button
-          label="Import from CSV"
-          variant="link"
-          onPress={() => router.push('/import-csv')}
-          accessibilityHint="Adds past transactions from a bank's CSV export, read on this phone"
-          style={styles.linkStart}
-        />
+        <Divided>
+          <Button
+            label="Import from CSV"
+            variant="link"
+            onPress={() => router.push('/import-csv')}
+            accessibilityHint="Adds past transactions from a bank's CSV export, read on this phone"
+            style={styles.linkStart}
+          />
+          <Button
+            label="Export CSV"
+            variant="link"
+            onPress={() => router.push('/export-csv')}
+            accessibilityHint="Saves your transactions to a file you can share"
+            style={styles.linkStart}
+          />
+        </Divided>
       </Card>
 
       <SectionLabel>Privacy</SectionLabel>

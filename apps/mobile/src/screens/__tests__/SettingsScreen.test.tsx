@@ -166,4 +166,12 @@ describe('SettingsScreen', () => {
     expect(source.seedSampleData).toHaveBeenCalledTimes(1);
     expect(await screen.findByText('Added 24 sample alerts.')).toBeOnTheScreen();
   });
+
+  it('opens CSV import and export', async () => {
+    await setup();
+    await fireEvent.press(screen.getByRole('button', { name: 'Import from CSV' }));
+    expect(mockRouter.push).toHaveBeenCalledWith('/import-csv');
+    await fireEvent.press(screen.getByRole('button', { name: 'Export CSV' }));
+    expect(mockRouter.push).toHaveBeenCalledWith('/export-csv');
+  });
 });

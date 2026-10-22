@@ -55,8 +55,8 @@ export function clearExportFiles(): void {
 }
 
 /**
- * Writes the export to the app cache and opens the share sheet. The cache copy is removed the
- * next time the export screen opens (the receiving app may still be reading it now).
+ * Writes the export to the app cache and opens the share sheet. The export screen removes the
+ * cache copy when it closes (the receiving app may still be reading it right after sharing).
  */
 export async function shareCsv(fileName: string, text: string): Promise<void> {
   clearExportFiles();
