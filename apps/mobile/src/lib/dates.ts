@@ -61,6 +61,8 @@ const longDateFormat = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'long' });
+const monthYearFormat = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+const shortMonthFormat = new Intl.DateTimeFormat('en-US', { month: 'short' });
 
 /** "8:42 AM" */
 export function formatTime(date: Date): string {
@@ -80,6 +82,16 @@ export function formatLongDate(date: Date): string {
 /** "October" */
 export function formatMonth(date: Date): string {
   return monthFormat.format(date);
+}
+
+/** "October 2026" */
+export function formatMonthYear(date: Date): string {
+  return monthYearFormat.format(date);
+}
+
+/** "Oct" */
+export function formatShortMonth(date: Date): string {
+  return shortMonthFormat.format(date);
 }
 
 /** Day section heading: "Today", "Yesterday", "Tuesday, Oct 13". */

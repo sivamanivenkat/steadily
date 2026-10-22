@@ -38,6 +38,36 @@ export type SubscriptionSummary = {
   previousAmountMinor: number | null;
 };
 
+/** Spending in one category for a month. */
+export type CategorySpend = { categoryId: CategoryId; amountMinor: number };
+
+/** Spending at one merchant for a month (refunds subtract, like budgets). */
+export type MerchantSpend = {
+  name: string;
+  amountMinor: number;
+  /** Counted purchases (refunds and duplicates not counted). */
+  count: number;
+};
+
+export type MonthSpend = { month: DateRange; totalMinor: number };
+
+/**
+ * Spending trends for one local calendar month, with the same rules as budgets: refunds offset
+ * spending, income and transfers are left out, linked duplicates count once, USD only.
+ */
+export type Trends = {
+  month: DateRange;
+  totalMinor: number;
+  /** The month before `month`. */
+  previousTotalMinor: number;
+  /** Categories with spending, largest first. */
+  byCategory: CategorySpend[];
+  /** Largest first, at most five. */
+  topMerchants: MerchantSpend[];
+  /** Six months ending with `month`, oldest first. */
+  months: MonthSpend[];
+};
+
 /** Where the user is with setting up alerts for one issuer (D-014). */
 export type IssuerSetupStatus = 'pending' | 'done' | 'skipped';
 

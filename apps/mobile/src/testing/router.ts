@@ -10,11 +10,15 @@ export const mockRouter = {
   canGoBack: jest.fn(() => true),
 };
 
+/** Route params screens read with `useLocalSearchParams`. Set in a test, cleared by `resetRouter`. */
+export const mockParams: Record<string, string> = {};
+
 export const routerModule = {
   useRouter: () => mockRouter,
-  useLocalSearchParams: () => ({}),
+  useLocalSearchParams: () => mockParams,
 };
 
 export function resetRouter() {
   Object.values(mockRouter).forEach((fn) => fn.mockClear());
+  for (const key of Object.keys(mockParams)) delete mockParams[key];
 }

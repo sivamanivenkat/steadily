@@ -16,6 +16,7 @@ import type {
   Settings,
   SubscriptionSummary,
   Transaction,
+  Trends,
 } from './types';
 
 /**
@@ -61,6 +62,10 @@ export interface DataSource {
 
   // Subscriptions
   listSubscriptions(): Promise<SubscriptionSummary[]>;
+
+  // Trends
+  /** Spending trends for the local month containing `month` (see `computeTrends`). */
+  getTrends(month: Date): Promise<Trends>;
 
   // Issuers and onboarding (D-014). Stored on this phone only.
   listIssuerSetup(): Promise<IssuerSetup[]>;

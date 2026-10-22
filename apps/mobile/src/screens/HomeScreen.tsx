@@ -100,6 +100,11 @@ export function HomeScreen() {
           onPress={() => router.push('/add')}
         />
         <IconButton
+          icon="chart"
+          accessibilityLabel="Spending trends"
+          onPress={() => router.push('/trends')}
+        />
+        <IconButton
           icon="settings"
           accessibilityLabel="Settings"
           onPress={() => router.push('/settings')}

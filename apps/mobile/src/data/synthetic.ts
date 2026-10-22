@@ -9,6 +9,7 @@ import type { DataSource } from './DataSource';
 import { ISSUER_IDS, type IssuerId } from './issuers';
 import { cleanManualInput } from './manual';
 import { defaultSeed, type SyntheticSeed } from './syntheticSeed';
+import { computeTrends, trendsWindow } from './trends';
 import type {
   Budget,
   BudgetInput,
@@ -303,6 +304,10 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
       return [...subscriptions.values()]
         .filter((s) => s.subscription.deletedAt === null && !s.subscription.dismissed)
         .map((s) => ({ ...s, subscription: { ...s.subscription } }));
+    },
+
+    async getTrends(month) {
+      return computeTrends(inRange(trendsWindow(month)), month);
     },
 
     async listIssuerSetup(): Promise<IssuerSetup[]> {

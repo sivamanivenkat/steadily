@@ -47,6 +47,7 @@ import type { DataSource } from './DataSource';
 import { cleanManualInput } from './manual';
 import { ISSUER_IDS, isIssuerId, type IssuerId } from './issuers';
 import type { AppRuntime } from './runtime';
+import { computeTrends, trendsWindow } from './trends';
 import type {
   Budget,
   BudgetInput,
@@ -553,6 +554,13 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
             : null;
         return { subscription, previousAmountMinor: previous };
       });
+    },
+
+    // -- Trends -------------------------------------------------------------
+
+    async getTrends(month) {
+      const window = trendsWindow(month);
+      return computeTrends(await repos.transactions.listBetween(window.from, window.to), month);
     },
 
     // -- Issuers and onboarding ---------------------------------------------

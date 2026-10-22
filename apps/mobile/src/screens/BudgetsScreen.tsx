@@ -99,6 +99,14 @@ export function BudgetsScreen() {
         </Glass>
       )}
 
+      <Button
+        label="See spending trends"
+        icon="chart"
+        variant="secondary"
+        accessibilityHint="Compares this month with past months"
+        onPress={() => router.push('/trends')}
+      />
+
       <SectionLabel>Categories</SectionLabel>
       {categories.length > 0 ? (
         <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
