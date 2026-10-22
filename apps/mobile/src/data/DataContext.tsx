@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { AppState } from 'react-native';
 
 import type { DataSource } from './DataSource';
 
@@ -66,9 +75,22 @@ export function useData<T>(
   return state;
 }
 
-/** "Now" from the data source clock, fixed for the life of the screen. */
+/**
+ * "Now" from the data source clock. Stable between renders so it can sit in `useData` deps, and
+ * read again after every write and whenever the app comes back to the foreground: tab screens stay
+ * mounted for days, and a "now" from when they mounted would hide today's captures and keep last
+ * month's budgets.
+ */
 export function useNow(): Date {
-  const source = useDataSource();
-  const [now] = useState(() => source.now());
-  return now;
+  'use no memo';
+  const { source, version } = useDataContext();
+  const [foreground, setForeground] = useState(0);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') setForeground((n) => n + 1);
+    });
+    return () => subscription.remove();
+  }, []);
+  // `version` and `foreground` are not read inside: they are the triggers to read the clock again.
+  return useMemo(() => source.now(), [source, version, foreground]);
 }

@@ -1,6 +1,8 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 
-import { makeSource, renderWithData } from '@/testing/render';
+import { createSyntheticDataSource } from '@/data';
+import type { SyntheticSeed } from '@/data/syntheticSeed';
+import { emptySeed, FIXED_NOW, makeSource, renderWithData } from '@/testing/render';
 import { mockRouter, resetRouter } from '@/testing/router';
 
 import { HomeScreen } from '../HomeScreen';
@@ -86,5 +88,92 @@ describe('HomeScreen', () => {
     await renderWithData(<HomeScreen />, source);
     expect(await screen.findByText('Price up $2.50')).toBeOnTheScreen();
     expect(screen.getByText("See what's safe to spend")).toBeOnTheScreen();
+  });
+
+  describe('with category budgets only', () => {
+    const seed: SyntheticSeed = {
+      ...emptySeed,
+      transactions: [
+        {
+          daysAgo: 1,
+          at: [12, 0],
+          merchant: 'Corner Bistro',
+          amountMinor: 6_000,
+          category: 'food.dining',
+        },
+        {
+          daysAgo: 2,
+          at: [8, 0],
+          merchant: 'Bean Bar',
+          amountMinor: 4_500,
+          category: 'food.coffee',
+        },
+        // Not budgeted: left out of the derived total.
+        {
+          daysAgo: 2,
+          at: [18, 0],
+          merchant: 'Green Grocer',
+          amountMinor: 3_000,
+          category: 'food.groceries',
+        },
+      ],
+      budgets: [
+        { category: 'food.dining', amountMinor: 20_000 },
+        { category: 'food.coffee', amountMinor: 5_000 },
+        { category: 'transport.general', amountMinor: 10_000 },
+        { category: 'shopping.general', amountMinor: 10_000 },
+      ],
+    };
+
+    it('derives safe to spend from the category budgets and says so', async () => {
+      await renderWithData(<HomeScreen />, makeSource(seed));
+      // 450 budgeted - 105 spent in those categories.
+      expect(await screen.findByText('$345')).toBeOnTheScreen();
+      expect(screen.getByText('Based on your category budgets')).toBeOnTheScreen();
+      expect(screen.getByText('Budgeted categories this month')).toBeOnTheScreen();
+      expect(screen.queryByText("See what's safe to spend")).toBeNull();
+    });
+
+    it('shows the three most used budgets and links to all of them', async () => {
+      await renderWithData(<HomeScreen />, makeSource(seed));
+      expect(
+        await screen.findByLabelText('Coffee: spent 45 dollars of 50 dollars, 5 dollars left'),
+      ).toBeOnTheScreen();
+      expect(
+        screen.getByLabelText('Dining Out: spent 60 dollars of 200 dollars, 140 dollars left'),
+      ).toBeOnTheScreen();
+      expect(screen.getByLabelText(/^Transport: /)).toBeOnTheScreen();
+      expect(screen.queryByLabelText(/^Shopping: /)).toBeNull();
+
+      await fireEvent.press(screen.getByRole('button', { name: 'See all budgets' }));
+      expect(mockRouter.navigate).toHaveBeenCalledWith('/budgets');
+      await fireEvent.press(screen.getByLabelText(/^Coffee: /));
+      expect(mockRouter.push).toHaveBeenCalledWith({
+        pathname: '/budget-edit',
+        params: { categoryId: 'food.coffee' },
+      });
+    });
+
+    it('updates as soon as a budget is set', async () => {
+      const source = makeSource({ ...seed, budgets: [] });
+      await renderWithData(<HomeScreen />, source);
+      expect(await screen.findByText("See what's safe to spend")).toBeOnTheScreen();
+
+      await act(() => source.setBudget({ categoryId: 'food.dining', amountMinor: 20_000 }));
+      expect(await screen.findByText('$140')).toBeOnTheScreen();
+      expect(screen.getByText('Based on your category budgets')).toBeOnTheScreen();
+    });
+  });
+
+  it('reads the clock again after a write', async () => {
+    let clock = FIXED_NOW;
+    const source = createSyntheticDataSource({ now: () => clock });
+    await renderWithData(<HomeScreen />, source);
+    expect(await screen.findByText('Good morning')).toBeOnTheScreen();
+
+    clock = new Date(2026, 9, 16, 19, 0);
+    await act(() => source.updateSettings({}));
+    expect(await screen.findByText('Good evening')).toBeOnTheScreen();
+    expect(screen.getByText('Friday, October 16')).toBeOnTheScreen();
   });
 });

@@ -1,6 +1,14 @@
 import type { Budget, BudgetWithSpent, Subscription, Transaction } from '@/data/types';
 
-import { monthProgress, safeToSpend, spendingDelta, spentRatio } from '../budget';
+import {
+  busiestCategoryBudgets,
+  monthlyTotal,
+  monthProgress,
+  safeToSpend,
+  safeToSpendFor,
+  spendingDelta,
+  spentRatio,
+} from '../budget';
 
 const base: Transaction = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -110,5 +118,66 @@ describe('spending math', () => {
       amountMinor: 73_760 - 1_799,
       perDayMinor: Math.floor((73_760 - 1_799) / 17),
     });
+  });
+});
+
+describe('monthly total for Home', () => {
+  const now = new Date(2026, 9, 15, 9, 30);
+  const categoryRow = (
+    categoryId: Budget['categoryId'],
+    amountMinor: number,
+    spentMinor: number,
+  ): BudgetWithSpent => ({
+    budget: { ...budget, categoryId, amountMinor },
+    spentMinor,
+  });
+
+  it('uses the overall budget when there is one', () => {
+    const overall = row(100_000, 20_000);
+    const result = monthlyTotal([overall, categoryRow('food.dining', 20_000, 6_000)]);
+    expect(result).toEqual({ basis: 'overall', total: overall, categoryIds: [] });
+  });
+
+  it('adds up category budgets when there is no overall budget', () => {
+    const result = monthlyTotal([
+      categoryRow('food.dining', 20_000, 6_000),
+      categoryRow('food.coffee', 5_000, 4_500),
+    ]);
+    expect(result?.basis).toBe('categories');
+    expect(result?.categoryIds).toEqual(['food.dining', 'food.coffee']);
+    expect(result?.total.budget).toMatchObject({ categoryId: null, amountMinor: 25_000 });
+    expect(result?.total.spentMinor).toBe(10_500);
+  });
+
+  it('is null without any budget', () => {
+    expect(monthlyTotal([])).toBeNull();
+  });
+
+  it('reserves only subscriptions in budgeted categories on the category basis', () => {
+    const due = subscription(new Date(2026, 9, 20, 12).toISOString(), 1_799);
+    const byCategories = monthlyTotal([categoryRow('food.dining', 20_000, 6_000)])!;
+    expect(safeToSpendFor(byCategories, [due], now).amountMinor).toBe(14_000);
+    const withSubs = monthlyTotal([
+      categoryRow('food.dining', 20_000, 6_000),
+      categoryRow('subscriptions.general', 5_000, 0),
+    ])!;
+    expect(safeToSpendFor(withSubs, [due], now).amountMinor).toBe(19_000 - 1_799);
+    const overall = monthlyTotal([row(100_000, 26_240)])!;
+    expect(safeToSpendFor(overall, [due], now).amountMinor).toBe(73_760 - 1_799);
+  });
+
+  it('ranks category budgets by share used', () => {
+    const rows = [
+      row(100_000, 99_000),
+      categoryRow('food.dining', 20_000, 6_000),
+      categoryRow('food.coffee', 5_000, 4_500),
+      categoryRow('transport.general', 10_000, 0),
+      categoryRow('shopping.general', 10_000, 0),
+    ];
+    expect(busiestCategoryBudgets(rows, now, 3).map((r) => r.budget.categoryId)).toEqual([
+      'food.coffee',
+      'food.dining',
+      'transport.general',
+    ]);
   });
 });

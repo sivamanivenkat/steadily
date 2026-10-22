@@ -9,6 +9,7 @@ import {
   safeToSpend as coreSafeToSpend,
   upcomingCharges,
 } from '@steadily/agent-core';
+import type { CategoryId } from '@steadily/taxonomy';
 
 import type { BudgetWithSpent, Subscription, Transaction } from '@/data/types';
 
@@ -78,4 +79,66 @@ export function overallBudget(rows: readonly BudgetWithSpent[]): BudgetWithSpent
 /** Per-category rows (taxonomy order is handled by the data source); drops the overall row. */
 export function categoryBudgets(rows: readonly BudgetWithSpent[]): BudgetWithSpent[] {
   return rows.filter((row) => row.budget.categoryId !== null);
+}
+
+/**
+ * The monthly total Home's safe-to-spend card works from. The overall budget when the user set
+ * one; otherwise the sum of the category budgets, with spending counted in those categories only.
+ */
+export type MonthlyTotal = {
+  basis: 'overall' | 'categories';
+  /** The overall row, or a summed row (never stored) whose amount and spent are the totals. */
+  total: BudgetWithSpent;
+  /** Budgeted categories (empty for the overall basis). */
+  categoryIds: readonly CategoryId[];
+};
+
+export function monthlyTotal(rows: readonly BudgetWithSpent[]): MonthlyTotal | null {
+  const overall = overallBudget(rows);
+  if (overall) return { basis: 'overall', total: overall, categoryIds: [] };
+  const categories = categoryBudgets(rows);
+  const first = categories[0];
+  if (!first) return null;
+  let amountMinor = 0;
+  let spentMinor = 0;
+  const categoryIds: CategoryId[] = [];
+  for (const row of categories) {
+    amountMinor += row.budget.amountMinor;
+    spentMinor += row.spentMinor;
+    if (row.budget.categoryId !== null) categoryIds.push(row.budget.categoryId);
+  }
+  return {
+    basis: 'categories',
+    total: { budget: { ...first.budget, categoryId: null, amountMinor }, spentMinor },
+    categoryIds,
+  };
+}
+
+/**
+ * Safe-to-spend for a `monthlyTotal`. On the category basis only subscriptions in budgeted
+ * categories are reserved, so the reserve matches the spending being counted.
+ */
+export function safeToSpendFor(
+  monthly: MonthlyTotal,
+  subscriptions: readonly Subscription[],
+  now: Date,
+): SafeToSpend {
+  const counted =
+    monthly.basis === 'overall'
+      ? subscriptions
+      : subscriptions.filter((s) => monthly.categoryIds.includes(s.categoryId));
+  return safeToSpend(monthly.total, counted, now);
+}
+
+/** Category budgets by share used, highest first (ties keep taxonomy order). */
+export function busiestCategoryBudgets(
+  rows: readonly BudgetWithSpent[],
+  now: Date,
+  limit: number,
+): BudgetWithSpent[] {
+  return categoryBudgets(rows)
+    .map((row, i) => ({ row, i, ratio: spentRatio(row, now) }))
+    .sort((a, b) => b.ratio - a.ratio || a.i - b.i)
+    .slice(0, limit)
+    .map(({ row }) => row);
 }

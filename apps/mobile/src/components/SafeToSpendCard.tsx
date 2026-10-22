@@ -12,10 +12,17 @@ type SafeToSpendCardProps = {
   /** e.g. "Oct 31" */
   untilLabel: string;
   perDayCents: number;
+  /** Where the number comes from when it is not the overall budget. */
+  basisLabel?: string;
 };
 
 /** The headline number: what is safe to spend until the end of the period. */
-export function SafeToSpendCard({ amountCents, untilLabel, perDayCents }: SafeToSpendCardProps) {
+export function SafeToSpendCard({
+  amountCents,
+  untilLabel,
+  perDayCents,
+  basisLabel,
+}: SafeToSpendCardProps) {
   const { colors } = useTheme();
   const perDay = formatMoney(perDayCents, { cents: 'auto' });
 
@@ -42,6 +49,11 @@ export function SafeToSpendCard({ amountCents, untilLabel, perDayCents }: SafeTo
       >
         until {untilLabel} · about {perDay} a day
       </AppText>
+      {basisLabel ? (
+        <AppText variant="caption" color={colors.ink2}>
+          {basisLabel}
+        </AppText>
+      ) : null}
     </Glass>
   );
 }
