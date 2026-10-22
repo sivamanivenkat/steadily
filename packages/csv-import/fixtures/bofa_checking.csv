@@ -1,0 +1,11 @@
+Description,,Summary Amt.
+Beginning balance as of 10/01/2026,,"1,000.00"
+Total credits,,"2,500.00"
+Total debits,,"-162.18"
+Ending balance as of 10/15/2026,,"3,337.82"
+
+Date,Description,Amount,Running Bal.
+10/01/2026,Beginning balance as of 10/01/2026,,"1,000.00"
+10/02/2026,"EXAMPLE GROCER 0042 DES:PURCHASE","-62.18","937.82"
+10/05/2026,"EXAMPLE CORP DES:PAYROLL","2,500.00","3,437.82"
+10/07/2026,"EXAMPLE UTILITY CO DES:BILL PAY","-100.00","3,337.82"
