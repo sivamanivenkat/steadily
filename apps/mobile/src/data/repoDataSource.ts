@@ -44,6 +44,7 @@ import { and, asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 import { runAsk, type AskDeps } from './ask';
 import { APP_KEYS, readAppValue, writeAppValue } from './appSettings';
 import type { DataSource } from './DataSource';
+import { cleanManualInput } from './manual';
 import { ISSUER_IDS, isIssuerId, type IssuerId } from './issuers';
 import type { AppRuntime } from './runtime';
 import type {
@@ -430,6 +431,58 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
         updatedAt: nowIso(),
       });
       notify();
+    },
+
+    async addManualTransaction(raw) {
+      const input = cleanManualInput(raw);
+      // No inbox item: there is no raw text, the event carries the typed fields. The id doubles
+      // as the transaction id (the Parser uses the inbox id).
+      const id = newId();
+      await runtime.bus.publish(
+        [
+          {
+            type: 'transaction.captured',
+            payload: {
+              inboxId: id,
+              source: 'manual',
+              extracted: {
+                amountMinor: input.amountMinor,
+                currency: 'USD',
+                direction: input.kind === 'expense' ? 'debit' : 'credit',
+                merchantRaw: input.merchant,
+                occurredAt: input.occurredAt,
+              },
+              // The user picked it, so the Categorizer keeps it and nothing waits for review.
+              quickCategory: { categoryId: input.categoryId, confidence: 1, source: 'user' },
+            },
+          },
+        ],
+        null,
+      );
+      await runtime.runUntilIdle();
+
+      const tx = await repos.transactions.get(id);
+      if (!tx) throw new Error('The transaction could not be saved');
+      if (tx.deletedAt !== null) {
+        // The Reconciler matched one already logged (e.g. from the bank alert) and kept that.
+        syncIssuerAlerts();
+        notify();
+        return { transactionId: tx.linkedTransactionId ?? id, duplicate: true };
+      }
+
+      // A credit is income or a refund depending on the merchant; the user already said which.
+      const patch: Partial<Transaction> = {};
+      if (tx.kind !== input.kind) {
+        patch.kind = input.kind;
+        if (input.kind === 'income') patch.linkedTransactionId = null;
+      }
+      if (input.note !== null) patch.note = input.note;
+      if (Object.keys(patch).length > 0) {
+        await repos.transactions.update(id, { ...patch, updatedAt: nowIso() });
+      }
+      syncIssuerAlerts();
+      notify();
+      return { transactionId: id, duplicate: false };
     },
 
     // -- Budgets ------------------------------------------------------------

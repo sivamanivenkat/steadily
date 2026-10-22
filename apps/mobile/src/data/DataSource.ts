@@ -9,6 +9,8 @@ import type {
   DateRange,
   IssuerSetup,
   IssuerSetupStatus,
+  ManualAddResult,
+  ManualTransactionInput,
   OnboardingProgress,
   ReviewItem,
   Settings,
@@ -44,6 +46,11 @@ export interface DataSource {
   /** Not spending (e.g. moving money between own accounts): kept, but excluded from budgets. */
   markNotExpense(id: string): Promise<void>;
   setNote(id: string, note: string | null): Promise<void>;
+  /**
+   * Logs a transaction the user typed in. Runs through the same pipeline as captures (source
+   * `manual`, category chosen by the user), so duplicates of an alert already logged are caught.
+   */
+  addManualTransaction(input: ManualTransactionInput): Promise<ManualAddResult>;
 
   // Budgets
   /** Active budgets with spending in `range`. The overall budget (categoryId null) comes first. */

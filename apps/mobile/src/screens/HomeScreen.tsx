@@ -95,6 +95,11 @@ export function HomeScreen() {
           </AppText>
         </View>
         <IconButton
+          icon="plus"
+          accessibilityLabel="Add transaction"
+          onPress={() => router.push('/add')}
+        />
+        <IconButton
           icon="settings"
           accessibilityLabel="Settings"
           onPress={() => router.push('/settings')}

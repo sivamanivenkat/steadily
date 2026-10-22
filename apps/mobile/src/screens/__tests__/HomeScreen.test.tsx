@@ -38,6 +38,8 @@ describe('HomeScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Settings' }));
     expect(mockRouter.push).toHaveBeenCalledWith('/settings');
+    await fireEvent.press(screen.getByRole('button', { name: 'Add transaction' }));
+    expect(mockRouter.push).toHaveBeenCalledWith('/add');
 
     expect(screen.getByLabelText('Safe to spend: 1,444 dollars and 44 cents')).toBeOnTheScreen();
     expect(

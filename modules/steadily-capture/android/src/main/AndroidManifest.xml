@@ -24,7 +24,7 @@
       android:name=".CaptureDrainService"
       android:exported="false" />
 
-    <!-- Quick Settings tile "Log expense": opens the app. -->
+    <!-- Quick Settings tile "Log expense": opens the app's Add screen. -->
     <service
       android:name=".LogExpenseTileService"
       android:exported="true"

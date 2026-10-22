@@ -72,5 +72,8 @@ describe('ActivityScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: '4 transactions to review' }));
     expect(mockRouter.push).toHaveBeenCalledWith('/review');
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Add transaction' }));
+    expect(mockRouter.push).toHaveBeenCalledWith('/add');
   });
 });

@@ -8,6 +8,7 @@ import {
   CategoryChip,
   Glass,
   Icon,
+  IconButton,
   Screen,
   SearchField,
   TransactionRow,
@@ -80,9 +81,16 @@ export function ActivityScreen() {
 
   return (
     <Screen>
-      <AppText variant="title" accessibilityRole="header">
-        Activity
-      </AppText>
+      <View style={styles.header}>
+        <AppText variant="title" accessibilityRole="header" style={styles.flex}>
+          Activity
+        </AppText>
+        <IconButton
+          icon="plus"
+          accessibilityLabel="Add transaction"
+          onPress={() => router.push('/add')}
+        />
+      </View>
 
       <SearchField
         value={query}
@@ -206,6 +214,7 @@ export function ActivityScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   pressed: { opacity: 0.7 },
   filterStrip: { marginHorizontal: -layout.screenPadding },
   filters: { gap: space.sm, paddingHorizontal: layout.screenPadding },

@@ -87,4 +87,19 @@ class CaptureTextTest {
     assertEquals("$scheme://review", DeepLinks.REVIEW)
     assertTrue(File(TestRepo.root, "apps/mobile/src/app/review.tsx").isFile)
   }
+
+  /** The Quick Settings tile opens the manual Add screen. */
+  @Test
+  fun addDeepLinkPointsAtARealRoute() {
+    val appJson = JSONObject(File(TestRepo.root, "apps/mobile/app.json").readText())
+    val scheme = appJson.getJSONObject("expo").getString("scheme")
+    assertEquals("$scheme://add", DeepLinks.ADD)
+    assertTrue(File(TestRepo.root, "apps/mobile/src/app/add.tsx").isFile)
+    val tile =
+      File(
+        TestRepo.root,
+        "modules/steadily-capture/android/src/main/java/expo/modules/steadilycapture/LogExpenseTileService.kt",
+      ).readText()
+    assertTrue(tile.contains("DeepLinks.intent(this, DeepLinks.ADD)"))
+  }
 }

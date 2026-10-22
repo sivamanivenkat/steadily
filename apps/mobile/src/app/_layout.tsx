@@ -56,6 +56,7 @@ function RootNavigator() {
           <Stack.Screen name="settings" />
           <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal' }} />
           <Stack.Screen name="budget-edit" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="add" options={{ presentation: 'modal' }} />
         </Stack.Protected>
         <Stack.Protected guard={!onboarded}>
           <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />

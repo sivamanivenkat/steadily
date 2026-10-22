@@ -73,3 +73,25 @@ export type AskTurn = {
 };
 
 export type BudgetInput = { categoryId: CategoryId | null; amountMinor: number };
+
+/** What the user can log by hand. Transfers are marked from a transaction instead. */
+export type ManualKind = 'expense' | 'income' | 'refund';
+
+/** A transaction typed in on the Add screen. */
+export type ManualTransactionInput = {
+  /** Positive integer cents. */
+  amountMinor: number;
+  merchant: string;
+  categoryId: CategoryId;
+  /** ISO timestamp. */
+  occurredAt: string;
+  kind: ManualKind;
+  note: string | null;
+};
+
+export type ManualAddResult = {
+  /** The saved transaction, or the already logged one it matched. */
+  transactionId: string;
+  /** True when it matched one already captured (e.g. from a bank alert), which was kept. */
+  duplicate: boolean;
+};

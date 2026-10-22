@@ -48,9 +48,8 @@ bridged to watches.
 
 ## Quick Settings tile
 
-"Log expense" (`LogExpenseTileService`). The app has no manual-entry route yet, so a tap opens the
-app's start screen; switch it to `steadily://add` when that route exists. The user adds the tile
-from the Quick Settings edit panel.
+"Log expense" (`LogExpenseTileService`). A tap opens the app's Add screen (`steadily://add`,
+`apps/mobile/src/app/add.tsx`). The user adds the tile from the Quick Settings edit panel.
 
 No network code and no `INTERNET` permission in this module (unit tests enforce both, plus no
 `Log` calls). Declared permissions: `WAKE_LOCK` (Headless JS start) and `POST_NOTIFICATIONS`.
@@ -128,4 +127,4 @@ access for sideloaded apps until the user opens App info, menu, "Allow restricte
 11. Turn confirmations off in the app setting, post an alert: no confirmation, capture still staged.
 12. Android 13+ only: deny notification permission, post an alert: no confirmation, no crash.
 13. Tile: Quick Settings, edit, drag "Log expense" in. Tap it unlocked and locked (asks to unlock
-    first); the app opens and the shade collapses.
+    first); the app opens on the Add screen and the shade collapses.

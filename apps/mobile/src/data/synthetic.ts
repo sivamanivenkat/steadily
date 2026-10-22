@@ -7,6 +7,7 @@ import { addDays, startOfDay } from '@/lib/dates';
 import { runAsk, type AskRepos } from './ask';
 import type { DataSource } from './DataSource';
 import { ISSUER_IDS, type IssuerId } from './issuers';
+import { cleanManualInput } from './manual';
 import { defaultSeed, type SyntheticSeed } from './syntheticSeed';
 import type {
   Budget,
@@ -221,6 +222,36 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
       const trimmed = note?.trim() ?? '';
       update(id, { note: trimmed === '' ? null : trimmed.slice(0, 500) });
       notify();
+    },
+
+    async addManualTransaction(raw) {
+      const input = cleanManualInput(raw);
+      const id = synthId(4, nextId++);
+      const at = nowIso();
+      transactions.set(id, {
+        id,
+        createdAt: at,
+        updatedAt: at,
+        deletedAt: null,
+        occurredAt: input.occurredAt,
+        amountMinor: input.amountMinor,
+        currency: 'USD',
+        kind: input.kind,
+        merchantRaw: input.merchant,
+        merchantName: input.merchant,
+        categoryId: input.categoryId,
+        categoryConfidence: 1,
+        categorySource: 'user',
+        status: 'confirmed',
+        source: 'manual',
+        accountLast4: null,
+        issuerId: null,
+        txnRef: null,
+        note: input.note,
+        linkedTransactionId: null,
+      });
+      notify();
+      return { transactionId: id, duplicate: false };
     },
 
     async listBudgets(range): Promise<BudgetWithSpent[]> {
