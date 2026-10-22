@@ -24,6 +24,7 @@ import {
   useNow,
 } from '@/data';
 import type { Settings } from '@/data/types';
+import { useCaptureConfirmations } from '@/hooks/useCaptureConfirmations';
 import { layout, radius, space, useTheme } from '@/theme';
 
 const NOTIFY_OPTIONS: readonly {
@@ -95,6 +96,7 @@ export function SettingsScreen() {
   const now = useNow();
   const { data: settings } = useData((s) => s.getSettings());
   const { data: setups } = useData((s) => s.listIssuerSetup());
+  const confirmations = useCaptureConfirmations();
 
   const [seedStatus, setSeedStatus] = useState<string | null>(null);
   const [confirmCloud, setConfirmCloud] = useState(false);
@@ -201,6 +203,35 @@ export function SettingsScreen() {
               />
             </Divided>
           </Card>
+          {confirmations.available ? (
+            <Card>
+              <Divided>
+                <ToggleRow
+                  label="Confirm each logged purchase"
+                  description={'A quiet "Logged $X at Y" note on this phone after each alert.'}
+                  value={confirmations.enabled}
+                  onValueChange={confirmations.setEnabled}
+                />
+                {confirmations.enabled && !confirmations.canPost ? (
+                  <View style={styles.explain}>
+                    <AppText variant="caption" color={colors.headsUp.text}>
+                      Notifications are off for Steadily, so confirmations can't show.
+                    </AppText>
+                    <Button
+                      label={
+                        confirmations.needsPermission && !confirmations.blocked
+                          ? 'Allow notifications'
+                          : 'Open app settings'
+                      }
+                      variant="link"
+                      onPress={() => void confirmations.allow()}
+                      style={styles.linkStart}
+                    />
+                  </View>
+                ) : null}
+              </Divided>
+            </Card>
+          ) : null}
 
           <SectionLabel>Cloud AI</SectionLabel>
           <Card>
