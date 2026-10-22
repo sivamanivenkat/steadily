@@ -2,6 +2,7 @@ import { createTestDb } from '@steadily/db/node';
 import type { CategoryId } from '@steadily/taxonomy';
 
 import { createRepoDataSource } from '../repoDataSource';
+import { createSyntheticDataSource } from '../synthetic';
 import { createAppLogger, createAppRuntime } from '../runtime';
 import type { Transaction } from '../types';
 
@@ -87,5 +88,77 @@ describe('repo data source: trends', () => {
     expect(trends.byCategory).toEqual([{ categoryId: 'food.dining', amountMinor: 4_000 }]);
     expect(trends.topMerchants).toEqual([{ name: 'Chipotle', amountMinor: 4_000, count: 1 }]);
     expect(trends.months.map((m) => m.totalMinor)).toEqual([0, 0, 0, 0, 2_500, 4_000]);
+  });
+});
+
+describe('repo data source: subscriptions', () => {
+  it('dismisses and restores a subscription, and lists its recent charges', async () => {
+    const { source, repos } = launch();
+    const netflix = {
+      id: newId(),
+      createdAt: on(9, 1),
+      updatedAt: on(9, 1),
+      deletedAt: null,
+      merchantName: 'Netflix',
+      cadence: 'monthly' as const,
+      amountMinor: 1_799,
+      currency: 'USD',
+      categoryId: 'subscriptions.general' as CategoryId,
+      lastChargedAt: on(9, 1),
+      nextDueAt: on(10, 1),
+      dismissed: false,
+    };
+    await repos.subscriptions.upsert(netflix);
+    const charges = [
+      tx({ occurredAt: on(7, 1), amountMinor: 1_549, merchantName: 'Netflix' }),
+      tx({ occurredAt: on(8, 1), amountMinor: 1_549, merchantName: 'Netflix' }),
+      tx({ occurredAt: on(9, 1), amountMinor: 1_799, merchantName: 'Netflix' }),
+    ];
+    const extra = [
+      // A duplicate of the latest charge and a refund are not charges.
+      tx({
+        occurredAt: on(9, 1),
+        amountMinor: 1_799,
+        merchantName: 'Netflix',
+        linkedTransactionId: charges[2]!.id,
+      }),
+      tx({ occurredAt: on(9, 2), amountMinor: 500, merchantName: 'Netflix', kind: 'refund' }),
+      tx({ occurredAt: on(9, 3), amountMinor: 900, merchantName: 'Hulu' }),
+    ];
+    for (const row of [...charges, ...extra]) await repos.transactions.insert(row);
+
+    expect((await source.listSubscriptionCharges(netflix.id)).map((t) => t.id)).toEqual(
+      [...charges].reverse().map((t) => t.id),
+    );
+    expect(await source.listSubscriptionCharges(netflix.id, 1)).toHaveLength(1);
+    expect(await source.listSubscriptionCharges('missing')).toEqual([]);
+
+    const listener = jest.fn();
+    source.subscribe(listener);
+    await source.setSubscriptionDismissed(netflix.id, true);
+    expect(listener).toHaveBeenCalled();
+    expect(await source.listSubscriptions()).toEqual([]);
+
+    await source.setSubscriptionDismissed(netflix.id, false);
+    expect((await source.listSubscriptions()).map((s) => s.subscription.id)).toEqual([netflix.id]);
+  });
+});
+
+describe('synthetic data source: subscriptions', () => {
+  it('dismisses, restores and lists charges like the repo source', async () => {
+    const source = createSyntheticDataSource({ now: () => NOW });
+    const netflix = (await source.listSubscriptions()).find(
+      (s) => s.subscription.merchantName === 'Netflix',
+    )!;
+    expect(
+      (await source.listSubscriptionCharges(netflix.subscription.id)).map((t) => t.amountMinor),
+    ).toEqual([1_799, 1_549]);
+
+    await source.setSubscriptionDismissed(netflix.subscription.id, true);
+    expect((await source.listSubscriptions()).map((s) => s.subscription.merchantName)).toEqual([
+      'Spotify',
+    ]);
+    await source.setSubscriptionDismissed(netflix.subscription.id, false);
+    expect(await source.listSubscriptions()).toHaveLength(2);
   });
 });
