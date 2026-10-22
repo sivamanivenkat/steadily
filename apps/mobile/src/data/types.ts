@@ -89,6 +89,17 @@ export type ManualTransactionInput = {
   note: string | null;
 };
 
+/** What the Privacy screen counts on this phone (D-011). Counts only, no contents. */
+export type PrivacySummary = {
+  transactions: number;
+  budgets: number;
+  subscriptions: number;
+  /** Rules learned for merchants ("remember for this merchant", "not an expense"). */
+  rules: number;
+  /** True when the data sits in the SQLCipher database; false for in-memory demo data. */
+  encryptedAtRest: boolean;
+};
+
 export type ManualAddResult = {
   /** The saved transaction, or the already logged one it matched. */
   transactionId: string;

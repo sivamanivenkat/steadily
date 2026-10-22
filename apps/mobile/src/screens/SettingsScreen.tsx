@@ -15,6 +15,7 @@ import {
   StatusPill,
   ToggleRow,
 } from '@/components';
+import { CLOUD_NEVER_SENT, CLOUD_SENT_SUMMARY } from '@/content/privacy';
 import {
   ISSUER_HEALTH_LABEL,
   issuerHealth,
@@ -60,11 +61,6 @@ function clockLabel(hhmm: string): string {
 }
 
 const DEFAULT_QUIET_HOURS = { start: '22:00', end: '07:00' };
-
-const CLOUD_SENT_SUMMARY =
-  'When on, Steadily sends the text of your question plus totals only: no individual transactions, no notes, no names of people you paid. Local business names are grouped as “Other merchants”. For an unclear charge, the merchant name and amount are sent. All of it goes through Steadily’s server to a cloud AI model.';
-const CLOUD_NEVER_SENT =
-  'Never sent: alert text, screenshots, card numbers, account details or your name.';
 
 function Card({ children }: { children: ReactNode }) {
   return (
@@ -295,6 +291,13 @@ export function SettingsScreen() {
             exactly what we kept.
           </AppText>
         </View>
+        <Button
+          label="Privacy & data"
+          variant="link"
+          onPress={() => router.push('/privacy')}
+          accessibilityHint="What is stored on this phone, and deleting it"
+          style={styles.linkStart}
+        />
       </Card>
 
       {__DEV__ ? (

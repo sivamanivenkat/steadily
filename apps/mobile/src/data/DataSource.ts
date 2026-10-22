@@ -12,6 +12,7 @@ import type {
   ManualAddResult,
   ManualTransactionInput,
   OnboardingProgress,
+  PrivacySummary,
   ReviewItem,
   Settings,
   SubscriptionSummary,
@@ -80,6 +81,16 @@ export interface DataSource {
    * without an engine leave it out and the Ask tab says so.
    */
   ask?: (question: string) => Promise<AskTurn>;
+
+  // Privacy (D-011)
+  /** Counts for the Privacy screen. Optional: sources without it show no counts. */
+  getPrivacySummary?: () => Promise<PrivacySummary>;
+  /**
+   * Deletes everything Steadily stored on this phone: the database (on a device also its
+   * encryption key) and captures still staged by the native capture layer. Afterwards the app
+   * starts over at onboarding. Optional: absent where there is nothing to delete.
+   */
+  deleteAllData?: () => Promise<void>;
 
   /**
    * Development only: runs synthetic sample alerts through the capture pipeline and returns how

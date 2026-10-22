@@ -1,4 +1,3 @@
-import type { CaptureSource, CategorySource, TransactionKind } from '@steadily/shared-types';
 import { CATEGORIES } from '@steadily/taxonomy';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -10,71 +9,26 @@ import {
   CategoryChip,
   CategoryTile,
   Glass,
+  Icon,
   OnDeviceBadge,
   Screen,
   ScreenHeader,
   SectionLabel,
   StatusPill,
 } from '@/components';
-import { categoryMeta } from '@/components/CategoryTile';
-import { issuerName, useData, useDataSource } from '@/data';
-import type { Transaction } from '@/data/types';
-import { dateTimeLabel, formatLongDate, formatTime } from '@/lib/dates';
+import {
+  KEPT_BOOKKEEPING,
+  keptFields,
+  keptIntro,
+  KIND_LABEL,
+  notKeptFields,
+} from '@/content/privacy';
+import { useData, useDataSource } from '@/data';
+import { formatLongDate, formatTime } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { layout, radius, space, type, useTheme } from '@/theme';
+import { iconSize, layout, radius, space, type, useTheme } from '@/theme';
 
 const NOTE_MAX = 500;
-
-const SOURCE_LABEL: Record<CaptureSource, string> = {
-  android_notification: 'Bank app notification',
-  ios_sms_shortcut: 'Text message alert',
-  ios_apple_pay_shortcut: 'Apple Pay',
-  share_text: 'Shared text',
-  share_image: 'Shared screenshot',
-  share_pdf: 'Shared PDF',
-  csv_import: 'Statement import',
-  manual: 'Added by you',
-};
-
-const CATEGORY_SOURCE_LABEL: Record<CategorySource, string> = {
-  user: 'Chosen by you',
-  user_rule: 'Your rule for this merchant',
-  dictionary: 'Known merchant',
-  classifier: 'Best guess on this phone',
-  on_device_llm: 'Best guess on this phone',
-  cloud_llm: 'Cloud AI (you opted in)',
-  none: 'Not categorized',
-};
-
-const KIND_LABEL: Record<TransactionKind, string> = {
-  expense: 'Expense',
-  income: 'Income',
-  transfer: 'Not an expense',
-  refund: 'Refund',
-};
-
-/**
- * "What we kept" (D-011): the stored fields of a transaction and nothing else. The alert text it
- * came from is never stored, so it can never be shown.
- */
-export function keptFields(tx: Transaction): { label: string; value: string }[] {
-  return [
-    { label: 'Amount', value: `${formatMoney(tx.amountMinor)} ${tx.currency}` },
-    { label: 'Merchant as written', value: tx.merchantRaw ?? 'Not captured' },
-    { label: 'Merchant', value: tx.merchantName ?? 'Not captured' },
-    { label: 'Date and time', value: dateTimeLabel(new Date(tx.occurredAt)) },
-    { label: 'Card', value: tx.accountLast4 ? `Ending ${tx.accountLast4}` : 'Not captured' },
-    { label: 'Bank or app', value: issuerName(tx.issuerId) ?? 'Not captured' },
-    { label: 'Captured from', value: SOURCE_LABEL[tx.source] },
-    { label: 'Type', value: KIND_LABEL[tx.kind] },
-    {
-      label: 'Category',
-      value: `${categoryMeta(tx.categoryId).name} (${CATEGORY_SOURCE_LABEL[tx.categorySource]})`,
-    },
-    { label: 'Reference number', value: tx.txnRef ?? 'None' },
-    { label: 'Note', value: tx.note ?? 'None' },
-  ];
-}
 
 export function TransactionDetailScreen({ id }: { id: string }) {
   const router = useRouter();
@@ -113,6 +67,7 @@ export function TransactionDetailScreen({ id }: { id: string }) {
   const merchant = tx.merchantName ?? tx.merchantRaw ?? 'Unknown merchant';
   const occurred = new Date(tx.occurredAt);
   const noteChanged = note.trim() !== savedNote;
+  const notKept = notKeptFields(tx);
 
   return (
     <Screen withTabBar={false}>
@@ -188,8 +143,7 @@ export function TransactionDetailScreen({ id }: { id: string }) {
       <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.kept}>
         <OnDeviceBadge />
         <AppText variant="caption" color={colors.ink2}>
-          Only these fields are stored, encrypted on this phone. The alert text was read here and
-          deleted right away. We never keep full card numbers, balances or passwords.
+          {keptIntro(tx.source)}
         </AppText>
         {keptFields(tx).map((field, i) => (
           <View
@@ -206,6 +160,33 @@ export function TransactionDetailScreen({ id }: { id: string }) {
             </AppText>
           </View>
         ))}
+        <AppText variant="caption" color={colors.ink2}>
+          {KEPT_BOOKKEEPING}
+        </AppText>
+      </Glass>
+
+      <SectionLabel>What we didn’t keep</SectionLabel>
+      <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.kept}>
+        {notKept.length === 0 ? (
+          <AppText variant="body" color={colors.ink2}>
+            Nothing else. You typed these in yourself.
+          </AppText>
+        ) : (
+          <View
+            accessibilityRole="list"
+            accessibilityLabel="What we didn’t keep"
+            style={styles.list}
+          >
+            {notKept.map((item) => (
+              <View key={item} style={styles.notKeptRow} accessible accessibilityLabel={item}>
+                <Icon name="close" size={iconSize.sm} color={colors.ink2} />
+                <AppText variant="body" style={styles.flex}>
+                  {item}
+                </AppText>
+              </View>
+            ))}
+          </View>
+        )}
       </Glass>
     </Screen>
   );
@@ -230,4 +211,6 @@ const styles = StyleSheet.create({
   keptLabel: { flexShrink: 0 },
   keptValue: { flexShrink: 1, textAlign: 'right' },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
+  list: { gap: space.sm },
+  notKeptRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
 });

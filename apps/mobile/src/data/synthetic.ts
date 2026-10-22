@@ -359,6 +359,27 @@ export function createSyntheticDataSource(options: Options = {}): DataSource {
     },
   };
 
+  source.getPrivacySummary = async () => ({
+    transactions: alive().length,
+    budgets: [...budgets.values()].filter((b) => b.deletedAt === null).length,
+    subscriptions: (await source.listSubscriptions()).length,
+    rules: merchantRules.size,
+    // Held in memory only: nothing is written to disk, encrypted or not.
+    encryptedAtRest: false,
+  });
+
+  source.deleteAllData = async () => {
+    transactions.clear();
+    suggestions.clear();
+    merchantRules.clear();
+    budgets.clear();
+    subscriptions.clear();
+    for (const id of ISSUER_IDS) issuers.set(id, { selected: false, setupStatus: 'pending' });
+    onboarding = { completed: false, step: 'welcome' };
+    settings = { ...DEFAULT_SETTINGS };
+    notify();
+  };
+
   // Ask runs the real engine over the in-memory rows. No event bus here, so nothing is published.
   source.ask = (question) =>
     runAsk(question, settings, {
