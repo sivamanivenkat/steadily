@@ -115,7 +115,7 @@
   {
     "name": "documented wording: card was charged at merchant",
     "input": {
-      "text": "U.S. Bank: Your credit card ending in 4821 was charged $18.40 at EXAMPLE DINER.",
+      "text": "U.S. Bank: Your credit card ending in 4821 was charged $18.40 at CHIPOTLE 1234.",
       "receivedAt": "2026-10-14T15:12:00.000Z",
       "source": "ios_sms_shortcut"
     },
@@ -123,7 +123,7 @@
       "amountMinor": 1840,
       "currency": "USD",
       "direction": "debit",
-      "merchantRaw": "EXAMPLE DINER",
+      "merchantRaw": "CHIPOTLE 1234",
       "occurredAt": "2026-10-14T15:12:00.000Z",
       "accountLast4": "4821",
       "issuerId": "us_bank"

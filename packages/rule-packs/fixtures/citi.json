@@ -97,7 +97,7 @@
   {
     "name": "documented layout: shared alert email with merchant and date fields",
     "input": {
-      "text": "Citi Double Cash Card\nAccount ending in 4821\nA transaction of $25.40 was made on your account.\nMerchant\nEXAMPLE GROCERY 0042\nDate\n10/14/2026\nTime\n8:12 AM ET",
+      "text": "Citi Double Cash Card\nAccount ending in 4821\nA transaction of $25.40 was made on your account.\nMerchant\nWHOLEFDS MKT 10234\nDate\n10/14/2026\nTime\n8:12 AM ET",
       "receivedAt": "2026-10-14T15:12:00.000Z",
       "source": "share_text"
     },
@@ -105,7 +105,7 @@
       "amountMinor": 2540,
       "currency": "USD",
       "direction": "debit",
-      "merchantRaw": "EXAMPLE GROCERY 0042",
+      "merchantRaw": "WHOLEFDS MKT 10234",
       "occurredAt": "2026-10-14T15:12:00.000Z",
       "accountLast4": "4821",
       "issuerId": "citi"
@@ -129,7 +129,7 @@
   {
     "name": "push from Citi Mobile app with Citi wording is attributed to citi",
     "input": {
-      "text": "Citi Alert: A $7.25 purchase at SQ *EXAMPLE TACOS on your card ending in 1234.",
+      "text": "Citi Alert: A $7.25 purchase at MARIA S TACOS on your card ending in 1234.",
       "receivedAt": "2026-10-14T15:12:00.000Z",
       "source": "android_notification",
       "androidPackage": "com.citi.citimobile"
@@ -138,7 +138,7 @@
       "amountMinor": 725,
       "currency": "USD",
       "direction": "debit",
-      "merchantRaw": "SQ *EXAMPLE TACOS",
+      "merchantRaw": "MARIA S TACOS",
       "occurredAt": "2026-10-14T15:12:00.000Z",
       "accountLast4": "1234",
       "issuerId": "citi"

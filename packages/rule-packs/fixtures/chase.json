@@ -102,7 +102,7 @@
   {
     "name": "documented legacy wording: charge has been authorized (push, no brand)",
     "input": {
-      "text": "A charge of ($USD) 1,050.00 at EXAMPLE AIRLINES 0042 has been authorized on Oct 14, 2026 at 8:12 AM ET.",
+      "text": "A charge of ($USD) 1,050.00 at DELTA AIR LINES has been authorized on Oct 14, 2026 at 8:12 AM ET.",
       "receivedAt": "2026-10-14T15:12:00.000Z",
       "source": "android_notification",
       "androidPackage": "com.chase.sig.android"
@@ -111,7 +111,7 @@
       "amountMinor": 105000,
       "currency": "USD",
       "direction": "debit",
-      "merchantRaw": "EXAMPLE AIRLINES 0042",
+      "merchantRaw": "DELTA AIR LINES",
       "occurredAt": "2026-10-14T15:12:00.000Z",
       "issuerId": "chase"
     }
@@ -119,7 +119,7 @@
   {
     "name": "documented layout: shared alert email with field table",
     "input": {
-      "text": "Chase Freedom Unlimited\nAccount\nChase Freedom Unlimited (...4821)\nDate\nOct 14, 2026 at 8:12 AM ET\nMerchant\nTST* EXAMPLE CAFE\nAmount\n$18.07\nYou are receiving this alert because you chose to get transaction alerts.",
+      "text": "Chase Freedom Unlimited\nAccount\nChase Freedom Unlimited (...4821)\nDate\nOct 14, 2026 at 8:12 AM ET\nMerchant\nTST* JOES DINER\nAmount\n$18.07\nYou are receiving this alert because you chose to get transaction alerts.",
       "receivedAt": "2026-10-14T15:12:00.000Z",
       "source": "share_text"
     },
@@ -127,7 +127,7 @@
       "amountMinor": 1807,
       "currency": "USD",
       "direction": "debit",
-      "merchantRaw": "TST* EXAMPLE CAFE",
+      "merchantRaw": "TST* JOES DINER",
       "occurredAt": "2026-10-14T15:12:00.000Z",
       "accountLast4": "4821",
       "issuerId": "chase"

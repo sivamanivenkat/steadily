@@ -134,6 +134,14 @@
     "expected": null
   },
   {
+    "name": "negative: fraud check question",
+    "input": {
+      "text": "Fraud alert: Did you attempt a $250.00 purchase at EXAMPLE ELECTRONICS? Reply YES or NO.",
+      "receivedAt": "2026-10-14T15:12:00.000Z"
+    },
+    "expected": null
+  },
+  {
     "name": "negative: empty text",
     "input": {
       "text": "   ",
