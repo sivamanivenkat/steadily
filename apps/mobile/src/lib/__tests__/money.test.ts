@@ -1,4 +1,30 @@
-import { amountInputFromCents, formatMoney, parseAmountInput, spokenMoney } from '../money';
+import {
+  amountInputFromCents,
+  centsFromDigits,
+  centsInputText,
+  formatMoney,
+  parseAmountInput,
+  spokenMoney,
+} from '../money';
+
+describe('cents-first amount entry', () => {
+  it('shifts digits in from the right', () => {
+    expect(['4', '45', '452', '4520'].map(centsFromDigits)).toEqual([4, 45, 452, 4520]);
+    // What the field shows is fed back in with one more digit or one less.
+    expect(centsFromDigits(`${centsInputText(4520)}7`)).toBe(45207);
+    expect(centsFromDigits(centsInputText(4520).slice(0, -1))).toBe(452);
+    expect(centsFromDigits('')).toBe(0);
+    expect(centsFromDigits('0.0')).toBe(0);
+    expect(centsFromDigits('99999999999')).toBe(999_999_999);
+  });
+
+  it('formats for the field', () => {
+    expect(centsInputText(0)).toBe('');
+    expect(centsInputText(5)).toBe('0.05');
+    expect(centsInputText(4520)).toBe('45.20');
+    expect(centsInputText(123456)).toBe('1,234.56');
+  });
+});
 
 describe('money', () => {
   it('formats cents as USD', () => {

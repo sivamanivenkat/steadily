@@ -80,6 +80,27 @@ export function amountInputFromCents(cents: number): string {
   return rest === 0 ? grouped : `${grouped}.${String(rest).padStart(2, '0')}`;
 }
 
+/** Most digits a cents-first amount field takes (up to $9,999,999.99). */
+const MAX_CENTS_DIGITS = 9;
+
+/**
+ * Cents-first entry for a number pad: every digit typed shifts in from the right, so "4", "5",
+ * "2", "0" reads $0.04, $0.45, $4.52, $45.20. Non-digits are ignored.
+ *
+ * "45.20" -> 4520, "1,234.5" -> 12345
+ */
+export function centsFromDigits(text: string): number {
+  const digits = text.replace(/\D/g, '').replace(/^0+/, '').slice(0, MAX_CENTS_DIGITS);
+  return digits === '' ? 0 : Number(digits);
+}
+
+/** Text for a cents-first field: 4520 -> "45.20", 123456 -> "1,234.56", 0 -> "". */
+export function centsInputText(cents: number): string {
+  if (cents <= 0) return '';
+  const whole = String(Math.floor(cents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return `${whole}.${String(cents % 100).padStart(2, '0')}`;
+}
+
 /**
  * Screen-reader text for an amount: "45 dollars and 20 cents". Screen readers voice the digits
  * as words, so this reads "forty-five dollars and twenty cents".

@@ -17,6 +17,9 @@ import expo.modules.steadilycapture.fastpath.CaptureSummary
 object DeepLinks {
   const val REVIEW = "steadily://review"
 
+  /** The Add screen, opened by the Quick Settings tile. */
+  const val ADD = "steadily://add"
+
   /** Opens [uri] in this app only. */
   fun intent(context: Context, uri: String): Intent =
     Intent(Intent.ACTION_VIEW, Uri.parse(uri))

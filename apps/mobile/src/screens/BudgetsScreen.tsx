@@ -1,93 +1,23 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   AppText,
+  BudgetRow,
   Button,
-  CategoryTile,
   Glass,
-  MiniPaceBar,
   OnDeviceBadge,
   PaceBar,
   Screen,
   SectionLabel,
 } from '@/components';
-import { categoryMeta } from '@/components/CategoryTile';
 import { useData, useNow } from '@/data';
-import type { BudgetWithSpent } from '@/data/types';
-import {
-  categoryBudgets,
-  monthProgress,
-  overallBudget,
-  safeToSpend,
-  spentRatio,
-} from '@/lib/budget';
+import { categoryBudgets, monthProgress, overallBudget, safeToSpend } from '@/lib/budget';
 import { formatMonth, formatShortDate, monthRange } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
 import { layout, radius, space, useTheme } from '@/theme';
 
 const money = (cents: number) => formatMoney(cents, { cents: 'auto' });
-
-/** "$87.60 left" / "Over by $12" for one budget. */
-export function budgetStatus(row: BudgetWithSpent): {
-  text: string;
-  spoken: string;
-  over: boolean;
-} {
-  const left = row.budget.amountMinor - row.spentMinor;
-  return left >= 0
-    ? { text: `${money(left)} left`, spoken: `${spokenMoney(left)} left`, over: false }
-    : { text: `Over by ${money(-left)}`, spoken: `over by ${spokenMoney(-left)}`, over: true };
-}
-
-function BudgetRow({
-  row,
-  monthRatio,
-  now,
-  onPress,
-}: {
-  row: BudgetWithSpent;
-  monthRatio: number;
-  now: Date;
-  onPress: () => void;
-}) {
-  const { colors } = useTheme();
-  const categoryId = row.budget.categoryId;
-  if (categoryId === null) return null;
-  const name = categoryMeta(categoryId).name;
-  const status = budgetStatus(row);
-  const ratio = spentRatio(row, now);
-
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={`${name}: spent ${spokenMoney(row.spentMinor)} of ${spokenMoney(row.budget.amountMinor)}, ${status.spoken}`}
-      accessibilityHint="Edit this budget"
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
-    >
-      <CategoryTile categoryId={categoryId} />
-      <View style={styles.rowBody}>
-        <View style={styles.rowTop}>
-          <AppText variant="bodyStrong" style={styles.flex}>
-            {name}
-          </AppText>
-          <AppText
-            variant="captionStrong"
-            color={status.over ? colors.headsUp.text : colors.ink2}
-            style={styles.tabular}
-          >
-            {status.text}
-          </AppText>
-        </View>
-        <MiniPaceBar spentRatio={ratio} monthRatio={monthRatio} />
-        <AppText variant="caption" color={colors.ink2} style={styles.tabular}>
-          {money(row.spentMinor)} of {money(row.budget.amountMinor)}
-        </AppText>
-      </View>
-    </Pressable>
-  );
-}
 
 /** Budgets tab: overall pace and safe-to-spend, then per-category budgets. */
 export function BudgetsScreen() {
@@ -198,9 +128,6 @@ export function BudgetsScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  tabular: { fontVariant: ['tabular-nums'] },
-  pressed: { opacity: 0.7 },
   alignStart: { alignSelf: 'flex-start', marginLeft: -space.lg },
   overall: { padding: layout.cardPadding + 2, gap: space.sm },
   overallHeader: {
@@ -211,14 +138,5 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    minHeight: layout.touchTarget + layout.rowPaddingVertical,
-    paddingVertical: layout.rowPaddingVertical + 2,
-  },
-  rowBody: { flex: 1, gap: space.xs },
-  rowTop: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
 });

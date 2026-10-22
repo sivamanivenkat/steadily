@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   AppText,
+  BudgetRow,
   Button,
   Glass,
   Icon,
@@ -16,7 +17,7 @@ import {
 } from '@/components';
 import { useData, useNow } from '@/data';
 import type { SubscriptionSummary, Transaction } from '@/data/types';
-import { monthProgress, overallBudget, safeToSpend } from '@/lib/budget';
+import { busiestCategoryBudgets, monthlyTotal, monthProgress, safeToSpendFor } from '@/lib/budget';
 import {
   formatLongDate,
   formatShortDate,
@@ -28,6 +29,8 @@ import { formatMoney } from '@/lib/money';
 import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 const RECENT_COUNT = 4;
+const BUDGET_COUNT = 3;
+const CATEGORY_BASIS_LABEL = 'Based on your category budgets';
 
 function greetingFor(date: Date): string {
   const hour = date.getHours();
@@ -64,15 +67,18 @@ export function HomeScreen() {
   const { data: recent } = useData((s) => s.listTransactions(recentRange(now)), [now]);
   const { data: subscriptions } = useData((s) => s.listSubscriptions());
 
-  const overall = budgets ? overallBudget(budgets) : null;
+  // The overall budget, or the category budgets added up when there is no overall one.
+  const monthly = budgets ? monthlyTotal(budgets) : null;
   const safe =
-    overall && subscriptions
-      ? safeToSpend(
-          overall,
+    monthly && subscriptions
+      ? safeToSpendFor(
+          monthly,
           subscriptions.map((s) => s.subscription),
           now,
         )
       : null;
+  const monthRatio = monthProgress(now);
+  const busiest = budgets ? busiestCategoryBudgets(budgets, now, BUDGET_COUNT) : [];
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const toReview = review?.length ?? 0;
   const recentRows = (recent ?? []).slice(0, RECENT_COUNT);
@@ -89,22 +95,30 @@ export function HomeScreen() {
           </AppText>
         </View>
         <IconButton
+          icon="plus"
+          accessibilityLabel="Add transaction"
+          onPress={() => router.push('/add')}
+        />
+        <IconButton
           icon="settings"
           accessibilityLabel="Settings"
           onPress={() => router.push('/settings')}
         />
       </View>
 
-      {budgets === undefined || subscriptions === undefined ? null : safe && overall ? (
+      {budgets === undefined || subscriptions === undefined ? null : safe && monthly ? (
         <>
           <SafeToSpendCard
             amountCents={safe.amountMinor}
             untilLabel={formatShortDate(endOfMonth)}
             perDayCents={safe.perDayMinor}
+            {...(monthly.basis === 'categories' ? { basisLabel: CATEGORY_BASIS_LABEL } : {})}
           />
           <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
-            <AppText variant="heading">This month</AppText>
-            <PaceBar spentRatio={safe.spentRatio} monthRatio={monthProgress(now)} />
+            <AppText variant="heading">
+              {monthly.basis === 'categories' ? 'Budgeted categories this month' : 'This month'}
+            </AppText>
+            <PaceBar spentRatio={safe.spentRatio} monthRatio={monthRatio} />
           </Glass>
         </>
       ) : (
@@ -138,6 +152,43 @@ export function HomeScreen() {
             <Icon name="chevronRight" size={iconSize.md} color={colors.ink2} />
           </Glass>
         </Pressable>
+      ) : null}
+
+      {busiest.length > 0 ? (
+        <>
+          <View style={styles.sectionRow}>
+            <View style={styles.flex}>
+              <SectionLabel>Budgets</SectionLabel>
+            </View>
+            <Button
+              label="See all"
+              variant="link"
+              accessibilityLabel="See all budgets"
+              onPress={() => router.navigate('/budgets')}
+              style={styles.edgeRight}
+            />
+          </View>
+          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
+            {busiest.map((row, i) => (
+              <View
+                key={row.budget.id}
+                style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
+              >
+                <BudgetRow
+                  row={row}
+                  monthRatio={monthRatio}
+                  now={now}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/budget-edit',
+                      params: { categoryId: row.budget.categoryId ?? 'overall' },
+                    })
+                  }
+                />
+              </View>
+            ))}
+          </Glass>
+        </>
       ) : null}
 
       {recentRows.length > 0 ? (
@@ -181,6 +232,9 @@ const styles = StyleSheet.create({
     marginBottom: space.xs,
   },
   headerText: { flex: 1, gap: 2 },
+  flex: { flex: 1 },
+  sectionRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm },
+  edgeRight: { marginRight: -space.lg },
   card: { padding: layout.cardPadding, gap: space.md },
   pressed: { opacity: 0.7 },
   reviewRow: {

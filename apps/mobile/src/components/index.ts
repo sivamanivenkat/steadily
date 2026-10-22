@@ -11,6 +11,7 @@ export { TabBar, tabBarClearance } from './TabBar';
 export { TransactionRow, type TransactionBadge } from './TransactionRow';
 export { PlaceholderScreen } from './PlaceholderScreen';
 export { Screen } from './Screen';
+export { BudgetRow, budgetStatus } from './BudgetRow';
 export { Button, type ButtonVariant } from './Button';
 export { ConfirmSheet } from './ConfirmSheet';
 export { CategoryPickerSheet } from './CategoryPickerSheet';

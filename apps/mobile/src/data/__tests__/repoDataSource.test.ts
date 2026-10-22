@@ -213,4 +213,97 @@ describe('repo data source', () => {
     await source.setNote(txs[0]!.id, '');
     expect((await source.getTransaction(txs[0]!.id))?.note).toBeNull();
   });
+
+  describe('manual entry', () => {
+    const entry = {
+      amountMinor: 1_250,
+      merchant: ' Corner  Cafe ',
+      categoryId: 'food.dining' as const,
+      occurredAt: at(13),
+      kind: 'expense' as const,
+      note: ' lunch ',
+    };
+
+    it('runs through the pipeline with the category the user picked', async () => {
+      const { source, db } = launch();
+      const listener = jest.fn();
+      source.subscribe(listener);
+      const result = await source.addManualTransaction(entry);
+
+      expect(result.duplicate).toBe(false);
+      const tx = await source.getTransaction(result.transactionId);
+      expect(Transaction.safeParse(tx).success).toBe(true);
+      expect(tx).toMatchObject({
+        amountMinor: 1_250,
+        merchantRaw: 'Corner Cafe',
+        categoryId: 'food.dining',
+        categorySource: 'user',
+        status: 'confirmed',
+        kind: 'expense',
+        source: 'manual',
+        note: 'lunch',
+        occurredAt: at(13),
+      });
+      expect(await source.listNeedsReview()).toEqual([]);
+      expect(listener).toHaveBeenCalled();
+      // No raw text was ever stored.
+      expect(db.select().from(inbox).all()).toEqual([]);
+      const budget = await source.setBudget({ categoryId: 'food.dining', amountMinor: 10_000 });
+      const rows = await source.listBudgets(MONTH);
+      expect(rows.find((r) => r.budget.id === budget.id)?.spentMinor).toBe(1_250);
+    });
+
+    it('keeps the kind the user chose for credits', async () => {
+      const { source } = launch();
+      // A known merchant: the Parser would call a credit a refund.
+      const income = await source.addManualTransaction({
+        ...entry,
+        merchant: 'Starbucks',
+        kind: 'income',
+        note: null,
+      });
+      expect(await source.getTransaction(income.transactionId)).toMatchObject({
+        kind: 'income',
+        linkedTransactionId: null,
+        note: null,
+      });
+      // An unknown one: the Parser would call it income.
+      const refund = await source.addManualTransaction({
+        ...entry,
+        merchant: 'Zqx Outlet',
+        kind: 'refund',
+      });
+      expect((await source.getTransaction(refund.transactionId))?.kind).toBe('refund');
+    });
+
+    it('reports a match with an alert already captured, keeping the alert', async () => {
+      // A ticking clock: the Reconciler keeps the row created first.
+      let tick = 0;
+      const clock = () => new Date(NOW.getTime() + 1_000 * tick++);
+      const db = createTestDb().db;
+      const app = createAppRuntime(db, { newId, clock, log: createAppLogger(false) });
+      const source = createRepoDataSource({ db, ...app, newId, now: clock });
+      await source.captureAlerts([COFFEE]);
+      const [alert] = await source.listTransactions(MONTH);
+      const result = await source.addManualTransaction({
+        ...entry,
+        amountMinor: 500,
+        merchant: 'Blue Bottle',
+        categoryId: 'food.coffee',
+        occurredAt: at(12),
+      });
+      expect(result).toEqual({ transactionId: alert!.id, duplicate: true });
+      expect(await source.listTransactions(MONTH)).toHaveLength(1);
+    });
+
+    it('rejects bad input without saving', async () => {
+      const { source } = launch();
+      await expect(source.addManualTransaction({ ...entry, amountMinor: 0 })).rejects.toThrow();
+      await expect(source.addManualTransaction({ ...entry, merchant: '  ' })).rejects.toThrow();
+      await expect(
+        source.addManualTransaction({ ...entry, occurredAt: 'not a date' }),
+      ).rejects.toThrow();
+      expect(await source.listTransactions(MONTH)).toEqual([]);
+    });
+  });
 });

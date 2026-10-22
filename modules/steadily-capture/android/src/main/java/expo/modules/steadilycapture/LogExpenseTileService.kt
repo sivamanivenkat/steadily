@@ -1,16 +1,13 @@
 package expo.modules.steadilycapture
 
 import android.app.PendingIntent
-import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
 /**
- * Quick Settings tile "Log expense". A tap opens the app so the user can add an expense by hand.
- *
- * The app has no manual-entry route yet (no `steadily://add`), so this opens the app's start
- * screen. When that route exists, point [launchIntent] at `DeepLinks.intent(this, "steadily://add")`.
+ * Quick Settings tile "Log expense". A tap opens the app's Add screen (`steadily://add`) so the
+ * user can add an expense by hand.
  */
 class LogExpenseTileService : TileService() {
   override fun onStartListening() {
@@ -28,7 +25,7 @@ class LogExpenseTileService : TileService() {
   }
 
   private fun open() {
-    val intent = launchIntent() ?: return
+    val intent = DeepLinks.intent(this, DeepLinks.ADD)
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         startActivityAndCollapse(
@@ -42,8 +39,4 @@ class LogExpenseTileService : TileService() {
       // Nothing to report: the tile simply does not open the app.
     }
   }
-
-  private fun launchIntent(): Intent? =
-    packageManager.getLaunchIntentForPackage(packageName)
-      ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
 }

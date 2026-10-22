@@ -14,6 +14,7 @@ import {
 import type { IconName } from '@/components/Icon';
 import { openBatterySettings, openNotificationAccessSettings } from '@/capture';
 import { guideFor, issuerGuides } from '@/content/issuerGuides';
+import { useCaptureConfirmations } from '@/hooks/useCaptureConfirmations';
 import {
   ISSUER_HEALTH_LABEL,
   ISSUERS,
@@ -129,6 +130,7 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
   const now = useNow();
   const { data: progress } = useData((s) => s.getOnboarding());
   const { data: setups } = useData((s) => s.listIssuerSetup());
+  const confirmations = useCaptureConfirmations();
 
   const [picked, setPicked] = useState<Set<IssuerId> | null>(null);
   useEffect(() => {
@@ -292,6 +294,26 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
               <Bullet icon="lock" text="Nothing is sent anywhere. It all happens on this phone." />
               <Bullet icon="check" text="Text message alerts work too. No SMS permission needed." />
             </StepCard>
+            {/* Android 13+ asks before any notification shows, including the confirmation. */}
+            {confirmations.needsPermission ? (
+              <StepCard>
+                <AppText variant="heading">See each purchase land</AppText>
+                <AppText variant="body" color={colors.ink2}>
+                  After each alert, Steadily shows a quiet note like "Logged $12.40 at Corner Cafe"
+                  so you know it worked. It is made on this phone and you can turn it off in
+                  Settings.
+                </AppText>
+                {confirmations.canPost ? (
+                  <StatusPill label="Notifications allowed" tone="onTrack" icon="check" />
+                ) : (
+                  <Button
+                    label={confirmations.blocked ? 'Open app settings' : 'Allow notifications'}
+                    variant="accentTint"
+                    onPress={() => void confirmations.allow()}
+                  />
+                )}
+              </StepCard>
+            ) : null}
             <Button
               label="Open notification access"
               onPress={() => void openNotificationAccessSettings()}
