@@ -96,6 +96,38 @@ async function open(): Promise<OpenedDatabase> {
   }
 }
 
+/**
+ * "Delete all my data": closes the database if it is open and deletes the file. The next
+ * `openDatabase` starts a new one. Closing the last connection also removes the WAL files; the
+ * checkpoint first empties the WAL in case it cannot be removed.
+ */
+export async function closeAndDeleteDatabase(): Promise<void> {
+  const current = opening;
+  opening = null;
+  if (current) {
+    let opened: OpenedDatabase | null = null;
+    try {
+      opened = await current;
+    } catch {
+      // It never opened: there is no connection to close.
+    }
+    if (opened) {
+      try {
+        opened.sqlite.execSync('PRAGMA wal_checkpoint(TRUNCATE)');
+      } catch {
+        // Closing still releases the WAL.
+      }
+      opened.sqlite.closeSync();
+    }
+  }
+  deleteDatabaseSync(DATABASE_NAME);
+}
+
+/** Deletes the database key. Without it an old database file can never be read again. */
+export async function deleteDatabaseKey(): Promise<void> {
+  await SecureStore.deleteItemAsync(KEY_ITEM, KEY_OPTIONS);
+}
+
 /** Opens (once per app process), unlocks and migrates the database. */
 export function openDatabase(): Promise<OpenedDatabase> {
   if (!opening) {

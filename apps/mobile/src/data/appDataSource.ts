@@ -15,9 +15,10 @@ import { useEffect, useState } from 'react';
 import { drainPendingCaptures, type DrainResult } from '../capture/drain';
 import { getPendingCaptureStore } from '../capture/index';
 import { startCaptureTriggers } from '../capture/triggers';
-import { openDatabase } from './database';
+import { closeAndDeleteDatabase, deleteDatabaseKey, openDatabase } from './database';
 import { createRepoDataSource, type AlertCapture, type RepoDataSource } from './repoDataSource';
 import { createAppRuntime, type AppRuntime } from './runtime';
+import { clearPendingCaptures, WipeError, wipeAllData } from './wipe';
 
 // Hermes may lack crypto.randomUUID; expo-crypto always has it.
 const newId = () => randomUUID();
@@ -64,8 +65,10 @@ async function start(): Promise<RepoDataSource> {
     runtime,
     repos,
     newId,
+    encryptedAtRest: true,
     ...(sampleAlerts ? { sampleAlerts } : {}),
   });
+  source.deleteAllData = deleteAllAppData;
   // Purge expired captures and deliver anything left from the last session.
   await source.refresh();
   return source;
@@ -86,12 +89,55 @@ export function getStartedAppDataSource(): Promise<RepoDataSource> | null {
   return starting;
 }
 
+const resetListeners = new Set<() => void>();
+
+/**
+ * "Delete all my data": wipes staged captures, the database and its key, then makes the app open
+ * a new, empty database. The root layout reloads, and an empty database starts at onboarding.
+ */
+async function deleteAllAppData(): Promise<void> {
+  try {
+    await wipeAllData({
+      clearStaging: () => clearPendingCaptures(getPendingCaptureStore()),
+      deleteDatabase: closeAndDeleteDatabase,
+      deleteKey: deleteDatabaseKey,
+    });
+  } catch (error) {
+    // Staging failed: nothing was deleted and the database is still open, so the screen can
+    // say so and the user can try again.
+    if (error instanceof WipeError && error.step === 'staging') throw error;
+    reopen();
+    throw error;
+  }
+  reopen();
+}
+
+/** The old connection is closed: open everything again from scratch. */
+function reopen(): void {
+  core = null;
+  starting = null;
+  resetListeners.forEach((listener) => listener());
+}
+
 export type AppDataSourceState =
   { status: 'loading' } | { status: 'ready'; source: RepoDataSource } | { status: 'error' };
 
 /** Opens the data source and keeps the agents running while the app is in the foreground. */
 export function useAppDataSource(): AppDataSourceState {
   const [state, setState] = useState<AppDataSourceState>({ status: 'loading' });
+  // Bumped after "Delete all my data" so the data source is opened again.
+  const [generation, setGeneration] = useState(0);
+
+  useEffect(() => {
+    const onReset = () => {
+      setState({ status: 'loading' });
+      setGeneration((n) => n + 1);
+    };
+    resetListeners.add(onReset);
+    return () => {
+      resetListeners.delete(onReset);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -107,7 +153,7 @@ export function useAppDataSource(): AppDataSourceState {
     return () => {
       active = false;
     };
-  }, []);
+  }, [generation]);
 
   const source = state.status === 'ready' ? state.source : null;
   useEffect(() => {

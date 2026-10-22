@@ -24,6 +24,7 @@ import {
   issuers as issuersTable,
   saveSettings,
   transactions as transactionsTable,
+  userRules as userRulesTable,
   type SteadilyDb,
 } from '@steadily/db';
 import { lookupMerchant, toMerchantKey } from '@steadily/merchants';
@@ -105,6 +106,8 @@ export type RepoDataSourceOptions = AppRuntime & {
   sampleAlerts?: () => readonly AlertCapture[];
   /** Tests: stands in for the cloud Ask model (only used when the user opted in). */
   cloudModel?: AskDeps['cloudModel'];
+  /** True when `db` is the SQLCipher database (the app); the Privacy screen says so. */
+  encryptedAtRest?: boolean;
 };
 
 export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSource {
@@ -640,6 +643,27 @@ export function createRepoDataSource(options: RepoDataSourceOptions): RepoDataSo
       },
       ...(options.cloudModel ? { cloudModel: options.cloudModel } : {}),
     });
+
+  source.getPrivacySummary = async () => {
+    const count = sql<number>`count(*)`;
+    const transactions = db
+      .select({ n: count })
+      .from(transactionsTable)
+      .where(isNull(transactionsTable.deletedAt))
+      .get();
+    const rules = db
+      .select({ n: count })
+      .from(userRulesTable)
+      .where(isNull(userRulesTable.deletedAt))
+      .get();
+    return {
+      transactions: transactions?.n ?? 0,
+      budgets: (await repos.budgets.listActive()).length,
+      subscriptions: (await repos.subscriptions.listActive()).length,
+      rules: rules?.n ?? 0,
+      encryptedAtRest: options.encryptedAtRest ?? false,
+    };
+  };
 
   const { sampleAlerts } = options;
   if (sampleAlerts) {
