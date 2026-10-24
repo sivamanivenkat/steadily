@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -219,7 +219,11 @@ export function SubscriptionsScreen() {
   /** Bumped by "Try again" to re-run the query. */
   const [attempt, setAttempt] = useState(0);
   const { data, error } = useData((s) => s.listSubscriptions(), [attempt]);
-  const [openId, setOpenId] = useState<string | null>(null);
+  /** Home's upcoming-charge rows pass the tapped subscription so its sheet opens straight away. */
+  const params = useLocalSearchParams<{ id?: string }>();
+  const [openId, setOpenId] = useState<string | null>(
+    typeof params.id === 'string' ? params.id : null,
+  );
   const [dismissed, setDismissed] = useState<Subscription | null>(null);
 
   const subscriptions = data ? sortByNextDue(data, now) : undefined;

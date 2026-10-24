@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { emptySeed, makeSource, renderWithData } from '@/testing/render';
-import { mockRouter, resetRouter } from '@/testing/router';
+import { mockParams, mockRouter, resetRouter } from '@/testing/router';
 
 import { HomeScreen } from '../HomeScreen';
 import { SettingsScreen } from '../SettingsScreen';
@@ -47,6 +47,17 @@ describe('SubscriptionsScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByText('Recent charges')).toBeNull();
+  });
+
+  it('opens the sheet for the subscription passed in the route', async () => {
+    const source = makeSource();
+    const netflix = (await source.listSubscriptions()).find(
+      (s) => s.subscription.merchantName === 'Netflix',
+    );
+    mockParams.id = netflix!.subscription.id;
+    await renderWithData(<SubscriptionsScreen />, source);
+
+    expect(await screen.findByText('Was $15.49, now $17.99')).toBeOnTheScreen();
   });
 
   it('marks one as not a subscription, with undo', async () => {
