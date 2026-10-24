@@ -116,7 +116,10 @@ describe('Subscriptions entry points', () => {
     await fireEvent.press(
       screen.getByRole('button', { name: 'Netflix, 17 dollars and 99 cents, due Nov 13' }),
     );
-    expect(mockRouter.push).toHaveBeenCalledWith('/subscriptions');
+    // An upcoming row opens that subscription.
+    expect(mockRouter.push).toHaveBeenCalledWith(
+      expect.objectContaining({ pathname: '/subscriptions', params: { id: expect.any(String) } }),
+    );
   });
 
   it('opens from Settings', async () => {

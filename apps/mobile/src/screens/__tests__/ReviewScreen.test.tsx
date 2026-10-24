@@ -51,9 +51,9 @@ describe('ReviewScreen', () => {
     }
     expect(screen.getByText('Your choice teaches Steadily on this phone')).toBeOnTheScreen();
 
-    const split = screen.getByRole('button', { name: 'Split across categories' });
-    expect(split).toBeDisabled();
-    expect(split.props.accessibilityHint).toBe('Coming soon');
+    // Splitting is not built yet, so the card does not offer it.
+    expect(screen.queryByRole('button', { name: 'Split across categories' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Not an expense' })).toBeOnTheScreen();
   });
 
   it('confirms a chip choice and moves to the next card', async () => {

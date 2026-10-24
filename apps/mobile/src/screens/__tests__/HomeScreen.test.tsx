@@ -54,6 +54,25 @@ describe('HomeScreen', () => {
     expect(mockRouter.push).toHaveBeenCalledWith('/review');
   });
 
+  it('keeps the month pace inside the safe-to-spend card', async () => {
+    await renderWithData(<HomeScreen />);
+    expect(await screen.findByText('This month')).toBeOnTheScreen();
+    expect(screen.getByRole('progressbar')).toBeOnTheScreen();
+  });
+
+  it('opens the tapped upcoming charge', async () => {
+    const source = makeSource();
+    await renderWithData(<HomeScreen />, source);
+    const [netflix] = (await source.listSubscriptions()).filter(
+      (s) => s.subscription.merchantName === 'Netflix',
+    );
+    await fireEvent.press(await screen.findByRole('button', { name: /^Netflix, .*, due / }));
+    expect(mockRouter.push).toHaveBeenCalledWith({
+      pathname: '/subscriptions',
+      params: { id: netflix!.subscription.id },
+    });
+  });
+
   it('updates the review count after a transaction is confirmed', async () => {
     const source = makeSource();
     await renderWithData(<HomeScreen />, source);

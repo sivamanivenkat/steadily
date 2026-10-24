@@ -1,9 +1,9 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { emptySeed, makeSource, renderWithData } from '@/testing/render';
-import { resetRouter } from '@/testing/router';
+import { mockRouter, resetRouter } from '@/testing/router';
 
-import { TransactionDetailScreen } from '../TransactionDetailScreen';
+import { quickCategories, TransactionDetailScreen } from '../TransactionDetailScreen';
 
 jest.mock('expo-router', () => require('@/testing/router').routerModule);
 
@@ -91,16 +91,58 @@ describe('TransactionDetailScreen', () => {
     expect((await source.getTransaction(id))?.categoryId).toBe('food.dining');
   });
 
+  it('offers the full category list under More', async () => {
+    const { source, id } = await setup();
+    expect(screen.queryByRole('button', { name: 'Travel' })).toBeNull();
+
+    await fireEvent.press(screen.getByRole('button', { name: 'More categories' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Travel' }));
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Travel' })).toBeSelected());
+    expect((await source.getTransaction(id))?.categoryId).toBe('travel.general');
+  });
+
   it('saves a note', async () => {
     const { source, id } = await setup();
-    const save = screen.getByRole('button', { name: 'Save note' });
-    expect(save).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Save note' })).toBeNull();
 
     await fireEvent.changeText(screen.getByLabelText('Note'), 'Team coffee');
     await fireEvent.press(screen.getByRole('button', { name: 'Save note' }));
 
     expect(await screen.findByLabelText('Note: Team coffee')).toBeOnTheScreen();
+    expect(screen.getByText('Note saved')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Save note' })).toBeNull();
     expect((await source.getTransaction(id))?.note).toBe('Team coffee');
+  });
+
+  it('saves a note when the field loses focus', async () => {
+    const { source, id } = await setup();
+    const field = screen.getByLabelText('Note');
+    await fireEvent.changeText(field, 'Paid back');
+    await fireEvent(field, 'blur');
+    await waitFor(async () => expect((await source.getTransaction(id))?.note).toBe('Paid back'));
+  });
+
+  it('says so when the transaction is gone', async () => {
+    await renderWithData(<TransactionDetailScreen id="missing" />, makeSource(seed));
+    expect(await screen.findByText('Transaction not found')).toBeOnTheScreen();
+    await fireEvent.press(screen.getAllByRole('button', { name: 'Close' }).at(-1)!);
+    expect(mockRouter.back).toHaveBeenCalled();
+  });
+
+  it('picks quick categories by recent use and keeps the current one', () => {
+    const tx = (categoryId: string) => ({ categoryId }) as Parameters<typeof quickCategories>[0][0];
+    const recent = [tx('food.dining'), tx('food.dining'), tx('transport.gas')];
+    expect(quickCategories(recent, null)).toEqual([
+      'food.dining',
+      'transport.gas',
+      'food.groceries',
+    ]);
+    expect(quickCategories(recent, 'travel.general')).toEqual([
+      'food.dining',
+      'transport.gas',
+      'travel.general',
+    ]);
   });
 
   it('marks it as not an expense', async () => {

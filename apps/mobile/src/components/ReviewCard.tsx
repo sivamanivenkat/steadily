@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { layout, radius, space, useTheme } from '@/theme';
+import { cardTier, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { Glass } from './Glass';
@@ -13,6 +13,8 @@ const PEEK_STEP = 10;
 /** Horizontal inset per peek layer. */
 const PEEK_INSET = 14;
 const MAX_PEEK_LAYERS = 2;
+/** Opacity lost per peek layer. */
+const PEEK_FADE = 0.2;
 
 type ReviewCardProps = {
   /** Heads-up line, e.g. "Not sure. Pick a category". */
@@ -48,27 +50,34 @@ export function ReviewCard({
         <Glass
           key={depth}
           variant="light"
-          radius={radius.card}
+          radius={cardTier.hero.radius}
           shadow={false}
+          // Translucent tint on Android too: a solid surface at reduced opacity reads as grey.
+          fixed
           style={[
             styles.peek,
             {
               left: depth * PEEK_INSET,
               right: depth * PEEK_INSET,
               bottom: (layers - depth) * PEEK_STEP,
-              opacity: 1 - depth * 0.25,
+              opacity: 1 - depth * PEEK_FADE,
             },
           ]}
           contentStyle={styles.peekFill}
         />
       ))}
-      <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
+      <Glass variant="strong" radius={cardTier.hero.radius} contentStyle={styles.card}>
         <StatusPill label={headsUp} tone="headsUp" icon="inbox" />
         <View style={styles.headline}>
           <AppText variant="heading" accessibilityRole="header" numberOfLines={2}>
             {merchant}
           </AppText>
-          <AppText variant="amountL" accessibilityLabel={spokenMoney(amountCents)}>
+          <AppText
+            variant="amountL"
+            accessibilityLabel={spokenMoney(amountCents)}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
             {formatMoney(amountCents)}
           </AppText>
           <AppText variant="caption" color={colors.ink2}>
@@ -88,7 +97,7 @@ const styles = StyleSheet.create({
   },
   peekFill: { flex: 1 },
   card: {
-    padding: layout.cardPadding + 2,
+    padding: cardTier.hero.padding,
     gap: space.lg,
   },
   headline: { gap: space.xxs },
