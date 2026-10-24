@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { Icon } from './Icon';
+import { Touchable } from './Touchable';
 
 type RadioRowProps = {
   label: string;
@@ -19,13 +20,13 @@ type RadioRowProps = {
 export function RadioRow({ label, description, selected, onPress, leading }: RadioRowProps) {
   const { colors } = useTheme();
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
       accessibilityRole="radio"
       accessibilityLabel={label}
       accessibilityHint={description}
       accessibilityState={{ checked: selected, selected }}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={styles.row}
     >
       {leading}
       <View style={styles.text}>
@@ -46,7 +47,7 @@ export function RadioRow({ label, description, selected, onPress, leading }: Rad
       >
         {selected ? <Icon name="check" size={iconSize.badge} color={colors.onAccent} /> : null}
       </View>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -57,10 +58,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    minHeight: layout.touchTarget + space.sm,
+    minHeight: layout.rowMinHeight,
     paddingVertical: layout.rowPaddingVertical,
   },
-  text: { flex: 1, gap: 2 },
+  text: { flex: 1, minWidth: 0, gap: space.xxs },
   dot: {
     width: DOT,
     height: DOT,
@@ -69,5 +70,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { opacity: 0.7 },
 });

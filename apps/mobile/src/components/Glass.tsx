@@ -4,7 +4,13 @@ import type { ReactNode } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useReduceTransparency } from '@/hooks/useAccessibilitySettings';
-import { radius as radii, useTheme, type GlassVariant } from '@/theme';
+import {
+  defaultElevation,
+  radius as radii,
+  useTheme,
+  type Elevation,
+  type GlassVariant,
+} from '@/theme';
 
 type GlassProps = {
   variant?: GlassVariant;
@@ -15,7 +21,12 @@ type GlassProps = {
    * expensive and needs a blur target.
    */
   fixed?: boolean;
-  /** Drop shadow under the surface. On by default. */
+  /**
+   * Shadow tier. Defaults to `raised` for `strong` glass and `soft` for `light` glass, so key
+   * amounts lift above lists.
+   */
+  elevation?: Elevation;
+  /** `false` is shorthand for `elevation="none"`. */
   shadow?: boolean;
   /** Outer layout (margins, flex, size). */
   style?: StyleProp<ViewStyle>;
@@ -47,6 +58,7 @@ export function Glass({
   variant = 'light',
   radius = radii.cardSmall,
   fixed = false,
+  elevation,
   shadow = true,
   style,
   contentStyle,
@@ -55,6 +67,8 @@ export function Glass({
   const theme = useTheme();
   const reduceTransparency = useReduceTransparency();
   const tokens = theme.glass[variant];
+  const lift = shadow ? (elevation ?? defaultElevation[variant]) : 'none';
+  const boxShadow = lift === 'none' ? undefined : theme.shadows[lift];
 
   const solid = reduceTransparency || (Platform.OS === 'android' && !fixed);
   const surface: ViewStyle = solid
@@ -91,7 +105,7 @@ export function Glass({
   return (
     <View
       // The shadow lives on an outer view so the inner `overflow: hidden` does not clip it.
-      style={[{ borderRadius: radius }, shadow && { boxShadow: theme.shadow }, style]}
+      style={[{ borderRadius: radius }, boxShadow !== undefined && { boxShadow }, style]}
     >
       <View style={[styles.clip, surface, { borderRadius: radius }, contentStyle]}>
         {backdrop}

@@ -38,6 +38,8 @@ export type ColorTokens = {
   /** Reduce Transparency fallback surfaces. */
   solidSurface: string;
   solidBorder: string;
+  /** Dims the screen behind a bottom sheet so the sheet reads as the only thing in front. */
+  scrim: string;
 };
 
 export const lightColors: ColorTokens = {
@@ -62,6 +64,7 @@ export const lightColors: ColorTokens = {
   track: 'rgba(30,34,53,0.08)',
   solidSurface: '#FFFFFF',
   solidBorder: '#E4E6F0',
+  scrim: 'rgba(30,34,53,0.32)',
 };
 
 export const darkColors: ColorTokens = {
@@ -92,6 +95,7 @@ export const darkColors: ColorTokens = {
   track: 'rgba(255,255,255,0.10)',
   solidSurface: '#1C2038',
   solidBorder: '#2C3152',
+  scrim: 'rgba(5,7,16,0.6)',
 };
 
 export const colors: Record<ColorScheme, ColorTokens> = {

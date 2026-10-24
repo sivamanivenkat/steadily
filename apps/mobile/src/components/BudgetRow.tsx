@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { BudgetWithSpent } from '@/data/types';
 import { spentRatio } from '@/lib/budget';
@@ -8,6 +8,7 @@ import { layout, space, useTheme } from '@/theme';
 import { AppText } from './AppText';
 import { categoryMeta, CategoryTile } from './CategoryTile';
 import { MiniPaceBar } from './MiniPaceBar';
+import { Touchable } from './Touchable';
 
 const money = (cents: number) => formatMoney(cents, { cents: 'auto' });
 
@@ -46,12 +47,12 @@ export function BudgetRow({
   const status = budgetStatus(row);
 
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${name}: spent ${spokenMoney(row.spentMinor)} of ${spokenMoney(row.budget.amountMinor)}, ${status.spoken}`}
       accessibilityHint={accessibilityHint}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={styles.row}
     >
       <CategoryTile categoryId={categoryId} />
       <View style={styles.body}>
@@ -62,29 +63,27 @@ export function BudgetRow({
           <AppText
             variant="captionStrong"
             color={status.over ? colors.headsUp.text : colors.ink2}
-            style={styles.tabular}
+            tabular
           >
             {status.text}
           </AppText>
         </View>
         <MiniPaceBar spentRatio={spentRatio(row, now)} monthRatio={monthRatio} />
-        <AppText variant="caption" color={colors.ink2} style={styles.tabular}>
+        <AppText variant="caption" color={colors.ink2} tabular>
           {money(row.spentMinor)} of {money(row.budget.amountMinor)}
         </AppText>
       </View>
-    </Pressable>
+    </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  tabular: { fontVariant: ['tabular-nums'] },
-  pressed: { opacity: 0.7 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    minHeight: layout.touchTarget + layout.rowPaddingVertical,
+    minHeight: layout.rowMinHeight,
     paddingVertical: layout.rowPaddingVertical + 2,
   },
   body: { flex: 1, gap: space.xs },

@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { iconSize, layout, radius, useTheme } from '@/theme';
 
 import { Glass } from './Glass';
 import { Icon, type IconName } from './Icon';
+import { Touchable } from './Touchable';
 
 type IconButtonProps = {
   icon: IconName;
@@ -12,6 +13,8 @@ type IconButtonProps = {
   accessibilityHint?: string;
   onPress: () => void;
   disabled?: boolean;
+  /** No shadow, for icon buttons that sit inside another glass surface. */
+  flat?: boolean;
 };
 
 /** 44x44 circular glass button for icon-only actions. */
@@ -21,27 +24,31 @@ export function IconButton({
   accessibilityHint,
   onPress,
   disabled = false,
+  flat = false,
 }: IconButtonProps) {
   const { colors } = useTheme();
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
+      feedback="scale"
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled }}
       disabled={disabled}
       hitSlop={4}
-      style={({ pressed }) => [
-        styles.target,
-        disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
-      ]}
+      style={[styles.target, disabled && styles.disabled]}
     >
-      <Glass variant="light" radius={radius.pill} fixed contentStyle={styles.circle}>
+      <Glass
+        variant="light"
+        radius={radius.pill}
+        elevation={flat ? 'none' : 'soft'}
+        fixed
+        contentStyle={styles.circle}
+      >
         <Icon name={icon} size={iconSize.md} color={colors.ink} />
       </Glass>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -56,6 +63,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { opacity: 0.7 },
   disabled: { opacity: 0.4 },
 });

@@ -1,5 +1,5 @@
 import type { CategoryId } from '@steadily/taxonomy';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { formatMoney, spokenMoney } from '@/lib/money';
 import { layout, radius, space, useTheme } from '@/theme';
@@ -7,6 +7,7 @@ import { layout, radius, space, useTheme } from '@/theme';
 import { AppText } from './AppText';
 import { CategoryTile, categoryMeta } from './CategoryTile';
 import { Icon } from './Icon';
+import { Touchable } from './Touchable';
 
 export type TransactionBadge = { kind: 'priceUp' | 'review'; label: string };
 
@@ -76,14 +77,14 @@ export function TransactionRow({
 
   if (onPress) {
     return (
-      <Pressable
+      <Touchable
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={label}
-        style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+        style={styles.row}
       >
         {content}
-      </Pressable>
+      </Touchable>
     );
   }
   return (
@@ -98,14 +99,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    minHeight: layout.touchTarget + layout.rowPaddingVertical,
+    minHeight: layout.rowMinHeight,
     paddingVertical: layout.rowPaddingVertical,
   },
-  pressed: { opacity: 0.7 },
   text: {
     flex: 1,
-    flexShrink: 1,
-    gap: 2,
+    minWidth: 0,
+    gap: space.xxs,
   },
   badge: {
     flexDirection: 'row',

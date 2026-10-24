@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 
 import { layout, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
+import { Touchable } from './Touchable';
 
 type ToggleRowProps = {
   label: string;
@@ -16,14 +17,14 @@ type ToggleRowProps = {
 export function ToggleRow({ label, description, value, onValueChange, testID }: ToggleRowProps) {
   const { colors } = useTheme();
   return (
-    <Pressable
+    <Touchable
       onPress={() => onValueChange(!value)}
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityHint={description}
       accessibilityState={{ checked: value }}
       testID={testID}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={styles.row}
     >
       <View style={styles.text}>
         <AppText variant="bodyStrong">{label}</AppText>
@@ -42,7 +43,7 @@ export function ToggleRow({ label, description, value, onValueChange, testID }: 
         accessible={false}
         importantForAccessibility="no"
       />
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -51,9 +52,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    minHeight: layout.touchTarget + space.sm,
+    minHeight: layout.rowMinHeight,
     paddingVertical: layout.rowPaddingVertical,
   },
-  text: { flex: 1, gap: 2 },
-  pressed: { opacity: 0.7 },
+  text: { flex: 1, minWidth: 0, gap: space.xxs },
 });

@@ -41,8 +41,33 @@ export const glass: Record<ColorScheme, Record<GlassVariant, GlassTokens>> = {
   },
 };
 
+/**
+ * How far a surface lifts off the ground. `raised` is the hero tier (safe-to-spend, review card,
+ * sheets, tab bar): anything carrying a key amount. `soft` is for lists and secondary cards so they
+ * sit a step below the hero instead of competing with it. `none` is for surfaces inside a card.
+ */
+export type Elevation = 'raised' | 'soft' | 'none';
+
 /** CSS-style `boxShadow` values (supported by React Native's new architecture). */
+export const glassShadows: Record<ColorScheme, Record<Exclude<Elevation, 'none'>, string>> = {
+  light: {
+    raised: '0px 14px 40px rgba(60,70,120,0.12)',
+    soft: '0px 6px 20px rgba(60,70,120,0.07)',
+  },
+  dark: {
+    raised: '0px 16px 40px rgba(0,0,0,0.35)',
+    soft: '0px 8px 24px rgba(0,0,0,0.22)',
+  },
+};
+
+/** The hero shadow. Kept for callers that only need the one value. */
 export const glassShadow: Record<ColorScheme, string> = {
-  light: '0px 14px 40px rgba(60,70,120,0.12)',
-  dark: '0px 16px 40px rgba(0,0,0,0.35)',
+  light: glassShadows.light.raised,
+  dark: glassShadows.dark.raised,
+};
+
+/** Default elevation per glass variant: key amounts lift, lists stay low. */
+export const defaultElevation: Record<GlassVariant, Elevation> = {
+  strong: 'raised',
+  light: 'soft',
 };

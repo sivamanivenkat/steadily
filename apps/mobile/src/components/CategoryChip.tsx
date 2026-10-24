@@ -1,11 +1,12 @@
 import { getBuiltInCategory, isBuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { categoryColors, iconSize, layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { Glass } from './Glass';
 import { Icon } from './Icon';
+import { Touchable } from './Touchable';
 
 type CategoryChipProps =
   | {
@@ -29,16 +30,22 @@ export function CategoryChip(props: CategoryChipProps) {
   if (props.kind === 'more') {
     const label = props.label ?? 'More';
     return (
-      <Pressable
+      <Touchable
         onPress={props.onPress}
+        feedback="scale"
         accessibilityRole="button"
         accessibilityLabel={`${label} categories`}
-        style={({ pressed }) => pressed && styles.pressed}
       >
-        <Glass variant="light" radius={radius.pill} shadow={false} fixed contentStyle={styles.chip}>
+        <Glass
+          variant="light"
+          radius={radius.pill}
+          elevation="none"
+          fixed
+          contentStyle={[styles.chip, styles.moreChip, { borderColor: colors.solidBorder }]}
+        >
           <AppText variant="bodyStrong">{label}</AppText>
         </Glass>
-      </Pressable>
+      </Touchable>
     );
   }
 
@@ -49,12 +56,12 @@ export function CategoryChip(props: CategoryChipProps) {
   const tint = categoryColors(categoryId, scheme);
 
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
+      feedback="scale"
       accessibilityRole="button"
       accessibilityLabel={name}
       accessibilityState={{ selected }}
-      style={({ pressed }) => pressed && styles.pressed}
     >
       <View
         style={[
@@ -68,7 +75,7 @@ export function CategoryChip(props: CategoryChipProps) {
           {name}
         </AppText>
       </View>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -86,5 +93,5 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 2,
   },
-  pressed: { opacity: 0.7 },
+  moreChip: { borderWidth: 2 },
 });

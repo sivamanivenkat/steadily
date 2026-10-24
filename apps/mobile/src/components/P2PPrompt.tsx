@@ -1,10 +1,11 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { P2PPurpose } from '@/data/types';
 import { layout, radius, space } from '@/theme';
 
 import { AppText } from './AppText';
 import { Glass } from './Glass';
+import { Touchable } from './Touchable';
 
 export const P2P_OPTIONS: readonly { purpose: P2PPurpose; label: string }[] = [
   { purpose: 'split_bill', label: 'Split a bill' },
@@ -23,23 +24,24 @@ export function P2PPrompt({ onChoose }: { onChoose: (purpose: P2PPurpose) => voi
       <AppText variant="heading">What was this for?</AppText>
       <View style={styles.options}>
         {P2P_OPTIONS.map((option) => (
-          <Pressable
+          <Touchable
             key={option.purpose}
             onPress={() => onChoose(option.purpose)}
             accessibilityRole="button"
             accessibilityLabel={option.label}
-            style={({ pressed }) => [styles.option, pressed && styles.pressed]}
+            feedback="scale"
+            style={styles.option}
           >
             <Glass
               variant="light"
               radius={radius.pill}
-              shadow={false}
+              elevation="none"
               fixed
               contentStyle={styles.pill}
             >
               <AppText variant="bodyStrong">{option.label}</AppText>
             </Glass>
-          </Pressable>
+          </Touchable>
         ))}
       </View>
     </View>
@@ -57,5 +59,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingVertical: space.sm,
   },
-  pressed: { opacity: 0.7 },
 });
