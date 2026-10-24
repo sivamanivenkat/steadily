@@ -35,6 +35,9 @@ const P2P_DIRECT: Partial<Record<P2PPurpose, BuiltInCategoryId>> = {
   gift: 'gifts.general',
 };
 
+/** "Split across categories" stays off the card until splitting is built (no dead buttons). */
+const SPLIT_AVAILABLE: boolean = false;
+
 function announce(message: string) {
   try {
     AccessibilityInfo.announceForAccessibility(message);
@@ -150,14 +153,14 @@ function ReviewItemCard({ item, behind }: { item: ReviewItem; behind: number }) 
       >
         {body}
         <View style={[styles.actions, { borderTopColor: colors.hairline }]}>
-          <Button
-            label="Split across categories"
-            variant="accentTint"
-            disabled
-            accessibilityHint="Coming soon"
-            onPress={() => {}}
-            style={styles.action}
-          />
+          {SPLIT_AVAILABLE ? (
+            <Button
+              label="Split across categories"
+              variant="accentTint"
+              onPress={() => {}}
+              style={styles.action}
+            />
+          ) : null}
           <Button
             label="Not an expense"
             variant="neutralTint"
