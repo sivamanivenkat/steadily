@@ -1,17 +1,23 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import {
   AppText,
   Button,
+  Card,
+  EmptyState,
   Glass,
   Icon,
+  IconButton,
+  ListCard,
+  ListRow,
   OnDeviceBadge,
   ProgressSteps,
   Screen,
   StatusPill,
+  Touchable,
+  type IconName,
 } from '@/components';
-import type { IconName } from '@/components/Icon';
 import { openBatterySettings, openNotificationAccessSettings } from '@/capture';
 import { guideFor, issuerGuides } from '@/content/issuerGuides';
 import { useCaptureConfirmations } from '@/hooks/useCaptureConfirmations';
@@ -25,7 +31,7 @@ import {
   useNow,
   type IssuerId,
 } from '@/data';
-import type { IssuerSetup, OnboardingStep } from '@/data/types';
+import type { IssuerHealth, IssuerSetup, OnboardingStep } from '@/data/types';
 import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 type OnboardingPlatform = 'ios' | 'android';
@@ -37,13 +43,78 @@ export function onboardingSteps(platform: OnboardingPlatform): OnboardingStep[] 
     : ['welcome', 'issuers', 'setup', 'connect', 'waiting'];
 }
 
-function StepCard({ children }: { children: ReactNode }) {
+function StepCard({ children, hero = false }: { children: ReactNode; hero?: boolean }) {
+  return <Card tier={hero ? 'hero' : 'standard'}>{children}</Card>;
+}
+
+/** Every step opens the same way: optional eyebrow, title, one paragraph. */
+function Intro({ eyebrow, title, body }: { eyebrow?: string; title: string; body?: string }) {
+  const { colors } = useTheme();
   return (
-    <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
-      {children}
-    </Glass>
+    <View style={styles.intro}>
+      {eyebrow ? (
+        <AppText variant="captionStrong" color={colors.ink2}>
+          {eyebrow}
+        </AppText>
+      ) : null}
+      <AppText variant="title" accessibilityRole="header">
+        {title}
+      </AppText>
+      {body ? (
+        <AppText variant="body" color={colors.ink2}>
+          {body}
+        </AppText>
+      ) : null}
+    </View>
   );
 }
+
+/** Every step closes the same way: one primary action, an optional quieter one under it. */
+function Actions({ children }: { children: ReactNode }) {
+  return <View style={styles.actions}>{children}</View>;
+}
+
+/** Text-only link that sits flush with the screen edge; the hit area grows past it to 44 pt. */
+function EdgeLink({
+  label,
+  onPress,
+  accessibilityHint,
+}: {
+  label: string;
+  onPress: () => void;
+  accessibilityHint?: string;
+}) {
+  const { colors } = useTheme();
+  return (
+    <Touchable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={accessibilityHint}
+      hitSlop={EDGE_LINK_HIT_SLOP}
+      style={styles.edgeLink}
+    >
+      <AppText variant="bodyStrong" color={colors.accentInk}>
+        {label}
+      </AppText>
+    </Touchable>
+  );
+}
+
+/** At large text sizes the status pill moves under the name. */
+const STACK_PILL_FONT_SCALE = 1.3;
+
+const EDGE_LINK_HIT_SLOP = { top: 8, bottom: 8, left: 12, right: 12 };
+
+const HEALTH_PILL: Record<
+  IssuerHealth,
+  { tone: 'onTrack' | 'headsUp' | 'neutral'; icon?: IconName }
+> = {
+  receiving: { tone: 'onTrack', icon: 'check' },
+  quiet: { tone: 'headsUp', icon: 'bell' },
+  waiting: { tone: 'neutral' },
+  not_set_up: { tone: 'neutral' },
+};
 
 function Bullet({ icon, text }: { icon: IconName; text: string }) {
   const { colors } = useTheme();
@@ -90,26 +161,43 @@ function IssuerTile({
 }) {
   const { colors } = useTheme();
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
+      feedback="scale"
       accessibilityRole="checkbox"
       accessibilityLabel={name}
       accessibilityState={{ checked: selected }}
-      style={({ pressed }) => [styles.tileWrap, pressed && styles.pressed]}
+      style={styles.tileWrap}
     >
       <Glass
         variant="light"
         radius={radius.row}
-        shadow={false}
+        elevation="none"
         fixed
-        contentStyle={[styles.tile, { borderColor: selected ? colors.accent : colors.solidBorder }]}
+        contentStyle={[
+          styles.tile,
+          selected
+            ? { borderColor: colors.accent, backgroundColor: colors.accentTint }
+            : { borderColor: colors.solidBorder },
+        ]}
       >
         <AppText variant="bodyStrong" style={styles.flex}>
           {name}
         </AppText>
-        {selected ? <Icon name="check" size={iconSize.md} color={colors.accent} /> : null}
+        <View
+          style={[
+            styles.tileCheck,
+            selected
+              ? { backgroundColor: colors.accent, borderColor: colors.accent }
+              : { borderColor: colors.solidBorder },
+          ]}
+        >
+          {selected ? (
+            <Icon name="check" size={iconSize.badge} color={colors.onAccent} strokeWidth={2.4} />
+          ) : null}
+        </View>
       </Glass>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -127,6 +215,7 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
   const os: OnboardingPlatform = platform ?? (Platform.OS === 'android' ? 'android' : 'ios');
   const source = useDataSource();
   const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
   const now = useNow();
   const { data: progress } = useData((s) => s.getOnboarding());
   const { data: setups } = useData((s) => s.listIssuerSetup());
@@ -159,22 +248,20 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
     case 'welcome':
       content = (
         <>
-          <View style={styles.intro}>
-            <AppText variant="title" accessibilityRole="header">
-              Welcome to Steadily
-            </AppText>
-            <AppText variant="body" color={colors.ink2}>
-              Know what's safe to spend, from the alerts your bank already sends.
-            </AppText>
-          </View>
-          <StepCard>
+          <Intro
+            title="Welcome to Steadily"
+            body="Know what's safe to spend, from the alerts your bank already sends."
+          />
+          <StepCard hero>
             <OnDeviceBadge />
             <AppText variant="heading">No bank login. Alerts are read on your phone.</AppText>
             <Bullet icon="lock" text="We never ask for card numbers or passwords." />
             <Bullet icon="phone" text="Alert text is read here, then deleted right away." />
             <Bullet icon="check" text="Works offline. Your spending stays on this phone." />
           </StepCard>
-          <Button label="Get started" onPress={next} />
+          <Actions>
+            <Button label="Get started" onPress={next} />
+          </Actions>
         </>
       );
       break;
@@ -192,14 +279,10 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
       };
       content = (
         <>
-          <View style={styles.intro}>
-            <AppText variant="title" accessibilityRole="header">
-              Which banks and cards do you use?
-            </AppText>
-            <AppText variant="body" color={colors.ink2}>
-              Pick all that apply. This list stays on your phone.
-            </AppText>
-          </View>
+          <Intro
+            title="Which banks and cards do you use?"
+            body="Pick all that apply. This list stays on your phone."
+          />
           <View style={styles.grid}>
             {ISSUERS.map((issuer) => (
               <IssuerTile
@@ -210,11 +293,13 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
               />
             ))}
           </View>
-          <Button
-            label={picked.size > 0 ? `Continue with ${picked.size}` : 'Skip for now'}
-            variant={picked.size > 0 ? 'primary' : 'secondary'}
-            onPress={() => void confirm()}
-          />
+          <Actions>
+            {picked.size > 0 ? (
+              <Button label={`Continue with ${picked.size}`} onPress={() => void confirm()} />
+            ) : (
+              <Button label="Skip for now" variant="link" onPress={() => void confirm()} />
+            )}
+          </Actions>
         </>
       );
       break;
@@ -224,19 +309,18 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
       const current: IssuerSetup | undefined = pending[0];
       if (!current) {
         content = (
-          <>
-            <StepCard>
-              <AppText variant="heading" accessibilityRole="header">
-                {selected.length > 0 ? 'Cards are set' : 'No cards picked'}
-              </AppText>
-              <AppText variant="body" color={colors.ink2}>
-                {selected.length > 0
-                  ? 'You went through every card. You can revisit any of them from Settings.'
-                  : 'You can add banks and cards later from Settings.'}
-              </AppText>
-            </StepCard>
-            <Button label="Continue" onPress={next} />
-          </>
+          <EmptyState
+            tier="hero"
+            icon="check"
+            tone="onTrack"
+            title={selected.length > 0 ? 'Cards are set' : 'No cards picked'}
+            body={
+              selected.length > 0
+                ? 'You went through every card. You can revisit any of them from Settings.'
+                : 'You can add banks and cards later from Settings.'
+            }
+            action={{ label: 'Continue', onPress: next }}
+          />
         );
         break;
       }
@@ -247,19 +331,15 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
         void source.setIssuerSetupStatus(current.issuerId, status);
       content = (
         <>
-          <View style={styles.intro}>
-            <AppText variant="caption" color={colors.ink2}>
-              Card {position} of {selected.length}
-            </AppText>
-            <AppText variant="title" accessibilityRole="header">
-              Turn on {name} alerts
-            </AppText>
-            <AppText variant="body" color={colors.ink2}>
-              {guide.kind === 'p2p'
+          <Intro
+            eyebrow={`Card ${position} of ${selected.length}`}
+            title={`Turn on ${name} alerts`}
+            body={
+              guide.kind === 'p2p'
                 ? 'Payment notifications let Steadily log what you send and receive.'
-                : 'An alert for every purchase lets Steadily log spending as it happens.'}
-            </AppText>
-          </View>
+                : 'An alert for every purchase lets Steadily log spending as it happens.'
+            }
+          />
           <StepCard>
             <NumberedSteps steps={guide.steps} />
             {issuerGuides.verified ? null : (
@@ -269,8 +349,10 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
               />
             )}
           </StepCard>
-          <Button label="I've done it" onPress={() => mark('done')} />
-          <Button label="Skip" variant="secondary" onPress={() => mark('skipped')} />
+          <Actions>
+            <Button label="I've done it" onPress={() => mark('done')} />
+            <Button label="Skip" variant="link" onPress={() => mark('skipped')} />
+          </Actions>
         </>
       );
       break;
@@ -280,15 +362,10 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
       content =
         os === 'android' ? (
           <>
-            <View style={styles.intro}>
-              <AppText variant="title" accessibilityRole="header">
-                Let Steadily see bank notifications
-              </AppText>
-              <AppText variant="body" color={colors.ink2}>
-                With notification access, Steadily reads alerts from the bank and payment apps you
-                picked. Everything else is ignored right away.
-              </AppText>
-            </View>
+            <Intro
+              title="Let Steadily see bank notifications"
+              body="With notification access, Steadily reads alerts from the bank and payment apps you picked. Everything else is ignored right away."
+            />
             <StepCard>
               <Bullet icon="bell" text="Only purchase alerts are kept, as amount and merchant." />
               <Bullet icon="lock" text="Nothing is sent anywhere. It all happens on this phone." />
@@ -314,23 +391,20 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
                 )}
               </StepCard>
             ) : null}
-            <Button
-              label="Open notification access"
-              onPress={() => void openNotificationAccessSettings()}
-            />
-            <Button label="Continue" variant="secondary" onPress={next} />
+            <Actions>
+              <Button
+                label="Open notification access"
+                onPress={() => void openNotificationAccessSettings()}
+              />
+              <Button label="Continue" variant="link" onPress={next} />
+            </Actions>
           </>
         ) : (
           <>
-            <View style={styles.intro}>
-              <AppText variant="title" accessibilityRole="header">
-                Connect your text alerts
-              </AppText>
-              <AppText variant="body" color={colors.ink2}>
-                One Shortcuts automation sends bank texts to Steadily. They are read on this phone
-                and anything that isn't a purchase is thrown away.
-              </AppText>
-            </View>
+            <Intro
+              title="Connect your text alerts"
+              body="One Shortcuts automation sends bank texts to Steadily. They are read on this phone and anything that isn't a purchase is thrown away."
+            />
             <StepCard>
               {/* TODO: replace with the verified Shortcuts steps and a shared Shortcut link. */}
               <NumberedSteps
@@ -342,8 +416,10 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
               />
               <StatusPill label="General steps. Exact names may differ." tone="neutral" />
             </StepCard>
-            <Button label="I've set it up" onPress={next} />
-            <Button label="Skip" variant="secondary" onPress={next} />
+            <Actions>
+              <Button label="I've set it up" onPress={next} />
+              <Button label="Skip" variant="link" onPress={next} />
+            </Actions>
           </>
         );
       break;
@@ -351,90 +427,79 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
     case 'battery':
       content = (
         <>
-          <View style={styles.intro}>
-            <AppText variant="title" accessibilityRole="header">
-              Keep Steadily ready
-            </AppText>
-            <AppText variant="body" color={colors.ink2}>
-              Some phones pause apps to save battery, and alerts get missed. Letting Steadily run
-              unrestricted keeps capture reliable. It uses very little power.
-            </AppText>
-          </View>
+          <Intro
+            title="Keep Steadily ready"
+            body="Some phones pause apps to save battery, and alerts get missed. Letting Steadily run unrestricted keeps capture reliable. It uses very little power."
+          />
           <StepCard>
             <Bullet icon="battery" text="Find Steadily under Battery and choose Unrestricted." />
             <Bullet icon="check" text="You can change this later in your phone's settings." />
           </StepCard>
-          <Button label="Open battery settings" onPress={() => void openBatterySettings()} />
-          <Button label="Continue" variant="secondary" onPress={next} />
+          <Actions>
+            <Button label="Open battery settings" onPress={() => void openBatterySettings()} />
+            <Button label="Continue" variant="link" onPress={next} />
+          </Actions>
         </>
       );
       break;
 
-    case 'waiting':
+    case 'waiting': {
+      const stackPill = fontScale >= STACK_PILL_FONT_SCALE;
       content = (
         <>
-          <View style={styles.intro}>
-            <AppText variant="title" accessibilityRole="header">
-              Waiting for your first alert
-            </AppText>
-            <AppText variant="body" color={colors.ink2}>
-              Use a card you set up, or wait for your next purchase. It will show up in Steadily on
-              its own.
-            </AppText>
-          </View>
-          <StepCard>
-            {selected.length === 0 ? (
+          <Intro
+            title="Waiting for your first alert"
+            body="Use a card you set up, or wait for your next purchase. It will show up in Steadily on its own."
+          />
+          {selected.length === 0 ? (
+            <StepCard>
               <AppText variant="body" color={colors.ink2}>
                 No banks or cards picked yet. You can add them from Settings.
               </AppText>
-            ) : (
-              selected.map((s, i) => {
+            </StepCard>
+          ) : (
+            <ListCard>
+              {selected.map((s) => {
                 const health = issuerHealth(s, now);
-                return (
-                  <View
-                    key={s.issuerId}
-                    style={[
-                      styles.statusRow,
-                      i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
-                    ]}
-                    accessible
-                    accessibilityLabel={`${issuerName(s.issuerId)}: ${ISSUER_HEALTH_LABEL[health]}`}
-                  >
-                    <AppText variant="bodyStrong" style={styles.flex}>
-                      {issuerName(s.issuerId)}
-                    </AppText>
-                    <StatusPill
-                      label={ISSUER_HEALTH_LABEL[health]}
-                      tone={health === 'receiving' ? 'onTrack' : 'neutral'}
-                      icon={health === 'receiving' ? 'check' : undefined}
-                    />
-                  </View>
+                const issuer = issuerName(s.issuerId) ?? s.issuerId;
+                const pill = (
+                  <StatusPill label={ISSUER_HEALTH_LABEL[health]} {...HEALTH_PILL[health]} />
                 );
-              })
-            )}
-          </StepCard>
-          <Button label="Go to Home" onPress={finish} />
+                return (
+                  <ListRow
+                    key={s.issuerId}
+                    title={issuer}
+                    trailing={stackPill ? undefined : pill}
+                    accessibilityLabel={`${issuer}: ${ISSUER_HEALTH_LABEL[health]}`}
+                  >
+                    {stackPill ? pill : null}
+                  </ListRow>
+                );
+              })}
+            </ListCard>
+          )}
+          <Actions>
+            <Button label="Go to Home" onPress={finish} />
+          </Actions>
         </>
       );
       break;
+    }
   }
 
   return (
-    <Screen withTabBar={false}>
+    <Screen withTabBar={false} readable>
       <View style={styles.top}>
         <View style={styles.topRow}>
           {index > 0 ? (
-            <Button label="Back" variant="link" onPress={back} style={styles.edgeLeft} />
-          ) : (
-            <View />
-          )}
+            <IconButton icon="chevronLeft" accessibilityLabel="Back" onPress={back} />
+          ) : null}
+          <View style={styles.flex} />
           {step !== 'waiting' ? (
-            <Button
+            <EdgeLink
               label="Set up later"
-              variant="link"
               onPress={finish}
               accessibilityHint="Skips setup for now. You can continue from Settings."
-              style={styles.edgeRight}
             />
           ) : null}
         </View>
@@ -447,18 +512,16 @@ export function OnboardingScreen({ platform }: OnboardingScreenProps) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  pressed: { opacity: 0.7 },
-  top: { gap: space.sm },
+  top: { gap: space.md },
   topRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: space.md,
     minHeight: layout.touchTarget,
   },
-  edgeLeft: { marginLeft: -space.lg },
-  edgeRight: { marginRight: -space.lg },
+  edgeLink: { minHeight: 28, justifyContent: 'center' },
   intro: { gap: space.sm, marginTop: space.sm },
-  card: { padding: layout.cardPadding + 2, gap: space.md },
+  actions: { gap: space.xs, marginTop: space.xs },
   bullet: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md },
   bulletIcon: {
     width: 28,
@@ -478,7 +541,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   tileWrap: { flexGrow: 1, flexBasis: '45%' },
   tile: {
-    minHeight: layout.touchTarget + space.md,
+    minHeight: layout.rowMinHeight,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
@@ -486,12 +549,12 @@ const styles = StyleSheet.create({
     paddingVertical: space.sm,
     borderWidth: 2,
   },
-  statusRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  tileCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: radius.pill,
+    borderWidth: 2,
     alignItems: 'center',
-    gap: space.sm,
-    paddingVertical: space.sm,
+    justifyContent: 'center',
   },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
 });
