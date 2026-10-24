@@ -1,16 +1,21 @@
 import { useRouter } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import {
   AppText,
   Button,
+  Card,
   Glass,
+  IconTile,
+  ListCard,
+  ListRow,
   OnDeviceBadge,
   Screen,
   ScreenHeader,
   SectionLabel,
   StatusPill,
+  type IconName,
 } from '@/components';
 import { listenedBankApps, textMessageAppNames } from '@/content/listenedApps';
 import { CLOUD_NEVER_SENT, CLOUD_SENT_SUMMARY } from '@/content/privacy';
@@ -22,32 +27,26 @@ export const DELETE_CONFIRM_WORD = 'DELETE';
 
 type DeleteState = 'idle' | 'confirming' | 'deleting' | 'failed';
 
-function Card({ children, strong = false }: { children: ReactNode; strong?: boolean }) {
+function CountRow({
+  label,
+  count,
+  icon,
+}: {
+  label: string;
+  count: number | undefined;
+  icon: IconName;
+}) {
   return (
-    <Glass
-      variant={strong ? 'strong' : 'light'}
-      radius={radius.cardSmall}
-      contentStyle={styles.card}
-    >
-      {children}
-    </Glass>
-  );
-}
-
-function CountRow({ label, count }: { label: string; count: number | undefined }) {
-  const { colors } = useTheme();
-  const value = count === undefined ? '…' : String(count);
-  return (
-    <View
-      style={[styles.countRow, { borderTopColor: colors.hairline }]}
-      accessible
+    <ListRow
+      title={label}
+      leading={<IconTile icon={icon} />}
+      trailing={
+        <AppText variant="amount" tabular>
+          {count === undefined ? '…' : count.toLocaleString('en-US')}
+        </AppText>
+      }
       accessibilityLabel={`${label}: ${count === undefined ? 'loading' : count}`}
-    >
-      <AppText variant="body" style={styles.flex}>
-        {label}
-      </AppText>
-      <AppText variant="amount">{value}</AppText>
-    </View>
+    />
   );
 }
 
@@ -85,28 +84,26 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
   const bankApps = listenedBankApps();
 
   return (
-    <Screen withTabBar={false}>
+    <Screen withTabBar={false} readable>
       <ScreenHeader title="Privacy & data" onBack={() => router.back()} />
 
       <SectionLabel>On this phone</SectionLabel>
-      <Card strong>
-        <View style={styles.cardTop}>
-          <OnDeviceBadge />
-          <AppText variant="body" color={colors.ink2}>
-            {summary?.encryptedAtRest === false
-              ? 'Demo data, held in memory only and never written to storage.'
-              : 'Stored in an encrypted database. Its key stays in this phone’s secure keystore and never leaves it.'}
-          </AppText>
-        </View>
-        {summary === null ? null : (
-          <>
-            <CountRow label="Transactions" count={summary?.transactions} />
-            <CountRow label="Budgets" count={summary?.budgets} />
-            <CountRow label="Subscriptions" count={summary?.subscriptions} />
-            <CountRow label="Merchant rules you taught it" count={summary?.rules} />
-          </>
-        )}
+      <Card tier="hero" contentStyle={styles.tight}>
+        <OnDeviceBadge />
+        <AppText variant="body" color={colors.ink2}>
+          {summary?.encryptedAtRest === false
+            ? 'Demo data, held in memory only and never written to storage.'
+            : 'Stored in an encrypted database. Its key stays in this phone’s secure keystore and never leaves it.'}
+        </AppText>
       </Card>
+      {summary === null ? null : (
+        <ListCard accessibilityLabel="Stored on this phone">
+          <CountRow label="Transactions" icon="activity" count={summary?.transactions} />
+          <CountRow label="Budgets" icon="budgets" count={summary?.budgets} />
+          <CountRow label="Subscriptions" icon="repeat" count={summary?.subscriptions} />
+          <CountRow label="Merchant rules you taught it" icon="sparkle" count={summary?.rules} />
+        </ListCard>
+      )}
       <Card>
         <View style={styles.paragraphs}>
           <AppText variant="body">
@@ -147,48 +144,45 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
       </Card>
 
       <SectionLabel>Apps Steadily reads</SectionLabel>
-      <Card>
-        {os === 'android' ? (
-          <View style={styles.paragraphs}>
+      {os === 'android' ? (
+        <>
+          <Card>
             <AppText variant="body" color={colors.ink2}>
               With notification access, Steadily looks only at notifications from these apps.
               Notifications from every other app are ignored without being read.
             </AppText>
-            <View accessibilityRole="list" accessibilityLabel="Bank and payment apps">
-              {bankApps.map((app) => (
-                <View
-                  key={app.name}
-                  style={[styles.appRow, { borderTopColor: colors.hairline }]}
-                  accessible
-                  accessibilityLabel={
-                    app.alsoReads.length > 0
-                      ? `${app.name}, including ${app.alsoReads.join(', ')} alerts`
-                      : app.name
-                  }
-                >
-                  <AppText variant="bodyStrong">{app.name}</AppText>
-                  {app.alsoReads.length > 0 ? (
-                    <AppText variant="caption" color={colors.ink2}>
-                      Including {app.alsoReads.join(', ')} alerts in this app
-                    </AppText>
-                  ) : null}
-                </View>
-              ))}
-            </View>
             <AppText variant="body" color={colors.ink2}>
               Text messages in {textMessageAppNames().join(', ')} are checked for bank alerts.
               Anything that isn’t one is dropped right away.
             </AppText>
-          </View>
-        ) : (
-          <View style={styles.paragraphs}>
-            <AppText variant="body" color={colors.ink2}>
-              On iPhone, Steadily can’t see other apps’ notifications or your messages. It reads
-              only the bank texts your Shortcut passes to it and what you share with it.
-            </AppText>
-          </View>
-        )}
-      </Card>
+          </Card>
+          <ListCard accessibilityRole="list" accessibilityLabel="Bank and payment apps">
+            {bankApps.map((app) => (
+              <ListRow
+                key={app.name}
+                title={app.name}
+                subtitle={
+                  app.alsoReads.length > 0
+                    ? `Including ${app.alsoReads.join(', ')} alerts in this app`
+                    : undefined
+                }
+                accessibilityLabel={
+                  app.alsoReads.length > 0
+                    ? `${app.name}, including ${app.alsoReads.join(', ')} alerts`
+                    : app.name
+                }
+              />
+            ))}
+          </ListCard>
+        </>
+      ) : (
+        <Card>
+          <AppText variant="body" color={colors.ink2}>
+            On iPhone, Steadily can’t see other apps’ notifications or your messages. It reads only
+            the bank texts your Shortcut passes to it and what you share with it.
+          </AppText>
+        </Card>
+      )}
 
       {deleteAll ? (
         <>
@@ -209,13 +203,13 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
                 />
               ) : (
                 <>
-                  <AppText variant="bodyStrong" color={colors.headsUp.text}>
+                  <AppText variant="bodyStrong">
                     To confirm, type {DELETE_CONFIRM_WORD} below.
                   </AppText>
                   <Glass
                     variant="light"
                     radius={radius.row}
-                    shadow={false}
+                    elevation="none"
                     contentStyle={styles.inputBox}
                   >
                     <TextInput
@@ -232,8 +226,8 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
                   </Glass>
                   {deleteState === 'failed' ? (
                     <AppText
-                      variant="caption"
-                      color={colors.headsUp.text}
+                      variant="bodyStrong"
+                      color={colors.destructive.text}
                       accessibilityLiveRegion="polite"
                       accessibilityRole="alert"
                     >
@@ -242,8 +236,9 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
                   ) : null}
                   <Button
                     label={deleteState === 'deleting' ? 'Deleting…' : 'Delete everything'}
-                    variant="primary"
-                    disabled={!confirmed || deleteState === 'deleting'}
+                    variant="destructive"
+                    loading={deleteState === 'deleting'}
+                    disabled={!confirmed}
                     onPress={runDelete}
                   />
                   <Button
@@ -263,23 +258,8 @@ export function PrivacyScreen({ os = Platform.OS }: { os?: string }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  card: { paddingHorizontal: layout.cardPadding, paddingVertical: space.md },
-  cardTop: { gap: space.sm, paddingBottom: space.sm },
-  countRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.sm,
-    minHeight: layout.touchTarget,
-    paddingVertical: layout.rowPaddingVertical,
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
-  },
-  paragraphs: { gap: space.md, paddingVertical: space.xs },
-  appRow: {
-    gap: space.xxs,
-    paddingVertical: layout.rowPaddingVertical,
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
-  },
+  tight: { gap: space.sm },
+  paragraphs: { gap: space.md },
   inputBox: { paddingHorizontal: space.lg, paddingVertical: space.xs },
   input: { minHeight: layout.touchTarget },
 });
