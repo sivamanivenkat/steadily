@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router';
-import { useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import {
   AppText,
-  Button,
   ConfirmSheet,
-  Glass,
+  IconTile,
+  ListCard,
+  ListRow,
   OnDeviceBadge,
   RadioRow,
   Screen,
@@ -14,6 +15,8 @@ import {
   SectionLabel,
   StatusPill,
   ToggleRow,
+  type IconName,
+  type PillTone,
 } from '@/components';
 import { CLOUD_NEVER_SENT, CLOUD_SENT_SUMMARY } from '@/content/privacy';
 import {
@@ -24,9 +27,9 @@ import {
   useDataSource,
   useNow,
 } from '@/data';
-import type { Settings } from '@/data/types';
+import type { IssuerHealth, Settings } from '@/data/types';
 import { useCaptureConfirmations } from '@/hooks/useCaptureConfirmations';
-import { layout, radius, space, useTheme } from '@/theme';
+import { layout, space, useTheme } from '@/theme';
 
 const NOTIFY_OPTIONS: readonly {
   value: Settings['notifyMode'];
@@ -52,6 +55,16 @@ const THEME_OPTIONS: readonly { value: Settings['theme']; label: string }[] = [
   { value: 'dark', label: 'Dark' },
 ];
 
+const HEALTH_PILL: Record<IssuerHealth, { tone: PillTone; icon?: IconName }> = {
+  receiving: { tone: 'onTrack', icon: 'check' },
+  quiet: { tone: 'headsUp', icon: 'bell' },
+  waiting: { tone: 'neutral' },
+  not_set_up: { tone: 'neutral' },
+};
+
+/** At large text sizes the status pill moves under the name so the name keeps its width. */
+const STACK_PILL_FONT_SCALE = 1.3;
+
 /** "22:00" -> "10:00 PM" */
 function clockLabel(hhmm: string): string {
   const [h = 0, m = 0] = hhmm.split(':').map(Number);
@@ -62,26 +75,30 @@ function clockLabel(hhmm: string): string {
 
 const DEFAULT_QUIET_HOURS = { start: '22:00', end: '07:00' };
 
-function Card({ children }: { children: ReactNode }) {
+/** A row that opens another screen: tile, name, one line of help, chevron. */
+function NavRow({
+  title,
+  subtitle,
+  icon,
+  tone = 'neutral',
+  onPress,
+}: {
+  title: string;
+  subtitle?: string;
+  icon: IconName;
+  tone?: 'neutral' | 'accent' | 'headsUp';
+  onPress: () => void;
+}) {
   return (
-    <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
-      {children}
-    </Glass>
-  );
-}
-
-function Divided({ children }: { children: ReactNode[] }) {
-  const { colors } = useTheme();
-  return (
-    <>
-      {children
-        .filter((child) => child !== null && child !== false)
-        .map((child, i) => (
-          <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
-            {child}
-          </View>
-        ))}
-    </>
+    <ListRow
+      title={title}
+      subtitle={subtitle}
+      leading={<IconTile icon={icon} tone={tone} />}
+      chevron
+      onPress={onPress}
+      accessibilityLabel={title}
+      accessibilityHint={subtitle}
+    />
   );
 }
 
@@ -89,6 +106,7 @@ export function SettingsScreen() {
   const router = useRouter();
   const source = useDataSource();
   const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
   const now = useNow();
   const { data: settings } = useData((s) => s.getSettings());
   const { data: setups } = useData((s) => s.listIssuerSetup());
@@ -109,179 +127,153 @@ export function SettingsScreen() {
       }
     : null;
   const selected = setups?.filter((s) => s.selected) ?? [];
+  const stackPill = fontScale >= STACK_PILL_FONT_SCALE;
+  const reopenSetup = () => void source.saveOnboarding({ completed: false });
 
   return (
     <Screen withTabBar={false}>
       <ScreenHeader title="Settings" onBack={() => router.back()} />
 
       <SectionLabel>Banks and cards</SectionLabel>
-      <Card>
+      <ListCard>
+        {selected.map((s) => {
+          const health = issuerHealth(s, now);
+          const name = issuerName(s.issuerId) ?? s.issuerId;
+          const pill = <StatusPill label={ISSUER_HEALTH_LABEL[health]} {...HEALTH_PILL[health]} />;
+          return (
+            <ListRow
+              key={s.issuerId}
+              title={name}
+              trailing={stackPill ? undefined : pill}
+              accessibilityLabel={`${name}: ${ISSUER_HEALTH_LABEL[health]}`}
+            >
+              {stackPill ? pill : null}
+            </ListRow>
+          );
+        })}
         {selected.length === 0 ? (
-          <AppText variant="body" color={colors.ink2} style={styles.padded}>
-            No banks or cards set up yet.
-          </AppText>
+          <NavRow
+            title="Set up alerts"
+            subtitle="No banks or cards set up yet."
+            icon="bell"
+            tone="accent"
+            onPress={reopenSetup}
+          />
         ) : (
-          <Divided>
-            {selected.map((s) => {
-              const health = issuerHealth(s, now);
-              return (
-                <View
-                  key={s.issuerId}
-                  style={styles.issuerRow}
-                  accessible
-                  accessibilityLabel={`${issuerName(s.issuerId)}: ${ISSUER_HEALTH_LABEL[health]}`}
-                >
-                  <AppText variant="bodyStrong" style={styles.flex}>
-                    {issuerName(s.issuerId)}
-                  </AppText>
-                  <StatusPill
-                    label={ISSUER_HEALTH_LABEL[health]}
-                    tone={
-                      health === 'receiving'
-                        ? 'onTrack'
-                        : health === 'quiet'
-                          ? 'headsUp'
-                          : 'neutral'
-                    }
-                    icon={
-                      health === 'receiving' ? 'check' : health === 'quiet' ? 'bell' : undefined
-                    }
-                  />
-                </View>
-              );
-            })}
-          </Divided>
+          <NavRow
+            title="Continue setup"
+            subtitle="Add a bank or card, or finish one you started."
+            icon="plus"
+            tone="accent"
+            onPress={reopenSetup}
+          />
         )}
-        <Button
-          label={selected.length === 0 ? 'Set up alerts' : 'Continue setup'}
-          variant="link"
-          onPress={() => void source.saveOnboarding({ completed: false })}
-          accessibilityHint="Opens the alert setup guide where you left off"
-          style={styles.linkStart}
-        />
-      </Card>
+      </ListCard>
 
       <SectionLabel>Money</SectionLabel>
-      <Card>
-        <Divided>
-          <Button
-            label="Subscriptions"
-            variant="link"
-            accessibilityHint="Repeating charges found on this phone"
-            onPress={() => router.push('/subscriptions')}
-            style={styles.linkStart}
-          />
-          <Button
-            label="Spending trends"
-            variant="link"
-            onPress={() => router.push('/trends')}
-            style={styles.linkStart}
-          />
-        </Divided>
-      </Card>
+      <ListCard>
+        <NavRow
+          title="Subscriptions"
+          subtitle="Repeating charges found on this phone"
+          icon="repeat"
+          onPress={() => router.push('/subscriptions')}
+        />
+        <NavRow
+          title="Spending trends"
+          subtitle="This month against last month and your average"
+          icon="chart"
+          onPress={() => router.push('/trends')}
+        />
+      </ListCard>
 
       {settings ? (
         <>
           <SectionLabel>Notifications</SectionLabel>
-          <Card>
-            <View accessibilityRole="radiogroup" accessibilityLabel="When to notify">
-              <Divided>
-                {NOTIFY_OPTIONS.map((option) => (
-                  <RadioRow
-                    key={option.value}
-                    label={option.label}
-                    description={option.description}
-                    selected={settings.notifyMode === option.value}
-                    onPress={() => update({ notifyMode: option.value })}
-                  />
-                ))}
-              </Divided>
-            </View>
-          </Card>
-          <Card>
-            <Divided>
-              <ToggleRow
-                label="Daily summary"
-                description="One evening note with the day's total."
-                value={settings.dailySummary}
-                onValueChange={(dailySummary) => update({ dailySummary })}
+          <ListCard accessibilityRole="radiogroup" accessibilityLabel="When to notify">
+            {NOTIFY_OPTIONS.map((option) => (
+              <RadioRow
+                key={option.value}
+                label={option.label}
+                description={option.description}
+                selected={settings.notifyMode === option.value}
+                onPress={() => update({ notifyMode: option.value })}
               />
+            ))}
+          </ListCard>
+          <ListCard>
+            <ToggleRow
+              label="Daily summary"
+              description="One evening note with the day's total."
+              value={settings.dailySummary}
+              onValueChange={(dailySummary) => update({ dailySummary })}
+            />
+            <ToggleRow
+              label="Quiet hours"
+              description={
+                settings.quietHours
+                  ? `No notifications from ${clockLabel(settings.quietHours.start)} to ${clockLabel(settings.quietHours.end)}.`
+                  : 'Notifications can arrive at any time.'
+              }
+              value={settings.quietHours !== null}
+              onValueChange={(on) => update({ quietHours: on ? DEFAULT_QUIET_HOURS : null })}
+            />
+            {confirmations.available ? (
               <ToggleRow
-                label="Quiet hours"
-                description={
-                  settings.quietHours
-                    ? `No notifications from ${clockLabel(settings.quietHours.start)} to ${clockLabel(settings.quietHours.end)}.`
-                    : 'Notifications can arrive at any time.'
+                label="Confirm each logged purchase"
+                description={'A quiet "Logged $X at Y" note on this phone after each alert.'}
+                value={confirmations.enabled}
+                onValueChange={confirmations.setEnabled}
+              />
+            ) : null}
+            {confirmations.available && confirmations.enabled && !confirmations.canPost ? (
+              <NavRow
+                title={
+                  confirmations.needsPermission && !confirmations.blocked
+                    ? 'Allow notifications'
+                    : 'Open app settings'
                 }
-                value={settings.quietHours !== null}
-                onValueChange={(on) => update({ quietHours: on ? DEFAULT_QUIET_HOURS : null })}
+                subtitle="Notifications are off for Steadily, so confirmations can't show."
+                icon="bell"
+                tone="headsUp"
+                onPress={() => void confirmations.allow()}
               />
-            </Divided>
-          </Card>
-          {confirmations.available ? (
-            <Card>
-              <Divided>
-                <ToggleRow
-                  label="Confirm each logged purchase"
-                  description={'A quiet "Logged $X at Y" note on this phone after each alert.'}
-                  value={confirmations.enabled}
-                  onValueChange={confirmations.setEnabled}
-                />
-                {confirmations.enabled && !confirmations.canPost ? (
-                  <View style={styles.explain}>
-                    <AppText variant="caption" color={colors.headsUp.text}>
-                      Notifications are off for Steadily, so confirmations can't show.
-                    </AppText>
-                    <Button
-                      label={
-                        confirmations.needsPermission && !confirmations.blocked
-                          ? 'Allow notifications'
-                          : 'Open app settings'
-                      }
-                      variant="link"
-                      onPress={() => void confirmations.allow()}
-                      style={styles.linkStart}
-                    />
-                  </View>
-                ) : null}
-              </Divided>
-            </Card>
-          ) : null}
+            ) : null}
+          </ListCard>
 
           <SectionLabel>Cloud AI</SectionLabel>
-          <Card>
-            <ToggleRow
-              label="Use cloud AI"
-              description="For unclear merchants and your questions in Ask."
-              value={settings.cloudAiOptIn}
-              onValueChange={(on) => (on ? setConfirmCloud(true) : update({ cloudAiOptIn: false }))}
-            />
-            <View style={styles.explain}>
-              <AppText variant="caption" color={colors.ink2}>
-                {settings.cloudAiOptIn ? 'On. ' : 'Off. Everything is worked out on this phone. '}
-                {CLOUD_SENT_SUMMARY}
-              </AppText>
-              <AppText variant="caption" color={colors.ink2}>
-                {CLOUD_NEVER_SENT}
-              </AppText>
+          <ListCard>
+            <View>
+              <ToggleRow
+                label="Use cloud AI"
+                description="For unclear merchants and your questions in Ask."
+                value={settings.cloudAiOptIn}
+                onValueChange={(on) =>
+                  on ? setConfirmCloud(true) : update({ cloudAiOptIn: false })
+                }
+              />
+              <View style={styles.explain}>
+                <AppText variant="caption" color={colors.ink2}>
+                  {settings.cloudAiOptIn ? 'On. ' : 'Off. Everything is worked out on this phone. '}
+                  {CLOUD_SENT_SUMMARY}
+                </AppText>
+                <AppText variant="caption" color={colors.ink2}>
+                  {CLOUD_NEVER_SENT}
+                </AppText>
+              </View>
             </View>
-          </Card>
+          </ListCard>
 
           <SectionLabel>Appearance</SectionLabel>
-          <Card>
-            <View accessibilityRole="radiogroup" accessibilityLabel="Theme">
-              <Divided>
-                {THEME_OPTIONS.map((option) => (
-                  <RadioRow
-                    key={option.value}
-                    label={option.label}
-                    selected={settings.theme === option.value}
-                    onPress={() => update({ theme: option.value })}
-                  />
-                ))}
-              </Divided>
-            </View>
-          </Card>
+          <ListCard accessibilityRole="radiogroup" accessibilityLabel="Theme">
+            {THEME_OPTIONS.map((option) => (
+              <RadioRow
+                key={option.value}
+                label={option.label}
+                selected={settings.theme === option.value}
+                onPress={() => update({ theme: option.value })}
+              />
+            ))}
+          </ListCard>
         </>
       ) : null}
 
@@ -302,27 +294,23 @@ export function SettingsScreen() {
       />
 
       <SectionLabel>Your data</SectionLabel>
-      <Card>
-        <Divided>
-          <Button
-            label="Import from CSV"
-            variant="link"
-            onPress={() => router.push('/import-csv')}
-            accessibilityHint="Adds past transactions from a bank's CSV export, read on this phone"
-            style={styles.linkStart}
-          />
-          <Button
-            label="Export CSV"
-            variant="link"
-            onPress={() => router.push('/export-csv')}
-            accessibilityHint="Saves your transactions to a file you can share"
-            style={styles.linkStart}
-          />
-        </Divided>
-      </Card>
+      <ListCard>
+        <NavRow
+          title="Import from CSV"
+          subtitle="Add past transactions from a bank's CSV export, read on this phone"
+          icon="arrowDown"
+          onPress={() => router.push('/import-csv')}
+        />
+        <NavRow
+          title="Export CSV"
+          subtitle="Save your transactions to a file you can share"
+          icon="arrowUp"
+          onPress={() => router.push('/export-csv')}
+        />
+      </ListCard>
 
       <SectionLabel>Privacy</SectionLabel>
-      <Card>
+      <ListCard>
         <View style={styles.privacy}>
           <OnDeviceBadge />
           <AppText variant="body" color={colors.ink2}>
@@ -330,55 +318,45 @@ export function SettingsScreen() {
             exactly what we kept.
           </AppText>
         </View>
-        <Button
-          label="Privacy & data"
-          variant="link"
+        <NavRow
+          title="Privacy & data"
+          subtitle="What is stored on this phone, and deleting it"
+          icon="lock"
           onPress={() => router.push('/privacy')}
-          accessibilityHint="What is stored on this phone, and deleting it"
-          style={styles.linkStart}
         />
-      </Card>
+      </ListCard>
 
       {__DEV__ ? (
         <>
           <SectionLabel>Developer</SectionLabel>
-          <Card>
-            <Divided>
-              <Button
-                label="Reopen onboarding"
-                variant="link"
-                onPress={() => void source.saveOnboarding({ completed: false })}
-                style={styles.linkStart}
-              />
-              <Button
-                label="Restart onboarding from the beginning"
-                variant="link"
-                onPress={() => void source.saveOnboarding({ completed: false, step: 'welcome' })}
-                style={styles.linkStart}
-              />
-              {seedSampleData ? (
-                <View>
-                  <Button
-                    label="Seed sample data"
-                    variant="link"
-                    onPress={seedSampleData}
-                    accessibilityHint="Runs made-up bank alerts through the on-device pipeline"
-                    style={styles.linkStart}
-                  />
-                  {seedStatus ? (
-                    <AppText
-                      variant="caption"
-                      color={colors.ink2}
-                      accessibilityLiveRegion="polite"
-                      style={styles.seedStatus}
-                    >
-                      {seedStatus}
-                    </AppText>
-                  ) : null}
-                </View>
-              ) : null}
-            </Divided>
-          </Card>
+          <ListCard>
+            <ListRow title="Reopen onboarding" chevron onPress={reopenSetup} />
+            <ListRow
+              title="Restart onboarding from the beginning"
+              chevron
+              onPress={() => void source.saveOnboarding({ completed: false, step: 'welcome' })}
+            />
+            {seedSampleData ? (
+              <View>
+                <ListRow
+                  title="Seed sample data"
+                  onPress={seedSampleData}
+                  accessibilityLabel="Seed sample data"
+                  accessibilityHint="Runs made-up bank alerts through the on-device pipeline"
+                />
+                {seedStatus ? (
+                  <AppText
+                    variant="caption"
+                    color={colors.ink2}
+                    accessibilityLiveRegion="polite"
+                    style={styles.seedStatus}
+                  >
+                    {seedStatus}
+                  </AppText>
+                ) : null}
+              </View>
+            ) : null}
+          </ListCard>
         </>
       ) : null}
     </Screen>
@@ -386,20 +364,7 @@ export function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  card: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  padded: { paddingVertical: space.md },
-  issuerRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: space.sm,
-    minHeight: layout.touchTarget,
-    paddingVertical: space.sm,
-  },
-  linkStart: { alignSelf: 'flex-start', marginLeft: -space.lg },
-  explain: { gap: space.sm, paddingBottom: space.md },
-  privacy: { gap: space.sm, paddingVertical: space.md },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
+  explain: { gap: space.sm, paddingTop: space.xs, paddingBottom: space.md },
+  privacy: { gap: space.sm, paddingVertical: space.md, minHeight: layout.rowMinHeight },
   seedStatus: { paddingBottom: space.md },
 });
