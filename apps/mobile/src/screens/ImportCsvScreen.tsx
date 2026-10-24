@@ -14,19 +14,24 @@ import {
 } from '@steadily/csv-import';
 import { normalizeMerchant } from '@steadily/merchants';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import {
   AppText,
   Button,
-  Glass,
+  Card,
   Icon,
+  IconTile,
+  ListCard,
+  ListRow,
   OnDeviceBadge,
+  ProgressBar,
   RadioRow,
   Screen,
   ScreenHeader,
   SectionLabel,
+  Touchable,
 } from '@/components';
 import { useDataSource } from '@/data';
 import type { ImportCheck, ImportResult } from '@/data/csvImport';
@@ -48,16 +53,18 @@ type Step =
   | { kind: 'done'; result: ImportResult }
   | { kind: 'failed' };
 
+/** A local date from a "YYYY-MM-DD" day key. */
+function dayDate(day: string): Date {
+  const [y, m, d] = day.split('-').map(Number) as [number, number, number];
+  return new Date(y, m - 1, d);
+}
+
 /** "Oct 8 – Oct 14, 2026" from "YYYY-MM-DD" day keys. */
 function dateRangeLabel(rows: readonly ImportRow[]): string {
   if (rows.length === 0) return '';
   const days = rows.map((r) => r.day).sort();
-  const toDate = (day: string) => {
-    const [y, m, d] = day.split('-').map(Number) as [number, number, number];
-    return new Date(y, m - 1, d);
-  };
-  const first = toDate(days[0]!);
-  const last = toDate(days[days.length - 1]!);
+  const first = dayDate(days[0]!);
+  const last = dayDate(days[days.length - 1]!);
   const withYear = (d: Date) => `${formatShortDate(d)}, ${d.getFullYear()}`;
   if (days[0] === days[days.length - 1]) return withYear(last);
   const from =
@@ -67,18 +74,6 @@ function dateRangeLabel(rows: readonly ImportRow[]): string {
 
 const plural = (n: number, one: string, many: string) =>
   `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
-
-function Card({ children, strong = false }: { children: ReactNode; strong?: boolean }) {
-  return (
-    <Glass
-      variant={strong ? 'strong' : 'light'}
-      radius={strong ? radius.card : radius.cardSmall}
-      contentStyle={styles.card}
-    >
-      {children}
-    </Glass>
-  );
-}
 
 /** A column choice in the mapping step: a pill with a check when selected. */
 function ColumnChip({
@@ -94,25 +89,26 @@ function ColumnChip({
 }) {
   const { colors } = useTheme();
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
+      feedback="scale"
       accessibilityRole="radio"
       accessibilityLabel={`${group}: ${label}`}
       accessibilityState={{ checked: selected, selected }}
-      style={({ pressed }) => [
+      hitSlop={CHIP_HIT_SLOP}
+      style={[
         styles.chip,
         {
           backgroundColor: selected ? colors.accentTint : colors.neutralTint,
           borderColor: selected ? colors.accentInk : 'transparent',
         },
-        pressed && styles.pressed,
       ]}
     >
       {selected ? <Icon name="check" size={iconSize.sm} color={colors.accentInk} /> : null}
       <AppText variant="bodyStrong" color={selected ? colors.accentInk : colors.ink}>
         {label}
       </AppText>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -251,7 +247,7 @@ export function ImportCsvScreen() {
   }
 
   return (
-    <Screen withTabBar={false}>
+    <Screen withTabBar={false} readable>
       <ScreenHeader
         title="Import from CSV"
         onBack={() => router.back()}
@@ -311,7 +307,7 @@ export function ImportCsvScreen() {
               nothing is added twice.
             </AppText>
           </View>
-          <Button label="Done" onPress={() => router.back()} style={styles.action} />
+          <Button label="Done" onPress={() => router.back()} />
         </Card>
       )}
     </Screen>
@@ -330,7 +326,7 @@ function StartStep({
   const { colors } = useTheme();
   return (
     <>
-      <Card strong>
+      <Card tier="hero">
         <View style={styles.stack}>
           <OnDeviceBadge />
           <AppText variant="heading">Bring in past transactions</AppText>
@@ -343,7 +339,7 @@ function StartStep({
         <Button
           label={busy ? 'Reading the file…' : 'Choose a CSV file'}
           onPress={onChoose}
-          disabled={busy}
+          loading={busy}
           style={styles.action}
         />
       </Card>
@@ -476,7 +472,7 @@ function MappingStep({
         </View>
       </Card>
 
-      <AppText variant="caption" color={colors.ink2} accessibilityLiveRegion="polite">
+      <AppText variant="caption" color={colors.ink2} tabular accessibilityLiveRegion="polite">
         {readable
           ? `${plural(readable.rows.length, 'transaction', 'transactions')} readable with these columns${
               readable.skipped > 0 ? `, ${plural(readable.skipped, 'row', 'rows')} not` : ''
@@ -513,7 +509,7 @@ function PreviewStep({
 
   return (
     <>
-      <Card strong>
+      <Card tier="hero">
         <View style={styles.stack}>
           <View style={styles.titleRow}>
             <AppText variant="label" color={colors.ink2} style={styles.flex}>
@@ -521,7 +517,7 @@ function PreviewStep({
             </AppText>
             <OnDeviceBadge />
           </View>
-          <AppText variant="title">
+          <AppText variant="title" tabular>
             {plural(read.rows.length, 'transaction', 'transactions')}
           </AppText>
           <AppText variant="body" color={colors.ink2}>
@@ -553,41 +549,30 @@ function PreviewStep({
       {sample.length > 0 ? (
         <>
           <SectionLabel>First few</SectionLabel>
-          <Card>
-            {sample.map((row, i) => {
+          <ListCard>
+            {sample.map((row) => {
               const name = row.description
                 ? normalizeMerchant(row.description).name || row.description
                 : 'No description';
-              const signed = row.direction === 'credit' ? row.amountMinor : -row.amountMinor;
-              const amountText =
-                row.direction === 'credit'
-                  ? `+${formatMoney(row.amountMinor)}`
-                  : formatMoney(row.amountMinor);
+              const credit = row.direction === 'credit';
               return (
-                <View
+                <ListRow
                   key={row.id}
-                  style={[
-                    styles.sampleRow,
-                    i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
-                  ]}
-                  accessible
+                  title={name}
+                  titleLines={1}
+                  subtitle={formatShortDate(dayDate(row.day))}
+                  trailing={
+                    <AppText variant="amount" color={credit ? colors.onTrack : colors.ink}>
+                      {credit ? `+${formatMoney(row.amountMinor)}` : formatMoney(row.amountMinor)}
+                    </AppText>
+                  }
                   accessibilityLabel={`${name}, ${
-                    signed < 0 ? spokenMoney(row.amountMinor) : `${spokenMoney(row.amountMinor)} in`
+                    credit ? `${spokenMoney(row.amountMinor)} in` : spokenMoney(row.amountMinor)
                   }`}
-                >
-                  <AppText variant="bodyStrong" style={styles.flex} numberOfLines={1}>
-                    {name}
-                  </AppText>
-                  <AppText
-                    variant="amount"
-                    color={row.direction === 'credit' ? colors.onTrack : colors.ink}
-                  >
-                    {amountText}
-                  </AppText>
-                </View>
+                />
               );
             })}
-          </Card>
+          </ListCard>
         </>
       ) : null}
 
@@ -619,24 +604,20 @@ function ImportingStep({ done, total }: { done: number; total: number }) {
       ? `Importing ${done.toLocaleString('en-US')} of ${total.toLocaleString('en-US')}…`
       : 'Getting ready…';
   return (
-    <Card strong>
+    <Card tier="hero">
       <View style={styles.stack}>
-        <AppText variant="heading" accessibilityLiveRegion="polite">
+        <AppText variant="heading" tabular accessibilityLiveRegion="polite">
           {label}
         </AppText>
-        <View
-          style={[styles.track, { backgroundColor: colors.track }]}
-          accessibilityRole="progressbar"
+        <ProgressBar
+          value={ratio}
           accessibilityLabel="Import progress"
-          accessibilityValue={{ min: 0, max: Math.max(total, 1), now: done }}
-        >
-          <View
-            style={[
-              styles.fill,
-              { backgroundColor: colors.accent, width: `${Math.round(ratio * 100)}%` },
-            ]}
-          />
-        </View>
+          valueText={
+            total > 0
+              ? `${done.toLocaleString('en-US')} of ${total.toLocaleString('en-US')}`
+              : undefined
+          }
+        />
         <AppText variant="caption" color={colors.ink2}>
           Keep Steadily open until this finishes.
         </AppText>
@@ -657,12 +638,10 @@ function DoneStep({
   const { colors } = useTheme();
   const skipped = result.duplicates + result.alreadyImported;
   return (
-    <Card strong>
+    <Card tier="hero">
       <View style={styles.stack} accessibilityLiveRegion="polite">
         <View style={styles.titleRow}>
-          <View style={[styles.doneIcon, { backgroundColor: colors.status.onTrack.bg }]}>
-            <Icon name="check" size={iconSize.md} color={colors.status.onTrack.text} />
-          </View>
+          <IconTile icon="check" tone="onTrack" round />
           <AppText variant="heading" style={styles.flex}>
             Imported {plural(result.imported, 'transaction', 'transactions')}
           </AppText>
@@ -690,11 +669,11 @@ function DoneStep({
   );
 }
 
-const TRACK = 10;
+/** Chips are 44 high; this lifts the hit area to Android's 48 dp. */
+const CHIP_HIT_SLOP = { top: 2, bottom: 2, left: 0, right: 0 };
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  card: { padding: layout.cardPadding, gap: space.lg },
   stack: { gap: space.sm },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
   action: { marginTop: space.xs },
@@ -712,23 +691,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     borderRadius: radius.pill,
     borderWidth: 2,
-  },
-  pressed: { opacity: 0.7 },
-  sampleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    minHeight: layout.touchTarget,
-    paddingVertical: layout.rowPaddingVertical,
-  },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
-  track: { height: TRACK, borderRadius: TRACK / 2, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: TRACK / 2 },
-  doneIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
