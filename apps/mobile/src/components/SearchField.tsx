@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
 import { iconSize, layout, radius, space, type, useTheme } from '@/theme';
 
 import { Glass } from './Glass';
 import { Icon } from './Icon';
+import { Touchable } from './Touchable';
 
 type SearchFieldProps = {
   value: string;
@@ -21,7 +22,7 @@ export function SearchField({
 }: SearchFieldProps) {
   const { colors } = useTheme();
   return (
-    <Glass variant="light" radius={radius.button} shadow={false} fixed contentStyle={styles.box}>
+    <Glass variant="light" radius={radius.button} elevation="none" fixed contentStyle={styles.box}>
       <Icon name="search" size={iconSize.md} color={colors.ink2} />
       <TextInput
         value={value}
@@ -36,7 +37,7 @@ export function SearchField({
         style={[type.body, styles.input, { color: colors.ink }]}
       />
       {value ? (
-        <Pressable
+        <Touchable
           onPress={() => onChangeText('')}
           accessibilityRole="button"
           accessibilityLabel="Clear search"
@@ -44,7 +45,7 @@ export function SearchField({
           style={styles.clear}
         >
           <Icon name="close" size={iconSize.sm} color={colors.ink2} />
-        </Pressable>
+        </Touchable>
       ) : null}
     </Glass>
   );

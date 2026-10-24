@@ -2,19 +2,29 @@ import { createContext, useContext } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { colors, type ColorScheme, type ColorTokens } from './colors';
-import { glass, glassShadow, type GlassTokens, type GlassVariant } from './glass';
+import {
+  glass,
+  glassShadow,
+  glassShadows,
+  type Elevation,
+  type GlassTokens,
+  type GlassVariant,
+} from './glass';
 
 export * from './colors';
 export * from './glass';
 export * from './type';
 export * from './spacing';
+export * from './motion';
 export * from './categories';
 
 export type Theme = {
   scheme: ColorScheme;
   colors: ColorTokens;
   glass: Record<GlassVariant, GlassTokens>;
+  /** The hero (`raised`) shadow. */
   shadow: string;
+  shadows: Record<Exclude<Elevation, 'none'>, string>;
 };
 
 /** The user's choice in Settings. `system` follows the phone's light/dark setting. */
@@ -35,7 +45,13 @@ export function resolveScheme(
 }
 
 export function themeFor(scheme: ColorScheme): Theme {
-  return { scheme, colors: colors[scheme], glass: glass[scheme], shadow: glassShadow[scheme] };
+  return {
+    scheme,
+    colors: colors[scheme],
+    glass: glass[scheme],
+    shadow: glassShadow[scheme],
+    shadows: glassShadows[scheme],
+  };
 }
 
 /** Current theme: the Settings override if there is one, otherwise the system light/dark setting. */

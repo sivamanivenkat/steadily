@@ -1,16 +1,23 @@
 import { CATEGORIES, isBuiltInCategoryId, type CategoryId } from '@steadily/taxonomy';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import {
   AppText,
   CategoryChip,
+  EmptyState,
   Glass,
   Icon,
   IconButton,
+  IconTile,
+  ListCard,
+  ListRow,
   Screen,
+  ScreenHeader,
   SearchField,
+  SkeletonList,
+  Touchable,
   TransactionRow,
 } from '@/components';
 import { useData, useNow } from '@/data';
@@ -100,19 +107,20 @@ export function ActivityScreen() {
   const filterIds = CATEGORIES.filter((c) => present.has(c.id)).map((c) => c.id);
   const groups = groupByDay(filterTransactions(all, query, category));
   const reviewCount = review?.length ?? 0;
+  const filtering = query.trim() !== '' || category !== null;
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <AppText variant="title" accessibilityRole="header" style={styles.flex}>
-          Activity
-        </AppText>
-        <IconButton
-          icon="plus"
-          accessibilityLabel="Add transaction"
-          onPress={() => router.push('/add')}
-        />
-      </View>
+      <ScreenHeader
+        title="Activity"
+        right={
+          <IconButton
+            icon="plus"
+            accessibilityLabel="Add transaction"
+            onPress={() => router.push('/add')}
+          />
+        }
+      />
 
       <SearchField
         value={query}
@@ -128,17 +136,17 @@ export function ActivityScreen() {
         style={styles.filterStrip}
         accessibilityLabel="Filter by category"
       >
-        <Pressable
+        <Touchable
           onPress={() => setCategory(null)}
+          feedback="scale"
           accessibilityRole="button"
           accessibilityLabel="All categories"
           accessibilityState={{ selected: category === null }}
-          style={({ pressed }) => pressed && styles.pressed}
         >
           <Glass
             variant="light"
             radius={radius.pill}
-            shadow={false}
+            elevation="none"
             fixed
             contentStyle={[
               styles.allChip,
@@ -148,7 +156,7 @@ export function ActivityScreen() {
             {category === null ? <Icon name="check" size={iconSize.sm} color={colors.ink} /> : null}
             <AppText variant="bodyStrong">All</AppText>
           </Glass>
-        </Pressable>
+        </Touchable>
         {filterIds.map((id) => (
           <CategoryChip
             key={id}
@@ -160,32 +168,44 @@ export function ActivityScreen() {
       </ScrollView>
 
       {reviewCount > 0 ? (
-        <Pressable
-          onPress={() => router.push('/review')}
-          accessibilityRole="button"
-          accessibilityLabel={`${reviewCount} transactions to review`}
-          accessibilityHint="Opens the review queue"
-          style={({ pressed }) => pressed && styles.pressed}
-        >
-          <Glass variant="light" radius={radius.row} contentStyle={styles.reviewRow}>
-            <View style={[styles.reviewIcon, { backgroundColor: colors.headsUp.bg }]}>
-              <Icon name="inbox" size={iconSize.md} color={colors.headsUp.text} />
-            </View>
-            <AppText variant="bodyStrong" style={styles.flex}>
-              {reviewCount} to review
-            </AppText>
-            <Icon name="chevronRight" size={iconSize.md} color={colors.ink2} />
-          </Glass>
-        </Pressable>
+        <ListCard>
+          <ListRow
+            title={`${reviewCount} to review`}
+            leading={<IconTile icon="inbox" tone="headsUp" />}
+            chevron
+            onPress={() => router.push('/review')}
+            accessibilityLabel={`${reviewCount} transactions to review`}
+            accessibilityHint="Opens the review queue"
+          />
+        </ListCard>
       ) : null}
 
-      {transactions !== undefined && groups.length === 0 ? (
-        <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.empty}>
-          <AppText variant="heading">No matches</AppText>
-          <AppText variant="body" color={colors.ink2}>
-            Try another merchant name or category.
-          </AppText>
-        </Glass>
+      {transactions === undefined ? (
+        <SkeletonList count={5} label="Loading transactions" />
+      ) : groups.length === 0 ? (
+        filtering ? (
+          <EmptyState
+            icon="search"
+            tone="neutral"
+            title="No matches"
+            body="Try another merchant name or category."
+            action={{
+              label: 'Clear search and filters',
+              variant: 'secondary',
+              onPress: () => {
+                setQuery('');
+                setCategory(null);
+              },
+            }}
+          />
+        ) : (
+          <EmptyState
+            icon="activity"
+            title="No transactions yet"
+            body="Purchases show up here as your bank alerts arrive. You can also add one by hand."
+            action={{ label: 'Add a transaction', onPress: () => router.push('/add') }}
+          />
+        )
       ) : null}
 
       {groups.map((group) => {
@@ -201,32 +221,28 @@ export function ActivityScreen() {
               <AppText variant="label" color={colors.ink2} style={styles.flex}>
                 {heading}
               </AppText>
-              <AppText variant="captionStrong" color={colors.ink2} style={styles.tabular}>
+              <AppText variant="captionStrong" color={colors.ink2} tabular>
                 {formatMoney(group.totalMinor)}
               </AppText>
             </View>
-            <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-              {group.items.map((tx, i) => (
-                <View
+            <ListCard>
+              {group.items.map((tx) => (
+                <TransactionRow
                   key={tx.id}
-                  style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-                >
-                  <TransactionRow
-                    merchant={tx.merchantName ?? tx.merchantRaw ?? 'Unknown merchant'}
-                    amountCents={tx.amountMinor}
-                    categoryId={tx.categoryId}
-                    timeLabel={formatTime(new Date(tx.occurredAt))}
-                    {...rowProps(tx)}
-                    {...(tx.status === 'needs_review'
-                      ? { badge: { kind: 'review' as const, label: 'Needs review' } }
-                      : {})}
-                    onPress={() =>
-                      router.push({ pathname: '/transaction/[id]', params: { id: tx.id } })
-                    }
-                  />
-                </View>
+                  merchant={tx.merchantName ?? tx.merchantRaw ?? 'Unknown merchant'}
+                  amountCents={tx.amountMinor}
+                  categoryId={tx.categoryId}
+                  timeLabel={formatTime(new Date(tx.occurredAt))}
+                  {...rowProps(tx)}
+                  {...(tx.status === 'needs_review'
+                    ? { badge: { kind: 'review' as const, label: 'Needs review' } }
+                    : {})}
+                  onPress={() =>
+                    router.push({ pathname: '/transaction/[id]', params: { id: tx.id } })
+                  }
+                />
               ))}
-            </Glass>
+            </ListCard>
           </View>
         );
       })}
@@ -236,8 +252,6 @@ export function ActivityScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  pressed: { opacity: 0.7 },
   filterStrip: { marginHorizontal: -layout.screenPadding },
   filters: { gap: space.sm, paddingHorizontal: layout.screenPadding },
   allChip: {
@@ -248,30 +262,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     borderWidth: 2,
   },
-  reviewRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.md,
-    minHeight: layout.touchTarget + space.lg,
-  },
-  reviewIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  empty: { padding: layout.cardPadding, gap: space.xs },
-  group: { gap: space.sm },
+  group: { gap: space.sm, marginTop: space.xs },
   dayHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
+    minHeight: 24,
     paddingHorizontal: space.xs,
   },
-  tabular: { fontVariant: ['tabular-nums'] },
-  list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
 });

@@ -5,17 +5,21 @@ import {
   AppText,
   BudgetRow,
   Button,
-  Glass,
+  Card,
+  EmptyState,
+  ListCard,
   OnDeviceBadge,
   PaceBar,
   Screen,
+  ScreenHeader,
   SectionLabel,
+  SkeletonHero,
 } from '@/components';
 import { useData, useNow } from '@/data';
 import { categoryBudgets, monthProgress, overallBudget, safeToSpend } from '@/lib/budget';
 import { formatMonth, formatShortDate, monthRange } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { layout, radius, space, useTheme } from '@/theme';
+import { space, useTheme } from '@/theme';
 
 const money = (cents: number) => formatMoney(cents, { cents: 'auto' });
 
@@ -41,16 +45,11 @@ export function BudgetsScreen() {
 
   return (
     <Screen>
-      <View>
-        <AppText variant="caption" color={colors.ink2}>
-          {formatMonth(now)}
-        </AppText>
-        <AppText variant="title" accessibilityRole="header">
-          Budgets
-        </AppText>
-      </View>
+      <ScreenHeader eyebrow={formatMonth(now)} title="Budgets" />
 
-      {rows === undefined || subscriptions === undefined ? null : overall ? (
+      {rows === undefined || subscriptions === undefined ? (
+        <SkeletonHero label="Loading budgets" />
+      ) : overall ? (
         (() => {
           const safe = safeToSpend(
             overall,
@@ -58,7 +57,7 @@ export function BudgetsScreen() {
             now,
           );
           return (
-            <Glass variant="strong" radius={radius.card} contentStyle={styles.overall}>
+            <Card tier="hero" contentStyle={styles.overall}>
               <View style={styles.overallHeader}>
                 <AppText variant="heading" color={colors.ink2}>
                   Safe to spend
@@ -86,17 +85,17 @@ export function BudgetsScreen() {
                 onPress={() => edit(null)}
                 style={styles.alignStart}
               />
-            </Glass>
+            </Card>
           );
         })()
       ) : (
-        <Glass variant="strong" radius={radius.card} contentStyle={styles.overall}>
-          <AppText variant="heading">Set a monthly budget</AppText>
-          <AppText variant="body" color={colors.ink2}>
-            One number for the month. We'll show what's safe to spend each day.
-          </AppText>
-          <Button label="Set monthly budget" onPress={() => edit(null)} />
-        </Glass>
+        <EmptyState
+          tier="hero"
+          icon="budgets"
+          title="Set a monthly budget"
+          body="One number for the month. We'll show what's safe to spend each day."
+          action={{ label: 'Set monthly budget', onPress: () => edit(null) }}
+        />
       )}
 
       <Button
@@ -109,23 +108,19 @@ export function BudgetsScreen() {
 
       <SectionLabel>Categories</SectionLabel>
       {categories.length > 0 ? (
-        <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-          {categories.map((row, i) => (
-            <View
+        <ListCard>
+          {categories.map((row) => (
+            <BudgetRow
               key={row.budget.id}
-              style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-            >
-              <BudgetRow
-                row={row}
-                monthRatio={monthRatio}
-                now={now}
-                onPress={() => edit(row.budget.categoryId)}
-              />
-            </View>
+              row={row}
+              monthRatio={monthRatio}
+              now={now}
+              onPress={() => edit(row.budget.categoryId)}
+            />
           ))}
-        </Glass>
+        </ListCard>
       ) : rows !== undefined ? (
-        <AppText variant="body" color={colors.ink2}>
+        <AppText variant="body" color={colors.ink2} style={styles.note}>
           No category budgets yet.
         </AppText>
       ) : null}
@@ -137,7 +132,7 @@ export function BudgetsScreen() {
 
 const styles = StyleSheet.create({
   alignStart: { alignSelf: 'flex-start', marginLeft: -space.lg },
-  overall: { padding: layout.cardPadding + 2, gap: space.sm },
+  overall: { gap: space.sm },
   overallHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -145,6 +140,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: space.sm,
   },
-  list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
+  note: { paddingHorizontal: space.xs },
 });

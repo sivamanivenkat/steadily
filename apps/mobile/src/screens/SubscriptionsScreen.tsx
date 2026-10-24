@@ -1,22 +1,25 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import {
   AppText,
+  BottomSheet,
   Button,
+  Card,
   CategoryTile,
+  EmptyState,
   Glass,
+  ListCard,
   OnDeviceBadge,
   Screen,
   ScreenHeader,
   SectionLabel,
   StatusPill,
+  Touchable,
 } from '@/components';
 import { useData, useDataSource, useNow } from '@/data';
 import type { Subscription, SubscriptionSummary } from '@/data/types';
-import { useReduceMotion } from '@/hooks/useAccessibilitySettings';
 import { formatShortDate } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
 import {
@@ -73,12 +76,12 @@ function SubscriptionRow({
     .filter(Boolean)
     .join(', ');
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint="Shows recent charges"
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={styles.row}
     >
       <CategoryTile categoryId={sub.categoryId} />
       <View style={styles.rowText}>
@@ -96,7 +99,7 @@ function SubscriptionRow({
           {CADENCE_SUFFIX[sub.cadence]}
         </AppText>
       </AppText>
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -113,8 +116,6 @@ function SubscriptionSheet({
   onClose: () => void;
 }) {
   const { colors } = useTheme();
-  const reduceMotion = useReduceMotion();
-  const insets = useSafeAreaInsets();
   const id = summary?.subscription.id ?? null;
   const { data: charges } = useData(
     (source) => (id ? source.listSubscriptionCharges(id) : Promise.resolve([])),
@@ -124,110 +125,88 @@ function SubscriptionSheet({
   const change = summary ? priceChange(summary) : null;
 
   return (
-    <Modal
+    <BottomSheet
       visible={summary !== null}
-      transparent
-      animationType={reduceMotion ? 'fade' : 'slide'}
-      onRequestClose={onClose}
-      statusBarTranslucent
-      navigationBarTranslucent
+      onClose={onClose}
+      maxHeight="90%"
+      contentStyle={styles.sheetBody}
     >
-      <View style={styles.sheetRoot}>
-        <Pressable
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.hairline }]}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Dismiss"
-        />
-        {sub ? (
-          <Glass
-            variant="strong"
-            radius={radius.card}
-            style={styles.sheet}
-            contentStyle={styles.sheetBody}
+      {sub ? (
+        <ScrollView contentContainerStyle={styles.sheetContent}>
+          <View style={styles.sheetHeader}>
+            <CategoryTile categoryId={sub.categoryId} />
+            <AppText variant="heading" accessibilityRole="header" style={styles.flex}>
+              {sub.merchantName}
+            </AppText>
+          </View>
+          <AppText
+            variant="amountL"
+            accessibilityLabel={`${spokenMoney(sub.amountMinor)} ${CADENCE_SPOKEN[sub.cadence]}`}
           >
-            <ScrollView
-              contentContainerStyle={[
-                styles.sheetContent,
-                { paddingBottom: insets.bottom + space.lg },
-              ]}
+            {formatMoney(sub.amountMinor)}
+            <AppText variant="body" color={colors.ink2}>
+              {CADENCE_SUFFIX[sub.cadence]}
+            </AppText>
+          </AppText>
+          <AppText variant="caption" color={colors.ink2}>
+            {CADENCE_LABEL[sub.cadence]} · next charge {formatShortDate(nextDueDate(sub, now))}
+          </AppText>
+          {change ? (
+            <View
+              accessible
+              accessibilityLabel={`Was ${spokenMoney(change.previousMinor)}, now ${spokenMoney(sub.amountMinor)}`}
+              style={styles.changeLine}
             >
-              <View style={styles.sheetHeader}>
-                <CategoryTile categoryId={sub.categoryId} />
-                <AppText variant="heading" accessibilityRole="header" style={styles.flex}>
-                  {sub.merchantName}
-                </AppText>
-              </View>
-              <AppText
-                variant="amountL"
-                accessibilityLabel={`${spokenMoney(sub.amountMinor)} ${CADENCE_SPOKEN[sub.cadence]}`}
-              >
-                {formatMoney(sub.amountMinor)}
-                <AppText variant="body" color={colors.ink2}>
-                  {CADENCE_SUFFIX[sub.cadence]}
-                </AppText>
-              </AppText>
+              <PriceBadge change={change} />
               <AppText variant="caption" color={colors.ink2}>
-                {CADENCE_LABEL[sub.cadence]} · next charge {formatShortDate(nextDueDate(sub, now))}
+                Was {formatMoney(change.previousMinor)}, now {formatMoney(sub.amountMinor)}
               </AppText>
-              {change ? (
-                <View
-                  accessible
-                  accessibilityLabel={`Was ${spokenMoney(change.previousMinor)}, now ${spokenMoney(sub.amountMinor)}`}
-                  style={styles.changeLine}
-                >
-                  <PriceBadge change={change} />
-                  <AppText variant="caption" color={colors.ink2}>
-                    Was {formatMoney(change.previousMinor)}, now {formatMoney(sub.amountMinor)}
-                  </AppText>
-                </View>
-              ) : null}
+            </View>
+          ) : null}
 
-              <SectionLabel>Recent charges</SectionLabel>
-              {charges === undefined ? (
-                <AppText variant="caption" color={colors.ink2}>
-                  Loading charges…
-                </AppText>
-              ) : charges.length === 0 ? (
-                <AppText variant="caption" color={colors.ink2}>
-                  No charges logged on this phone yet.
-                </AppText>
-              ) : (
-                <View>
-                  {charges.map((tx, i) => {
-                    const date = formatShortDate(new Date(tx.occurredAt));
-                    return (
-                      <View
-                        key={tx.id}
-                        accessible
-                        accessibilityLabel={`${date}: ${spokenMoney(tx.amountMinor)}`}
-                        style={[
-                          styles.chargeRow,
-                          i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
-                        ]}
-                      >
-                        <AppText variant="body" style={styles.flex}>
-                          {date}
-                        </AppText>
-                        <AppText variant="amount">{formatMoney(tx.amountMinor)}</AppText>
-                      </View>
-                    );
-                  })}
-                </View>
-              )}
+          <SectionLabel>Recent charges</SectionLabel>
+          {charges === undefined ? (
+            <AppText variant="caption" color={colors.ink2}>
+              Loading charges…
+            </AppText>
+          ) : charges.length === 0 ? (
+            <AppText variant="caption" color={colors.ink2}>
+              No charges logged on this phone yet.
+            </AppText>
+          ) : (
+            <View>
+              {charges.map((tx, i) => {
+                const date = formatShortDate(new Date(tx.occurredAt));
+                return (
+                  <View
+                    key={tx.id}
+                    accessible
+                    accessibilityLabel={`${date}: ${spokenMoney(tx.amountMinor)}`}
+                    style={[
+                      styles.chargeRow,
+                      i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
+                    ]}
+                  >
+                    <AppText variant="body" style={styles.flex}>
+                      {date}
+                    </AppText>
+                    <AppText variant="amount">{formatMoney(tx.amountMinor)}</AppText>
+                  </View>
+                );
+              })}
+            </View>
+          )}
 
-              <Button
-                label="Not a subscription"
-                variant="neutralTint"
-                accessibilityHint="Stops counting it in subscriptions and safe to spend"
-                onPress={() => onDismissSubscription(sub)}
-              />
-              <Button label="Close" variant="accentTint" onPress={onClose} />
-            </ScrollView>
-          </Glass>
-        ) : null}
-      </View>
-    </Modal>
+          <Button
+            label="Not a subscription"
+            variant="neutralTint"
+            accessibilityHint="Stops counting it in subscriptions and safe to spend"
+            onPress={() => onDismissSubscription(sub)}
+          />
+          <Button label="Close" variant="accentTint" onPress={onClose} />
+        </ScrollView>
+      ) : null}
+    </BottomSheet>
   );
 }
 
@@ -283,24 +262,23 @@ export function SubscriptionsScreen() {
       ) : null}
 
       {subscriptions === undefined ? (
-        <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
+        <Card>
           <AppText variant="body" color={colors.ink2} accessibilityLiveRegion="polite">
             {error !== undefined
               ? 'Could not load subscriptions. Try again in a moment.'
               : 'Looking for repeating charges…'}
           </AppText>
-        </Glass>
+        </Card>
       ) : count === 0 ? (
-        <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
-          <AppText variant="heading">No subscriptions found yet</AppText>
-          <AppText variant="body" color={colors.ink2}>
-            When the same charge repeats, like a streaming plan or a gym, Steadily lists it here
-            with the next due date.
-          </AppText>
-        </Glass>
+        <EmptyState
+          tier="hero"
+          icon="repeat"
+          title="No subscriptions found yet"
+          body="When the same charge repeats, like a streaming plan or a gym, Steadily lists it here with the next due date."
+        />
       ) : (
         <>
-          <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
+          <Card tier="hero" contentStyle={styles.card}>
             <View style={styles.cardHeader}>
               <AppText variant="heading" color={colors.ink2}>
                 Every month
@@ -316,23 +294,19 @@ export function SubscriptionsScreen() {
             <AppText variant="caption" color={colors.ink2}>
               {`About this much a month for ${count} ${count === 1 ? 'subscription' : 'subscriptions'}, spotted from repeating charges on this phone.`}
             </AppText>
-          </Glass>
+          </Card>
 
           <SectionLabel>Next up first</SectionLabel>
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-            {subscriptions.map((summary, i) => (
-              <View
+          <ListCard>
+            {subscriptions.map((summary) => (
+              <SubscriptionRow
                 key={summary.subscription.id}
-                style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-              >
-                <SubscriptionRow
-                  summary={summary}
-                  now={now}
-                  onPress={() => setOpenId(summary.subscription.id)}
-                />
-              </View>
+                summary={summary}
+                now={now}
+                onPress={() => setOpenId(summary.subscription.id)}
+              />
             ))}
-          </Glass>
+          </ListCard>
         </>
       )}
 
@@ -348,8 +322,7 @@ export function SubscriptionsScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  pressed: { opacity: 0.7 },
-  card: { padding: layout.cardPadding, gap: space.sm },
+  card: { gap: space.sm },
   cardHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -365,24 +338,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingVertical: space.sm,
   },
-  list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    minHeight: layout.touchTarget + layout.rowPaddingVertical,
+    minHeight: layout.rowMinHeight,
     paddingVertical: layout.rowPaddingVertical,
   },
-  rowText: { flex: 1, gap: 2 },
+  rowText: { flex: 1, minWidth: 0, gap: space.xxs },
   amount: { flexShrink: 0, textAlign: 'right' },
-  sheetRoot: { flex: 1, justifyContent: 'flex-end' },
-  sheet: { maxHeight: '90%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
-  sheetBody: { flexShrink: 1, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
+  // The sheet scrolls its own content edge to edge; the scroll view carries the padding.
+  sheetBody: { paddingHorizontal: 0 },
   sheetContent: {
     gap: space.md,
-    paddingTop: space.xl,
+    paddingTop: space.xs,
     paddingHorizontal: layout.screenPadding,
+    paddingBottom: space.xs,
   },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   changeLine: { gap: space.xs },

@@ -1,10 +1,11 @@
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { Glass } from './Glass';
 import { Icon, type IconName } from './Icon';
+import { Touchable } from './Touchable';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'accentTint' | 'neutralTint' | 'link';
 
@@ -14,8 +15,10 @@ type ButtonProps = {
   variant?: ButtonVariant;
   icon?: IconName;
   disabled?: boolean;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
+  /** Work in progress: shows a spinner, announces busy and ignores taps. */
+  loading?: boolean;
+  accessibilityLabel?: string | undefined;
+  accessibilityHint?: string | undefined;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 };
@@ -31,12 +34,14 @@ export function Button({
   variant = 'primary',
   icon,
   disabled = false,
+  loading = false,
   accessibilityLabel,
   accessibilityHint,
   style,
   testID,
 }: ButtonProps) {
   const { colors } = useTheme();
+  const inactive = disabled || loading;
 
   const textColor =
     variant === 'primary'
@@ -47,7 +52,11 @@ export function Button({
 
   const content = (
     <>
-      {icon ? <Icon name={icon} size={iconSize.md} color={textColor} /> : null}
+      {loading ? (
+        <ActivityIndicator size="small" color={textColor} />
+      ) : icon ? (
+        <Icon name={icon} size={iconSize.md} color={textColor} />
+      ) : null}
       <AppText variant="bodyStrong" color={textColor} style={styles.label}>
         {label}
       </AppText>
@@ -60,7 +69,7 @@ export function Button({
       <Glass
         variant="light"
         radius={radius.button}
-        shadow={false}
+        elevation="none"
         fixed
         contentStyle={styles.inner}
       >
@@ -80,22 +89,19 @@ export function Button({
   }
 
   return (
-    <Pressable
+    <Touchable
       onPress={onPress}
-      disabled={disabled}
+      disabled={inactive}
+      feedback={variant === 'link' ? 'opacity' : 'scale'}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled: inactive, busy: loading }}
       testID={testID}
-      style={({ pressed }) => [
-        style,
-        disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
-      ]}
+      style={[style, disabled && !loading && styles.disabled]}
     >
       {body}
-    </Pressable>
+    </Touchable>
   );
 }
 
@@ -111,6 +117,5 @@ const styles = StyleSheet.create({
   },
   solid: { borderRadius: radius.button },
   label: { textAlign: 'center', flexShrink: 1 },
-  pressed: { opacity: 0.7 },
   disabled: { opacity: 0.45 },
 });
