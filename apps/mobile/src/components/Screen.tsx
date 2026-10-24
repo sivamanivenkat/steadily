@@ -101,7 +101,9 @@ export function Screen({
         contentStyle,
       ]}
       // Keep the scroll indicator out from under the floating bar too.
-      scrollIndicatorInsets={withTabBar && !footer ? { bottom: clearance - insets.bottom } : undefined}
+      scrollIndicatorInsets={
+        withTabBar && !footer ? { bottom: clearance - insets.bottom } : undefined
+      }
       contentInsetAdjustmentBehavior="never"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"

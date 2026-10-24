@@ -67,13 +67,7 @@ function KindPicker({
 }) {
   const { colors } = useTheme();
   return (
-    <Glass
-      variant="light"
-      radius={radius.pill}
-      elevation="none"
-      fixed
-      contentStyle={styles.kinds}
-    >
+    <Glass variant="light" radius={radius.pill} elevation="none" fixed contentStyle={styles.kinds}>
       <View style={styles.kindRow} accessibilityRole="radiogroup" accessibilityLabel="Type">
         {KINDS.map((kind) => {
           const selected = kind.value === value;
@@ -86,9 +80,7 @@ function KindPicker({
               accessibilityState={{ checked: selected }}
               style={[styles.kind, selected && { backgroundColor: colors.accentTint }]}
             >
-              {selected ? (
-                <Icon name="check" size={iconSize.sm} color={colors.accentInk} />
-              ) : null}
+              {selected ? <Icon name="check" size={iconSize.sm} color={colors.accentInk} /> : null}
               <AppText
                 variant={selected ? 'bodyStrong' : 'body'}
                 color={selected ? colors.accentInk : colors.ink2}
@@ -226,13 +218,7 @@ export function AddTransactionScreen() {
       </Card>
 
       <SectionLabel>{kind === 'income' ? 'From' : 'Merchant'}</SectionLabel>
-      <Glass
-        variant="light"
-        radius={radius.row}
-        elevation="none"
-        fixed
-        contentStyle={styles.field}
-      >
+      <Glass variant="light" radius={radius.row} elevation="none" fixed contentStyle={styles.field}>
         <TextInput
           value={merchant}
           onChangeText={setMerchant}
@@ -310,13 +296,7 @@ export function AddTransactionScreen() {
       </Glass>
 
       <SectionLabel>Note (optional)</SectionLabel>
-      <Glass
-        variant="light"
-        radius={radius.row}
-        elevation="none"
-        fixed
-        contentStyle={styles.field}
-      >
+      <Glass variant="light" radius={radius.row} elevation="none" fixed contentStyle={styles.field}>
         <TextInput
           value={note}
           onChangeText={setNote}
