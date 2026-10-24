@@ -13,6 +13,8 @@ type ConfirmSheetProps = {
   cancelLabel: string;
   onConfirm: () => void;
   onCancel: () => void;
+  /** The confirm action deletes something that cannot be undone: uses the destructive button. */
+  destructive?: boolean;
 };
 
 /** Bottom sheet that asks the user to confirm one choice. */
@@ -24,6 +26,7 @@ export function ConfirmSheet({
   cancelLabel,
   onConfirm,
   onCancel,
+  destructive = false,
 }: ConfirmSheetProps) {
   const { colors } = useTheme();
 
@@ -37,7 +40,11 @@ export function ConfirmSheet({
           {paragraph}
         </AppText>
       ))}
-      <Button label={confirmLabel} onPress={onConfirm} />
+      <Button
+        label={confirmLabel}
+        variant={destructive ? 'destructive' : 'primary'}
+        onPress={onConfirm}
+      />
       <Button label={cancelLabel} variant="neutralTint" onPress={onCancel} />
     </BottomSheet>
   );
