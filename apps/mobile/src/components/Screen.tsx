@@ -22,6 +22,8 @@ type ScreenProps = {
   withTabBar?: boolean;
   /** 16 pt side padding instead of 20, for dense screens. */
   dense?: boolean;
+  /** Caps the column at `layout.readableWidth`, centered, for text-heavy screens on wide displays. */
+  readable?: boolean;
   /** Extra layout for the scroll content (merged last). */
   contentStyle?: StyleProp<ViewStyle>;
   /**
@@ -79,6 +81,7 @@ export function Screen({
   children,
   withTabBar = true,
   dense = false,
+  readable = false,
   contentStyle,
   footer,
 }: ScreenProps) {
@@ -98,6 +101,7 @@ export function Screen({
           paddingLeft: insets.left + side,
           paddingRight: insets.right + side,
         },
+        readable && styles.readable,
         contentStyle,
       ]}
       // Keep the scroll indicator out from under the floating bar too.
@@ -134,4 +138,5 @@ const styles = StyleSheet.create({
     gap: layout.cardGap,
   },
   footer: { paddingTop: space.sm, gap: space.sm },
+  readable: { width: '100%', maxWidth: layout.readableWidth, alignSelf: 'center' },
 });

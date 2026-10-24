@@ -32,6 +32,8 @@ export const layout = {
   sectionLabelPull: -4,
   /** Minimum touch target edge (iOS HIG 44pt; Android 48dp is met by padding where needed). */
   touchTarget: 44,
+  /** Widest a text-heavy screen's column gets on tablets and landscape, so lines stay readable. */
+  readableWidth: 640,
 } as const;
 
 /**

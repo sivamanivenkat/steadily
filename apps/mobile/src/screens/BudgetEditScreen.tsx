@@ -160,6 +160,7 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
             : 'Your transactions stay as they are. Only the limit for this category goes away.',
         ]}
         confirmLabel="Remove"
+        destructive
         cancelLabel="Keep budget"
         onConfirm={() => void remove()}
         onCancel={() => setConfirmingRemove(false)}
