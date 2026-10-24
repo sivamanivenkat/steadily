@@ -5,7 +5,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -16,13 +15,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   AppText,
   Button,
+  EmptyState,
   EntranceView,
   Glass,
   Icon,
   OnDeviceBadge,
   ScreenBackground,
   ScreenHeader,
+  SectionLabel,
   StatusPill,
+  Touchable,
   useTabBarClearance,
 } from '@/components';
 import { useDataSource } from '@/data';
@@ -85,12 +87,17 @@ function AnswerCard({ entry, onRetry }: { entry: Entry; onRetry: () => void }) {
 
   if (entry.state === 'loading') {
     return (
-      <Glass variant="strong" radius={radius.cardSmall} contentStyle={styles.answer}>
+      <Glass
+        variant="strong"
+        elevation="soft"
+        radius={radius.cardSmall}
+        contentStyle={styles.answer}
+      >
         <View
           style={styles.loading}
           accessible
-          accessibilityRole="progressbar"
           accessibilityLabel="Working on your answer"
+          accessibilityState={{ busy: true }}
           accessibilityLiveRegion="polite"
         >
           <ActivityIndicator color={colors.accent} />
@@ -104,7 +111,12 @@ function AnswerCard({ entry, onRetry }: { entry: Entry; onRetry: () => void }) {
 
   if (entry.state === 'error' || !entry.turn) {
     return (
-      <Glass variant="strong" radius={radius.cardSmall} contentStyle={styles.answer}>
+      <Glass
+        variant="strong"
+        elevation="soft"
+        radius={radius.cardSmall}
+        contentStyle={styles.answer}
+      >
         <View accessible accessibilityRole="alert" accessibilityLiveRegion="assertive">
           <AppText variant="heading">That did not work</AppText>
           <AppText variant="body" color={colors.ink2}>
@@ -119,7 +131,12 @@ function AnswerCard({ entry, onRetry }: { entry: Entry; onRetry: () => void }) {
   const { turn } = entry;
   return (
     <EntranceView>
-      <Glass variant="strong" radius={radius.cardSmall} contentStyle={styles.answer}>
+      <Glass
+        variant="strong"
+        elevation="soft"
+        radius={radius.cardSmall}
+        contentStyle={styles.answer}
+      >
         <AppText
           variant="body"
           accessibilityLabel={spokenText(turn.text)}
@@ -134,7 +151,8 @@ function AnswerCard({ entry, onRetry }: { entry: Entry; onRetry: () => void }) {
   );
 }
 
-function EmptyState({
+/** First view of Ask: what it does, where answers come from, and questions to start with. */
+function AskIntro({
   available,
   onPick,
 }: {
@@ -143,40 +161,52 @@ function EmptyState({
 }) {
   const { colors } = useTheme();
   return (
-    <View style={styles.empty}>
-      <Glass variant="strong" radius={radius.cardSmall} contentStyle={styles.answer}>
-        <AppText variant="heading">Ask about your money</AppText>
-        <AppText variant="body" color={colors.ink2}>
-          {available
+    <View style={styles.intro}>
+      <EmptyState
+        tier="hero"
+        icon="ask"
+        title="Ask about your money"
+        body={
+          available
             ? 'Your questions are answered on this phone, from the transactions you have saved here. Nothing leaves your phone unless you turn on cloud AI in Settings.'
-            : 'Asking is not available in this build yet.'}
-        </AppText>
-        {available ? <OnDeviceBadge /> : null}
-      </Glass>
+            : 'Asking is not available in this build yet.'
+        }
+      >
+        {available ? (
+          <View style={styles.badgeWrap}>
+            <OnDeviceBadge />
+          </View>
+        ) : null}
+      </EmptyState>
       {available ? (
-        <View style={styles.chips} accessibilityLabel="Suggested questions">
-          {ASK_SUGGESTIONS.map((suggestion) => (
-            <Pressable
-              key={suggestion}
-              onPress={() => onPick(suggestion)}
-              accessibilityRole="button"
-              accessibilityLabel={suggestion}
-              style={({ pressed }) => pressed && styles.pressed}
-            >
-              <Glass
-                variant="light"
-                radius={radius.pill}
-                shadow={false}
-                fixed
-                contentStyle={styles.chip}
+        <>
+          <SectionLabel>Try asking</SectionLabel>
+          <View style={styles.chips} accessibilityLabel="Suggested questions">
+            {ASK_SUGGESTIONS.map((suggestion) => (
+              <Touchable
+                key={suggestion}
+                onPress={() => onPick(suggestion)}
+                feedback="scale"
+                accessibilityRole="button"
+                accessibilityLabel={suggestion}
+                accessibilityHint="Asks this question"
               >
-                <AppText variant="bodyStrong" color={colors.accentInk}>
-                  {suggestion}
-                </AppText>
-              </Glass>
-            </Pressable>
-          ))}
-        </View>
+                <Glass
+                  variant="light"
+                  radius={radius.pill}
+                  elevation="none"
+                  fixed
+                  contentStyle={styles.chip}
+                >
+                  <Icon name="ask" size={iconSize.sm} color={colors.accentInk} />
+                  <AppText variant="bodyStrong" color={colors.accentInk} style={styles.chipText}>
+                    {suggestion}
+                  </AppText>
+                </Glass>
+              </Touchable>
+            ))}
+          </View>
+        </>
       ) : null}
     </View>
   );
@@ -285,8 +315,8 @@ export function AskScreen() {
           onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}
         >
           <ScreenHeader
+            eyebrow="Answers come from this phone"
             title="Ask"
-            subtitle="Answers come from this phone"
             right={
               entries.length > 0 ? (
                 <Button
@@ -299,7 +329,7 @@ export function AskScreen() {
             }
           />
           {entries.length === 0 ? (
-            <EmptyState available={available} onPick={send} />
+            <AskIntro available={available} onPick={send} />
           ) : (
             entries.map((entry) => (
               <View key={entry.key} style={styles.turn}>
@@ -341,26 +371,39 @@ export function AskScreen() {
               style={[type.body, styles.input, { color: colors.ink }]}
             />
           </Glass>
-          <Pressable
+          <Touchable
             onPress={() => send(draft)}
             disabled={!canSend}
+            feedback="scale"
             accessibilityRole="button"
             accessibilityLabel="Send"
-            accessibilityState={{ disabled: !canSend }}
-            style={({ pressed }) => [
+            accessibilityState={{ disabled: !canSend, busy }}
+            hitSlop={SEND_HIT_SLOP}
+            style={[
               styles.send,
-              { backgroundColor: colors.accent },
-              !canSend && styles.disabled,
-              pressed && canSend && styles.pressed,
+              canSend
+                ? { backgroundColor: colors.accent }
+                : { backgroundColor: colors.neutralTint, borderColor: colors.hairline },
             ]}
           >
-            <Icon name="arrowUp" size={iconSize.md} color={colors.onAccent} />
-          </Pressable>
+            {busy ? (
+              <ActivityIndicator size="small" color={colors.ink2} />
+            ) : (
+              <Icon
+                name="arrowUp"
+                size={iconSize.md}
+                color={canSend ? colors.onAccent : colors.ink2}
+              />
+            )}
+          </Touchable>
         </View>
       </KeyboardAvoidingView>
     </ScreenBackground>
   );
 }
+
+/** The send button is 44 pt; this lifts its hit area to the 48 dp Android minimum. */
+const SEND_HIT_SLOP = { top: 2, bottom: 2, left: 2, right: 2 };
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -375,14 +418,18 @@ const styles = StyleSheet.create({
   },
   answer: { padding: layout.cardPadding, gap: space.md },
   loading: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  empty: { gap: layout.cardGap },
+  intro: { gap: layout.cardGap },
+  badgeWrap: { alignItems: 'center' },
   chips: { gap: space.sm, alignItems: 'flex-start' },
   chip: {
     minHeight: layout.touchTarget,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
     paddingHorizontal: space.lg,
     paddingVertical: space.sm,
   },
+  chipText: { flexShrink: 1 },
   inputBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -397,7 +444,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: 'transparent',
   },
-  pressed: { opacity: 0.7 },
-  disabled: { opacity: 0.45 },
 });
