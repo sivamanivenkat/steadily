@@ -1,18 +1,22 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   AppText,
   BudgetRow,
-  Button,
+  Card,
   CategoryTile,
-  Glass,
-  Icon,
+  EmptyState,
   IconButton,
+  IconTile,
+  ListCard,
+  ListRow,
   PaceBar,
   SafeToSpendCard,
   Screen,
+  ScreenHeader,
   SectionLabel,
+  SkeletonHero,
+  SkeletonList,
   TransactionRow,
   type TransactionBadge,
 } from '@/components';
@@ -28,7 +32,6 @@ import {
 } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
 import { nextDueDate, sortByNextDue } from '@/lib/subscriptions';
-import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 const RECENT_COUNT = 4;
 const BUDGET_COUNT = 3;
@@ -62,7 +65,6 @@ function badgeFor(
 
 export function HomeScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
   const now = useNow();
 
   const { data: budgets } = useData((s) => s.listBudgets(monthRange(now)), [now]);
@@ -89,33 +91,33 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <AppText variant="caption" color={colors.ink2}>
-            {formatLongDate(now)}
-          </AppText>
-          <AppText variant="title" accessibilityRole="header">
-            {greetingFor(now)}
-          </AppText>
-        </View>
-        <IconButton
-          icon="plus"
-          accessibilityLabel="Add transaction"
-          onPress={() => router.push('/add')}
-        />
-        <IconButton
-          icon="chart"
-          accessibilityLabel="Spending trends"
-          onPress={() => router.push('/trends')}
-        />
-        <IconButton
-          icon="settings"
-          accessibilityLabel="Settings"
-          onPress={() => router.push('/settings')}
-        />
-      </View>
+      <ScreenHeader
+        eyebrow={formatLongDate(now)}
+        title={greetingFor(now)}
+        right={
+          <>
+            <IconButton
+              icon="plus"
+              accessibilityLabel="Add transaction"
+              onPress={() => router.push('/add')}
+            />
+            <IconButton
+              icon="chart"
+              accessibilityLabel="Spending trends"
+              onPress={() => router.push('/trends')}
+            />
+            <IconButton
+              icon="settings"
+              accessibilityLabel="Settings"
+              onPress={() => router.push('/settings')}
+            />
+          </>
+        }
+      />
 
-      {budgets === undefined || subscriptions === undefined ? null : safe && monthly ? (
+      {budgets === undefined || subscriptions === undefined ? (
+        <SkeletonHero label="Loading safe to spend" />
+      ) : safe && monthly ? (
         <>
           <SafeToSpendCard
             amountCents={safe.amountMinor}
@@ -123,199 +125,133 @@ export function HomeScreen() {
             perDayCents={safe.perDayMinor}
             {...(monthly.basis === 'categories' ? { basisLabel: CATEGORY_BASIS_LABEL } : {})}
           />
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
+          <Card>
             <AppText variant="heading">
               {monthly.basis === 'categories' ? 'Budgeted categories this month' : 'This month'}
             </AppText>
             <PaceBar spentRatio={safe.spentRatio} monthRatio={monthRatio} />
-          </Glass>
+          </Card>
         </>
       ) : (
-        <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
-          <AppText variant="heading">See what's safe to spend</AppText>
-          <AppText variant="body" color={colors.ink2}>
-            Set a monthly budget and Steadily keeps the daily number for you.
-          </AppText>
-          <Button label="Set a budget" onPress={() => router.navigate('/budgets')} />
-        </Glass>
+        <EmptyState
+          tier="hero"
+          icon="budgets"
+          title="See what's safe to spend"
+          body="Set a monthly budget and Steadily keeps the daily number for you."
+          action={{ label: 'Set a budget', onPress: () => router.navigate('/budgets') }}
+        />
       )}
 
       {toReview > 0 ? (
-        <Pressable
-          onPress={() => router.push('/review')}
-          accessibilityRole="button"
-          accessibilityLabel={`${toReview} transactions to review`}
-          accessibilityHint="Opens the review queue"
-          style={({ pressed }) => pressed && styles.pressed}
-        >
-          <Glass variant="light" radius={radius.row} contentStyle={styles.reviewRow}>
-            <View style={[styles.reviewIcon, { backgroundColor: colors.headsUp.bg }]}>
-              <Icon name="inbox" size={iconSize.md} color={colors.headsUp.text} />
-            </View>
-            <View style={styles.reviewText}>
-              <AppText variant="bodyStrong">{toReview} to review</AppText>
-              <AppText variant="caption" color={colors.ink2}>
-                Confirm categories in a tap
-              </AppText>
-            </View>
-            <Icon name="chevronRight" size={iconSize.md} color={colors.ink2} />
-          </Glass>
-        </Pressable>
+        <ListCard>
+          <ListRow
+            title={`${toReview} to review`}
+            subtitle="Confirm categories in a tap"
+            leading={<IconTile icon="inbox" tone="headsUp" />}
+            chevron
+            onPress={() => router.push('/review')}
+            accessibilityLabel={`${toReview} transactions to review`}
+            accessibilityHint="Opens the review queue"
+          />
+        </ListCard>
       ) : null}
 
       {busiest.length > 0 ? (
         <>
-          <View style={styles.sectionRow}>
-            <View style={styles.flex}>
-              <SectionLabel>Budgets</SectionLabel>
-            </View>
-            <Button
-              label="See all"
-              variant="link"
-              accessibilityLabel="See all budgets"
-              onPress={() => router.navigate('/budgets')}
-              style={styles.edgeRight}
-            />
-          </View>
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-            {busiest.map((row, i) => (
-              <View
+          <SectionLabel
+            action={{
+              label: 'See all',
+              accessibilityLabel: 'See all budgets',
+              onPress: () => router.navigate('/budgets'),
+            }}
+          >
+            Budgets
+          </SectionLabel>
+          <ListCard>
+            {busiest.map((row) => (
+              <BudgetRow
                 key={row.budget.id}
-                style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-              >
-                <BudgetRow
-                  row={row}
-                  monthRatio={monthRatio}
-                  now={now}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/budget-edit',
-                      params: { categoryId: row.budget.categoryId ?? 'overall' },
-                    })
-                  }
-                />
-              </View>
+                row={row}
+                monthRatio={monthRatio}
+                now={now}
+                onPress={() =>
+                  router.push({
+                    pathname: '/budget-edit',
+                    params: { categoryId: row.budget.categoryId ?? 'overall' },
+                  })
+                }
+              />
             ))}
-          </Glass>
+          </ListCard>
         </>
       ) : null}
 
       {upcoming.length > 0 ? (
         <>
-          <View style={styles.sectionRow}>
-            <View style={styles.flex}>
-              <SectionLabel>Upcoming charges</SectionLabel>
-            </View>
-            <Button
-              label="See all"
-              variant="link"
-              accessibilityLabel="See all subscriptions"
-              onPress={() => router.push('/subscriptions')}
-              style={styles.edgeRight}
-            />
-          </View>
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-            {upcoming.map(({ subscription: sub }, i) => {
+          <SectionLabel
+            action={{
+              label: 'See all',
+              accessibilityLabel: 'See all subscriptions',
+              onPress: () => router.push('/subscriptions'),
+            }}
+          >
+            Upcoming charges
+          </SectionLabel>
+          <ListCard>
+            {upcoming.map(({ subscription: sub }) => {
               const due = formatShortDate(nextDueDate(sub, now));
               return (
-                <Pressable
+                <ListRow
                   key={sub.id}
+                  title={sub.merchantName}
+                  subtitle={`Due ${due}`}
+                  leading={<CategoryTile categoryId={sub.categoryId} />}
+                  trailing={<AppText variant="amount">{formatMoney(sub.amountMinor)}</AppText>}
                   onPress={() => router.push('/subscriptions')}
-                  accessibilityRole="button"
                   accessibilityLabel={`${sub.merchantName}, ${spokenMoney(sub.amountMinor)}, due ${due}`}
                   accessibilityHint="Opens subscriptions"
-                  style={({ pressed }) => [
-                    styles.upcomingRow,
-                    i > 0 && [styles.divider, { borderTopColor: colors.hairline }],
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <CategoryTile categoryId={sub.categoryId} />
-                  <View style={styles.reviewText}>
-                    <AppText variant="bodyStrong" numberOfLines={2}>
-                      {sub.merchantName}
-                    </AppText>
-                    <AppText variant="caption" color={colors.ink2}>
-                      Due {due}
-                    </AppText>
-                  </View>
-                  <AppText variant="amount">{formatMoney(sub.amountMinor)}</AppText>
-                </Pressable>
+                />
               );
             })}
-          </Glass>
+          </ListCard>
         </>
       ) : null}
 
-      {recentRows.length > 0 ? (
+      {recent === undefined ? (
+        <SkeletonList count={RECENT_COUNT} label="Loading recent transactions" />
+      ) : recentRows.length > 0 ? (
         <>
-          <SectionLabel>Recent</SectionLabel>
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-            {recentRows.map((tx, i) => {
+          <SectionLabel
+            action={{
+              label: 'See all',
+              accessibilityLabel: 'See all activity',
+              onPress: () => router.navigate('/activity'),
+            }}
+          >
+            Recent
+          </SectionLabel>
+          <ListCard>
+            {recentRows.map((tx) => {
               const badge = badgeFor(tx, subscriptions ?? []);
               return (
-                <View
+                <TransactionRow
                   key={tx.id}
-                  style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-                >
-                  <TransactionRow
-                    merchant={tx.merchantName ?? tx.merchantRaw ?? 'Unknown merchant'}
-                    amountCents={tx.amountMinor}
-                    categoryId={tx.categoryId}
-                    timeLabel={relativeTimeLabel(new Date(tx.occurredAt), now)}
-                    {...(badge ? { badge } : {})}
-                    {...(tx.kind === 'income' ? { kindLabel: 'Income', incoming: true } : {})}
-                    {...(tx.kind === 'transfer' ? { kindLabel: 'Not an expense' } : {})}
-                    onPress={() =>
-                      router.push({ pathname: '/transaction/[id]', params: { id: tx.id } })
-                    }
-                  />
-                </View>
+                  merchant={tx.merchantName ?? tx.merchantRaw ?? 'Unknown merchant'}
+                  amountCents={tx.amountMinor}
+                  categoryId={tx.categoryId}
+                  timeLabel={relativeTimeLabel(new Date(tx.occurredAt), now)}
+                  {...(badge ? { badge } : {})}
+                  {...(tx.kind === 'income' ? { kindLabel: 'Income', incoming: true } : {})}
+                  {...(tx.kind === 'transfer' ? { kindLabel: 'Not an expense' } : {})}
+                  onPress={() =>
+                    router.push({ pathname: '/transaction/[id]', params: { id: tx.id } })
+                  }
+                />
               );
             })}
-          </Glass>
+          </ListCard>
         </>
       ) : null}
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    marginBottom: space.xs,
-  },
-  headerText: { flex: 1, gap: 2 },
-  flex: { flex: 1 },
-  sectionRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm },
-  edgeRight: { marginRight: -space.lg },
-  card: { padding: layout.cardPadding, gap: space.md },
-  pressed: { opacity: 0.7 },
-  reviewRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.md,
-    minHeight: layout.touchTarget + space.lg,
-  },
-  reviewIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  reviewText: { flex: 1, gap: 2 },
-  list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  upcomingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    minHeight: layout.touchTarget + layout.rowPaddingVertical,
-    paddingVertical: layout.rowPaddingVertical,
-  },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
-});
