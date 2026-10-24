@@ -2,7 +2,7 @@ import type { CategoryId } from '@steadily/taxonomy';
 import { StyleSheet, View } from 'react-native';
 
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { layout, radius, space, useTheme } from '@/theme';
+import { iconSize, layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { CategoryTile, categoryMeta } from './CategoryTile';
@@ -59,7 +59,7 @@ export function TransactionRow({
           <View style={[styles.badge, { backgroundColor: colors.headsUp.bg }]}>
             <Icon
               name={badge.kind === 'priceUp' ? 'arrowUp' : 'inbox'}
-              size={12}
+              size={iconSize.badge}
               color={colors.headsUp.text}
               strokeWidth={2.4}
             />
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     gap: space.xs,
     marginTop: space.xs,
     paddingHorizontal: space.sm,
-    paddingVertical: 2,
+    paddingVertical: space.xxs,
     borderRadius: radius.pill,
   },
   amount: {

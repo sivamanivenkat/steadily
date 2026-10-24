@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import {
   AppText,
   BudgetRow,
-  Card,
   CategoryTile,
   EmptyState,
   IconButton,
@@ -118,20 +117,16 @@ export function HomeScreen() {
       {budgets === undefined || subscriptions === undefined ? (
         <SkeletonHero label="Loading safe to spend" />
       ) : safe && monthly ? (
-        <>
-          <SafeToSpendCard
-            amountCents={safe.amountMinor}
-            untilLabel={formatShortDate(endOfMonth)}
-            perDayCents={safe.perDayMinor}
-            {...(monthly.basis === 'categories' ? { basisLabel: CATEGORY_BASIS_LABEL } : {})}
-          />
-          <Card>
-            <AppText variant="heading">
-              {monthly.basis === 'categories' ? 'Budgeted categories this month' : 'This month'}
-            </AppText>
-            <PaceBar spentRatio={safe.spentRatio} monthRatio={monthRatio} />
-          </Card>
-        </>
+        <SafeToSpendCard
+          amountCents={safe.amountMinor}
+          untilLabel={formatShortDate(endOfMonth)}
+          perDayCents={safe.perDayMinor}
+          {...(monthly.basis === 'categories' ? { basisLabel: CATEGORY_BASIS_LABEL } : {})}
+          footerLabel={
+            monthly.basis === 'categories' ? 'Budgeted categories this month' : 'This month'
+          }
+          footer={<PaceBar spentRatio={safe.spentRatio} monthRatio={monthRatio} />}
+        />
       ) : (
         <EmptyState
           tier="hero"
@@ -207,9 +202,11 @@ export function HomeScreen() {
                   subtitle={`Due ${due}`}
                   leading={<CategoryTile categoryId={sub.categoryId} />}
                   trailing={<AppText variant="amount">{formatMoney(sub.amountMinor)}</AppText>}
-                  onPress={() => router.push('/subscriptions')}
+                  onPress={() =>
+                    router.push({ pathname: '/subscriptions', params: { id: sub.id } })
+                  }
                   accessibilityLabel={`${sub.merchantName}, ${spokenMoney(sub.amountMinor)}, due ${due}`}
-                  accessibilityHint="Opens subscriptions"
+                  accessibilityHint="Opens this subscription"
                 />
               );
             })}

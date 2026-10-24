@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { layout, radius, space, useTheme } from '@/theme';
+import { space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
-import { Glass } from './Glass';
+import { Card } from './Card';
 import { OnDeviceBadge } from './OnDeviceBadge';
 
 type SafeToSpendCardProps = {
@@ -14,24 +15,32 @@ type SafeToSpendCardProps = {
   perDayCents: number;
   /** Where the number comes from when it is not the overall budget. */
   basisLabel?: string;
+  /** Label over the footer, e.g. "This month". */
+  footerLabel?: string;
+  /** Under a hairline at the bottom of the card, e.g. the month's pace bar. */
+  footer?: ReactNode;
 };
 
-/** The headline number: what is safe to spend until the end of the period. */
+/**
+ * The headline number: what is safe to spend until the end of the period. Hero tier (strong
+ * glass, raised); an optional footer keeps the month's pace in the same card, so Home has one hero
+ * instead of two stacked cards.
+ */
 export function SafeToSpendCard({
   amountCents,
   untilLabel,
   perDayCents,
   basisLabel,
+  footerLabel,
+  footer,
 }: SafeToSpendCardProps) {
   const { colors } = useTheme();
   const perDay = formatMoney(perDayCents, { cents: 'auto' });
 
   return (
-    <Glass variant="strong" radius={radius.card} contentStyle={styles.content}>
+    <Card tier="hero" contentStyle={styles.content}>
       <View style={styles.header}>
-        <AppText variant="heading" color={colors.ink2}>
-          Safe to spend
-        </AppText>
+        <AppText variant="cardLabel">Safe to spend</AppText>
         <OnDeviceBadge />
       </View>
       <AppText
@@ -45,6 +54,7 @@ export function SafeToSpendCard({
       <AppText
         variant="caption"
         color={colors.ink2}
+        tabular
         accessibilityLabel={`Until ${untilLabel}, about ${spokenMoney(perDayCents)} a day`}
       >
         until {untilLabel} · about {perDay} a day
@@ -54,15 +64,18 @@ export function SafeToSpendCard({
           {basisLabel}
         </AppText>
       ) : null}
-    </Glass>
+      {footer ? (
+        <View style={[styles.footer, { borderTopColor: colors.hairline }]}>
+          {footerLabel ? <AppText variant="cardLabel">{footerLabel}</AppText> : null}
+          {footer}
+        </View>
+      ) : null}
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    padding: layout.cardPadding + 2,
-    gap: space.xs,
-  },
+  content: { gap: space.xs },
   header: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -70,5 +83,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: space.sm,
     marginBottom: space.xs,
+  },
+  footer: {
+    gap: space.md,
+    marginTop: space.lg,
+    paddingTop: space.lg,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
   },
 });

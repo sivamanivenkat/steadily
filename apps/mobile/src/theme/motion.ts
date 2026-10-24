@@ -13,4 +13,10 @@ export const motion = {
   pressedScale: 0.98,
   /** Loading placeholder pulse, one way. */
   pulseMs: 900,
+  /** Content entering (next review card): spring per steadily-ui "Motion". */
+  spring: { damping: 18, stiffness: 180, mass: 1 },
+  /** How far entering content travels; Reduce Motion drops the travel and keeps the fade. */
+  enterOffset: 24,
+  /** Fade that goes with an entrance (and is all that is left with Reduce Motion). */
+  enterFadeMs: 200,
 } as const;

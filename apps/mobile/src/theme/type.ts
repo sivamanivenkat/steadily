@@ -34,6 +34,11 @@ export const type = {
   },
   title: { fontFamily: fontFamily.extrabold, fontSize: 24, lineHeight: 30, letterSpacing: -0.5 },
   heading: { fontFamily: fontFamily.bold, fontSize: 16, lineHeight: 22 },
+  /**
+   * The quiet label on top of a card ("Safe to spend", "Amount", "This month"), in ink2 by
+   * default. `heading` stays for real headings (merchant, sheet titles).
+   */
+  cardLabel: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 20 },
   body: { fontFamily: fontFamily.medium, fontSize: 15, lineHeight: 21 },
   bodyStrong: { fontFamily: fontFamily.semibold, fontSize: 15, lineHeight: 21 },
   amount: { fontFamily: fontFamily.bold, fontSize: 15, lineHeight: 21, ...tabularNums },
@@ -58,5 +63,7 @@ export type TypeStyle = keyof typeof type;
  */
 export const maxFontScale = {
   display: 1.4,
+  /** Review card amount and the Add amount input: keeps "$" on the same line at 320 pt. */
+  amountL: 1.3,
   tab: 1.3,
 } as const;

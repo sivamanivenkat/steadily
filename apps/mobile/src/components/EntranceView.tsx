@@ -2,13 +2,12 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated, Easing, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useReduceMotion } from '@/hooks/useAccessibilitySettings';
-
-const DURATION_MS = 240;
-const OFFSET = 28;
+import { motion } from '@/theme';
 
 /**
- * Fades its content in, sliding from the right. With Reduce Motion it only fades. Give it a new
- * `key` to replay (e.g. the next review card).
+ * Fades its content in while it springs in from the right (damping 18, stiffness 180, clamped so
+ * amounts never bounce). With Reduce Motion it only fades. Give it a new `key` to replay (e.g. the
+ * next review card).
  */
 export function EntranceView({
   children,
@@ -18,25 +17,34 @@ export function EntranceView({
   style?: StyleProp<ViewStyle>;
 }) {
   const reduceMotion = useReduceMotion();
-  const progress = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const offset = useRef(new Animated.Value(reduceMotion ? 0 : motion.enterOffset)).current;
 
   useEffect(() => {
-    const animation = Animated.timing(progress, {
+    const fade = Animated.timing(opacity, {
       toValue: 1,
-      duration: DURATION_MS,
-      easing: Easing.out(Easing.cubic),
+      duration: motion.enterFadeMs,
+      easing: Easing.out(Easing.quad),
       useNativeDriver: true,
     });
+    const animation = reduceMotion
+      ? fade
+      : Animated.parallel([
+          fade,
+          Animated.spring(offset, {
+            toValue: 0,
+            ...motion.spring,
+            overshootClamping: true,
+            useNativeDriver: true,
+          }),
+        ]);
+    if (reduceMotion) offset.setValue(0);
     animation.start();
     return () => animation.stop();
-  }, [progress]);
-
-  const translateX = reduceMotion
-    ? 0
-    : progress.interpolate({ inputRange: [0, 1], outputRange: [OFFSET, 0] });
+  }, [opacity, offset, reduceMotion]);
 
   return (
-    <Animated.View style={[style, { opacity: progress, transform: [{ translateX }] }]}>
+    <Animated.View style={[style, { opacity, transform: [{ translateX: offset }] }]}>
       {children}
     </Animated.View>
   );
