@@ -7,7 +7,8 @@ import { Glass } from './Glass';
 import { Icon, type IconName } from './Icon';
 import { Touchable } from './Touchable';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'accentTint' | 'neutralTint' | 'link';
+export type ButtonVariant =
+  'primary' | 'secondary' | 'accentTint' | 'neutralTint' | 'link' | 'destructive';
 
 type ButtonProps = {
   label: string;
@@ -26,7 +27,8 @@ type ButtonProps = {
 /**
  * Text button. `primary` is the one filled accent action on a screen; `secondary` sits on light
  * glass; the tint variants are for secondary actions on cards (review card "Split", "Not an
- * expense"); `link` is text only.
+ * expense"); `link` is text only. `destructive` is the filled confirm for an action that deletes
+ * data and cannot be undone; use it in a confirmation step, never as a screen's first action.
  */
 export function Button({
   label,
@@ -46,9 +48,11 @@ export function Button({
   const textColor =
     variant === 'primary'
       ? colors.onAccent
-      : variant === 'accentTint' || variant === 'link'
-        ? colors.accentInk
-        : colors.ink;
+      : variant === 'destructive'
+        ? colors.destructive.onFill
+        : variant === 'accentTint' || variant === 'link'
+          ? colors.accentInk
+          : colors.ink;
 
   const content = (
     <>
@@ -80,11 +84,13 @@ export function Button({
     const backgroundColor =
       variant === 'primary'
         ? colors.accent
-        : variant === 'accentTint'
-          ? colors.accentTint
-          : variant === 'neutralTint'
-            ? colors.neutralTint
-            : 'transparent';
+        : variant === 'destructive'
+          ? colors.destructive.fill
+          : variant === 'accentTint'
+            ? colors.accentTint
+            : variant === 'neutralTint'
+              ? colors.neutralTint
+              : 'transparent';
     body = <View style={[styles.inner, styles.solid, { backgroundColor }]}>{content}</View>;
   }
 

@@ -40,6 +40,11 @@ export type ColorTokens = {
   solidBorder: string;
   /** Dims the screen behind a bottom sheet so the sheet reads as the only thing in front. */
   scrim: string;
+  /**
+   * Actions that delete data and cannot be undone. `fill` + `onFill` for the filled button,
+   * `text` for links and icons on glass, `tint` behind a destructive icon tile. All 4.5:1 or better.
+   */
+  destructive: { fill: string; onFill: string; text: string; tint: string };
 };
 
 export const lightColors: ColorTokens = {
@@ -65,6 +70,12 @@ export const lightColors: ColorTokens = {
   solidSurface: '#FFFFFF',
   solidBorder: '#E4E6F0',
   scrim: 'rgba(30,34,53,0.32)',
+  destructive: {
+    fill: '#B42318',
+    onFill: '#FFFFFF',
+    text: '#A61F15',
+    tint: 'rgba(180,35,24,0.10)',
+  },
 };
 
 export const darkColors: ColorTokens = {
@@ -96,6 +107,12 @@ export const darkColors: ColorTokens = {
   solidSurface: '#1C2038',
   solidBorder: '#2C3152',
   scrim: 'rgba(5,7,16,0.6)',
+  destructive: {
+    fill: '#FFB4AB',
+    onFill: '#0F1222',
+    text: '#FFB4AB',
+    tint: 'rgba(255,180,171,0.14)',
+  },
 };
 
 export const colors: Record<ColorScheme, ColorTokens> = {

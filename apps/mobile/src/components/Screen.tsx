@@ -13,6 +13,8 @@ type ScreenProps = {
   withTabBar?: boolean;
   /** 16 pt side padding instead of 20, for dense screens. */
   dense?: boolean;
+  /** Caps the column at `layout.readableWidth`, centered, for text-heavy screens on wide displays. */
+  readable?: boolean;
   /** Extra layout for the scroll content (merged last). */
   contentStyle?: StyleProp<ViewStyle>;
 };
@@ -22,7 +24,13 @@ type ScreenProps = {
  * screens the bottom padding is the bar's measured height + its offset from the bottom (safe area
  * or inset) + a gap, so the last row always scrolls fully above the floating bar.
  */
-export function Screen({ children, withTabBar = true, dense = false, contentStyle }: ScreenProps) {
+export function Screen({
+  children,
+  withTabBar = true,
+  dense = false,
+  readable = false,
+  contentStyle,
+}: ScreenProps) {
   const insets = useSafeAreaInsets();
   const clearance = useTabBarClearance();
   const side = dense ? layout.screenPaddingDense : layout.screenPadding;
@@ -38,6 +46,7 @@ export function Screen({ children, withTabBar = true, dense = false, contentStyl
             paddingLeft: insets.left + side,
             paddingRight: insets.right + side,
           },
+          readable && styles.readable,
           contentStyle,
         ]}
         // Keep the scroll indicator out from under the floating bar too.
@@ -57,4 +66,5 @@ const styles = StyleSheet.create({
   content: {
     gap: layout.cardGap,
   },
+  readable: { width: '100%', maxWidth: layout.readableWidth, alignSelf: 'center' },
 });
