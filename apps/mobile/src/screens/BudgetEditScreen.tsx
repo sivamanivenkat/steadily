@@ -6,9 +6,11 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import {
   AppText,
   Button,
+  Card,
   CategoryTile,
-  Glass,
-  Icon,
+  ConfirmSheet,
+  IconTile,
+  ListCard,
   RadioRow,
   Screen,
   ScreenHeader,
@@ -17,7 +19,7 @@ import {
 import { useData, useDataSource, useNow } from '@/data';
 import { monthRange } from '@/lib/dates';
 import { amountInputFromCents, formatMoney, parseAmountInput, spokenMoney } from '@/lib/money';
-import { iconSize, layout, radius, space, type, useTheme } from '@/theme';
+import { layout, maxFontScale, space, type, useTheme } from '@/theme';
 
 /** `undefined` = nothing picked yet; `null` = the overall monthly budget. */
 type Target = CategoryId | null | undefined;
@@ -35,6 +37,7 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
   const [target, setTarget] = useState<Target>(initialCategoryId);
   const [amountText, setAmountText] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const existing =
     target === undefined ? undefined : rows?.find((r) => r.budget.categoryId === target);
@@ -61,6 +64,7 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
   }
 
   async function remove() {
+    setConfirmingRemove(false);
     if (!existing) return;
     await source.deleteBudget(existing.budget.id);
     router.back();
@@ -79,12 +83,16 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
         backLabel="Close"
       />
 
-      <Glass variant="strong" radius={radius.card} contentStyle={styles.amountCard}>
+      <Card tier="hero" contentStyle={styles.amountCard}>
         <AppText variant="heading" color={colors.ink2}>
           Amount per month
         </AppText>
         <View style={styles.amountRow}>
-          <AppText variant="amountL" color={colors.ink2}>
+          <AppText
+            variant="amountL"
+            color={colors.ink2}
+            maxFontSizeMultiplier={maxFontScale.display}
+          >
             $
           </AppText>
           <TextInput
@@ -92,6 +100,7 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
             onChangeText={setAmountText}
             placeholder="0"
             placeholderTextColor={colors.ink2}
+            maxFontSizeMultiplier={maxFontScale.display}
             keyboardType="decimal-pad"
             inputMode="decimal"
             accessibilityLabel="Amount per month, in dollars"
@@ -103,54 +112,70 @@ export function BudgetEditScreen({ initialCategoryId }: BudgetEditScreenProps) {
         <AppText variant="caption" color={colors.ink2}>
           {spentLine}
         </AppText>
-      </Glass>
+      </Card>
 
       <SectionLabel>Applies to</SectionLabel>
-      <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-        <View accessibilityRole="radiogroup">
+      <ListCard accessibilityRole="radiogroup" accessibilityLabel="Applies to">
+        <RadioRow
+          label="Whole month"
+          description="Everything you spend"
+          selected={target === null}
+          onPress={() => pick(null)}
+          leading={<IconTile icon="budgets" tone="accent" />}
+        />
+        {CATEGORIES.map((c) => (
           <RadioRow
-            label="Whole month"
-            description="Everything you spend"
-            selected={target === null}
-            onPress={() => pick(null)}
-            leading={
-              <View style={[styles.overallTile, { backgroundColor: colors.accentTint }]}>
-                <Icon name="budgets" size={iconSize.md} color={colors.accentInk} />
-              </View>
-            }
+            key={c.id}
+            label={c.name}
+            selected={target === c.id}
+            onPress={() => pick(c.id)}
+            leading={<CategoryTile categoryId={c.id} icon={c.icon} />}
           />
-          {CATEGORIES.map((c) => (
-            <View key={c.id} style={[styles.divider, { borderTopColor: colors.hairline }]}>
-              <RadioRow
-                label={c.name}
-                selected={target === c.id}
-                onPress={() => pick(c.id)}
-                leading={<CategoryTile categoryId={c.id} icon={c.icon} />}
-              />
-            </View>
-          ))}
-        </View>
-      </Glass>
+        ))}
+      </ListCard>
 
-      <Button label="Save budget" onPress={() => void save()} disabled={!canSave} />
-      {existing ? (
-        <Button label="Remove budget" variant="neutralTint" onPress={() => void remove()} />
-      ) : null}
+      <View style={styles.actions}>
+        <Button
+          label="Save budget"
+          onPress={() => void save()}
+          disabled={!canSave}
+          loading={saving}
+        />
+        {existing ? (
+          <Button
+            label="Remove budget"
+            variant="link"
+            accessibilityHint="Asks before removing"
+            onPress={() => setConfirmingRemove(true)}
+          />
+        ) : null}
+      </View>
+
+      <ConfirmSheet
+        visible={confirmingRemove}
+        title={target === null ? 'Remove the monthly budget?' : 'Remove this budget?'}
+        body={[
+          target === null
+            ? 'Safe to spend needs a monthly budget, so it will be hidden until you set one again.'
+            : 'Your transactions stay as they are. Only the limit for this category goes away.',
+        ]}
+        confirmLabel="Remove"
+        cancelLabel="Keep budget"
+        onConfirm={() => void remove()}
+        onCancel={() => setConfirmingRemove(false)}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  amountCard: { padding: layout.cardPadding + 2, gap: space.sm },
+  amountCard: { gap: space.sm },
   amountRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
-  amountInput: { flex: 1, paddingVertical: space.xs, minHeight: layout.touchTarget },
-  list: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
-  overallTile: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    alignItems: 'center',
-    justifyContent: 'center',
+  amountInput: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: space.xs,
+    minHeight: layout.touchTarget,
   },
+  actions: { gap: space.xs, marginTop: space.sm },
 });

@@ -94,12 +94,17 @@ describe('BudgetsScreen', () => {
     });
     await fireEvent.press(screen.getByRole('button', { name: 'Set a budget' }));
     expect(mockRouter.push).toHaveBeenLastCalledWith({ pathname: '/budget-edit', params: {} });
+    await fireEvent.press(screen.getByRole('button', { name: /^Spending trends/ }));
+    expect(mockRouter.push).toHaveBeenLastCalledWith('/trends');
   });
 
   it('prompts for a monthly budget when there is none', async () => {
     await renderWithData(<BudgetsScreen />, makeSource(emptySeed));
     expect(await screen.findByText('Set a monthly budget')).toBeOnTheScreen();
-    expect(screen.getByText('No category budgets yet.')).toBeOnTheScreen();
+    expect(screen.getByText('No category budgets yet')).toBeOnTheScreen();
+    // One primary action: the monthly budget. The category prompt stays secondary.
+    expect(screen.getByRole('button', { name: 'Set monthly budget' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Add a category budget' })).toBeOnTheScreen();
   });
 });
 
@@ -154,6 +159,10 @@ describe('BudgetEditScreen', () => {
     const source = makeSource(seed);
     await renderWithData(<BudgetEditScreen initialCategoryId="food.dining" />, source);
     await fireEvent.press(await screen.findByRole('button', { name: 'Remove budget' }));
+    // Asks first; nothing is removed until confirmed.
+    expect(screen.getByText('Remove this budget?')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Remove' }));
+    expect(mockRouter.back).toHaveBeenCalled();
     const rows = await source.listBudgets({
       from: '2000-01-01T00:00:00Z',
       to: '2100-01-01T00:00:00Z',

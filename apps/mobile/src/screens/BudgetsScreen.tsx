@@ -4,22 +4,25 @@ import { StyleSheet, View } from 'react-native';
 import {
   AppText,
   BudgetRow,
-  Button,
   Card,
   EmptyState,
+  Icon,
+  IconTile,
   ListCard,
+  ListRow,
   OnDeviceBadge,
   PaceBar,
   Screen,
   ScreenHeader,
   SectionLabel,
   SkeletonHero,
+  Touchable,
 } from '@/components';
 import { useData, useNow } from '@/data';
 import { categoryBudgets, monthProgress, overallBudget, safeToSpend } from '@/lib/budget';
 import { formatMonth, formatShortDate, monthRange } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { space, useTheme } from '@/theme';
+import { iconSize, layout, space, useTheme } from '@/theme';
 
 const money = (cents: number) => formatMoney(cents, { cents: 'auto' });
 
@@ -73,18 +76,33 @@ export function BudgetsScreen() {
               <AppText
                 variant="caption"
                 color={colors.ink2}
+                tabular
                 accessibilityLabel={`Spent ${spokenMoney(overall.spentMinor)} of ${spokenMoney(overall.budget.amountMinor)}. About ${spokenMoney(safe.perDayMinor)} a day until ${formatShortDate(endOfMonth)}.`}
               >
                 {money(overall.spentMinor)} of {money(overall.budget.amountMinor)} spent · about{' '}
                 {money(safe.perDayMinor)} a day until {formatShortDate(endOfMonth)}
               </AppText>
               <PaceBar spentRatio={safe.spentRatio} monthRatio={monthRatio} />
-              <Button
-                label="Edit monthly budget"
-                variant="link"
+              <Touchable
                 onPress={() => edit(null)}
-                style={styles.alignStart}
-              />
+                accessibilityRole="button"
+                accessibilityLabel="Edit monthly budget"
+                accessibilityHint={`Currently ${spokenMoney(overall.budget.amountMinor)} a month`}
+                style={[styles.heroFooter, { borderTopColor: colors.hairline }]}
+              >
+                <View style={styles.flex}>
+                  <AppText variant="caption" color={colors.ink2}>
+                    Monthly budget
+                  </AppText>
+                  <AppText variant="bodyStrong" tabular>
+                    {money(overall.budget.amountMinor)}
+                  </AppText>
+                </View>
+                <AppText variant="captionStrong" color={colors.accentInk}>
+                  Edit
+                </AppText>
+                <Icon name="chevronRight" size={iconSize.sm} color={colors.accentInk} />
+              </Touchable>
             </Card>
           );
         })()
@@ -98,40 +116,64 @@ export function BudgetsScreen() {
         />
       )}
 
-      <Button
-        label="See spending trends"
-        icon="chart"
-        variant="secondary"
-        accessibilityHint="Compares this month with past months"
-        onPress={() => router.push('/trends')}
-      />
+      {rows === undefined ? null : categories.length > 0 ? (
+        <>
+          <SectionLabel
+            action={{
+              label: 'Add',
+              accessibilityLabel: 'Set a budget',
+              accessibilityHint: 'Adds a budget for one category',
+              onPress: () => edit(),
+            }}
+          >
+            Categories
+          </SectionLabel>
+          <ListCard>
+            {categories.map((row) => (
+              <BudgetRow
+                key={row.budget.id}
+                row={row}
+                monthRatio={monthRatio}
+                now={now}
+                onPress={() => edit(row.budget.categoryId)}
+              />
+            ))}
+          </ListCard>
+        </>
+      ) : (
+        <>
+          <SectionLabel>Categories</SectionLabel>
+          <EmptyState
+            icon="plus"
+            tone="neutral"
+            title="No category budgets yet"
+            body="Give a category like Dining Out its own limit and track its pace here."
+            action={{
+              label: 'Add a category budget',
+              variant: overall ? 'primary' : 'secondary',
+              onPress: () => edit(),
+            }}
+          />
+        </>
+      )}
 
-      <SectionLabel>Categories</SectionLabel>
-      {categories.length > 0 ? (
-        <ListCard>
-          {categories.map((row) => (
-            <BudgetRow
-              key={row.budget.id}
-              row={row}
-              monthRatio={monthRatio}
-              now={now}
-              onPress={() => edit(row.budget.categoryId)}
-            />
-          ))}
-        </ListCard>
-      ) : rows !== undefined ? (
-        <AppText variant="body" color={colors.ink2} style={styles.note}>
-          No category budgets yet.
-        </AppText>
-      ) : null}
-
-      <Button label="Set a budget" icon="plus" onPress={() => edit()} />
+      <SectionLabel>Insights</SectionLabel>
+      <ListCard>
+        <ListRow
+          title="Spending trends"
+          subtitle="This month against last month and your average"
+          leading={<IconTile icon="chart" tone="accent" />}
+          chevron
+          accessibilityHint="Opens spending trends"
+          onPress={() => router.push('/trends')}
+        />
+      </ListCard>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  alignStart: { alignSelf: 'flex-start', marginLeft: -space.lg },
+  flex: { flex: 1, minWidth: 0 },
   overall: { gap: space.sm },
   overallHeader: {
     flexDirection: 'row',
@@ -140,5 +182,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: space.sm,
   },
-  note: { paddingHorizontal: space.xs },
+  heroFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    minHeight: layout.touchTarget,
+    marginTop: space.xs,
+    paddingTop: space.md,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
+  },
 });
