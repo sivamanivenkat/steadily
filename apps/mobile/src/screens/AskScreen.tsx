@@ -23,7 +23,7 @@ import {
   ScreenBackground,
   ScreenHeader,
   StatusPill,
-  tabBarClearance,
+  useTabBarClearance,
 } from '@/components';
 import { useDataSource } from '@/data';
 import type { AskTurn } from '@/data/types';
@@ -186,6 +186,7 @@ export function AskScreen() {
   const source = useDataSource();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const clearance = useTabBarClearance();
   const available = typeof source.ask === 'function';
 
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -315,7 +316,7 @@ export function AskScreen() {
             {
               paddingLeft: insets.left + layout.screenPadding,
               paddingRight: insets.right + layout.screenPadding,
-              paddingBottom: keyboardUp ? space.sm : tabBarClearance(insets.bottom),
+              paddingBottom: keyboardUp ? space.sm : clearance,
             },
           ]}
         >

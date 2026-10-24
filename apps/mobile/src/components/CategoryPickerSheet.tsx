@@ -1,13 +1,11 @@
 import { CATEGORIES, type CategoryId } from '@steadily/taxonomy';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { useReduceMotion } from '@/hooks/useAccessibilitySettings';
-import { layout, radius, space, useTheme } from '@/theme';
+import { space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
+import { BottomSheet } from './BottomSheet';
 import { CategoryTile } from './CategoryTile';
-import { Glass } from './Glass';
 import { IconButton } from './IconButton';
 import { RadioRow } from './RadioRow';
 
@@ -28,72 +26,45 @@ export function CategoryPickerSheet({
   onClose,
 }: CategoryPickerSheetProps) {
   const { colors } = useTheme();
-  const reduceMotion = useReduceMotion();
-  const insets = useSafeAreaInsets();
 
   return (
-    <Modal
+    <BottomSheet
       visible={visible}
-      transparent
-      animationType={reduceMotion ? 'fade' : 'slide'}
-      onRequestClose={onClose}
-      statusBarTranslucent
-      navigationBarTranslucent
+      onClose={onClose}
+      dismissLabel="Close category list"
+      contentStyle={styles.content}
     >
-      <View style={styles.root}>
-        <Pressable
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.hairline }]}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Close category list"
-        />
-        <Glass
-          variant="strong"
-          radius={radius.card}
-          style={styles.sheet}
-          contentStyle={[styles.content, { paddingBottom: insets.bottom + space.lg }]}
-        >
-          <View style={styles.header}>
-            <AppText variant="heading" accessibilityRole="header" style={styles.title}>
-              {title}
-            </AppText>
-            <IconButton icon="close" accessibilityLabel="Close" onPress={onClose} />
-          </View>
-          <ScrollView accessibilityRole="radiogroup" accessibilityLabel={title}>
-            {CATEGORIES.map((category, i) => (
-              <View
-                key={category.id}
-                style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-              >
-                <RadioRow
-                  label={category.name}
-                  selected={selectedId === category.id}
-                  onPress={() => onSelect(category.id)}
-                  leading={<CategoryTile categoryId={category.id} icon={category.icon} />}
-                />
-              </View>
-            ))}
-          </ScrollView>
-        </Glass>
+      <View style={styles.header}>
+        <AppText variant="heading" accessibilityRole="header" style={styles.title}>
+          {title}
+        </AppText>
+        <IconButton icon="close" accessibilityLabel="Close" onPress={onClose} flat />
       </View>
-    </Modal>
+      <ScrollView accessibilityRole="radiogroup" accessibilityLabel={title}>
+        {CATEGORIES.map((category, i) => (
+          <View
+            key={category.id}
+            style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
+          >
+            <RadioRow
+              label={category.name}
+              selected={selectedId === category.id}
+              onPress={() => onSelect(category.id)}
+              leading={<CategoryTile categoryId={category.id} icon={category.icon} />}
+            />
+          </View>
+        ))}
+      </ScrollView>
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, justifyContent: 'flex-end' },
-  sheet: { maxHeight: '85%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
-  content: {
-    paddingTop: space.lg,
-    paddingHorizontal: layout.screenPadding,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
+  content: { gap: space.sm },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    marginBottom: space.sm,
   },
   title: { flex: 1 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
