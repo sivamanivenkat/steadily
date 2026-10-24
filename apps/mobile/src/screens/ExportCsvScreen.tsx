@@ -3,7 +3,17 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, Button, Glass, Icon, RadioRow, Screen, ScreenHeader } from '@/components';
+import {
+  AppText,
+  Button,
+  Card,
+  Icon,
+  IconTile,
+  ListCard,
+  RadioRow,
+  Screen,
+  ScreenHeader,
+} from '@/components';
 import { useData, useDataSource, useNow } from '@/data';
 import type { DateRange } from '@/data/types';
 import { canShareFiles, clearExportFiles, shareCsv } from '@/lib/csvFiles';
@@ -83,7 +93,7 @@ export function ExportCsvScreen() {
   }
 
   return (
-    <Screen withTabBar={false}>
+    <Screen withTabBar={false} readable>
       <ScreenHeader
         title="Export CSV"
         onBack={() => router.back()}
@@ -91,25 +101,19 @@ export function ExportCsvScreen() {
         backLabel="Close"
       />
 
-      <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
-        <View accessibilityRole="radiogroup" accessibilityLabel="Which transactions">
-          {RANGES.map((range, i) => (
-            <View
-              key={range.id}
-              style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}
-            >
-              <RadioRow
-                label={range.label}
-                selected={rangeId === range.id}
-                onPress={() => {
-                  setRangeId(range.id);
-                  setStatus('idle');
-                }}
-              />
-            </View>
-          ))}
-        </View>
-      </Glass>
+      <ListCard accessibilityRole="radiogroup" accessibilityLabel="Which transactions">
+        {RANGES.map((range) => (
+          <RadioRow
+            key={range.id}
+            label={range.label}
+            selected={rangeId === range.id}
+            onPress={() => {
+              setRangeId(range.id);
+              setStatus('idle');
+            }}
+          />
+        ))}
+      </ListCard>
 
       <View
         style={[styles.notice, { backgroundColor: colors.headsUp.bg }]}
@@ -143,29 +147,40 @@ export function ExportCsvScreen() {
               : `Export ${count.toLocaleString('en-US')} ${count === 1 ? 'transaction' : 'transactions'}`
         }
         onPress={() => void exportNow()}
-        disabled={count === 0 || status === 'working'}
+        disabled={count === 0}
+        loading={status === 'working'}
         accessibilityHint="Opens the share sheet with the file"
       />
       {status === 'shared' || status === 'failed' || status === 'unavailable' ? (
-        <AppText
-          variant="caption"
-          color={status === 'shared' ? colors.ink2 : colors.headsUp.text}
-          accessibilityLiveRegion="polite"
-        >
-          {status === 'shared'
-            ? 'Done. Steadily deletes its copy of the file when you close this screen.'
-            : status === 'unavailable'
-              ? 'Sharing files isn’t available on this device.'
-              : 'The export didn’t finish. Try again.'}
-        </AppText>
+        <Card tier="inset">
+          <View
+            style={styles.status}
+            accessible
+            accessibilityRole={status === 'shared' ? undefined : 'alert'}
+            accessibilityLiveRegion="polite"
+          >
+            <IconTile
+              icon={status === 'shared' ? 'check' : 'bell'}
+              tone={status === 'shared' ? 'onTrack' : 'headsUp'}
+              round
+            />
+            <AppText variant="body" style={styles.statusText}>
+              {status === 'shared'
+                ? 'Done. Steadily deletes its copy of the file when you close this screen.'
+                : status === 'unavailable'
+                  ? 'Sharing files isn’t available on this device.'
+                  : 'The export didn’t finish. Try again.'}
+            </AppText>
+          </View>
+        </Card>
       ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { paddingHorizontal: space.lg, paddingVertical: space.xs },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
   notice: { borderRadius: radius.cardSmall, padding: layout.cardPadding, gap: space.sm },
   noticeTitle: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  status: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  statusText: { flex: 1, minWidth: 0 },
 });
