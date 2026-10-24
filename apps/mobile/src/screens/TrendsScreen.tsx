@@ -5,7 +5,10 @@ import Svg, { Rect } from 'react-native-svg';
 
 import {
   AppText,
+  Card,
   CategoryTile,
+  EmptyState,
+  ListCard,
   categoryMeta,
   Glass,
   IconButton,
@@ -202,19 +205,6 @@ function MerchantRow({ item }: { item: MerchantSpend }) {
   );
 }
 
-function Divided({ children }: { children: ReactNode[] }) {
-  const { colors } = useTheme();
-  return (
-    <>
-      {children.map((child, i) => (
-        <View key={i} style={i > 0 && [styles.divider, { borderTopColor: colors.hairline }]}>
-          {child}
-        </View>
-      ))}
-    </>
-  );
-}
-
 function TrendsBody({
   trends,
   isCurrentMonth,
@@ -237,24 +227,26 @@ function TrendsBody({
 
   if (!anySpending) {
     return (
-      <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
-        <AppText variant="heading">
-          {isCurrentMonth
+      <EmptyState
+        tier="hero"
+        icon="chart"
+        title={
+          isCurrentMonth
             ? 'No spending to compare yet'
-            : `Nothing logged in ${formatMonthYear(monthDate)}`}
-        </AppText>
-        <AppText variant="body" color={colors.ink2}>
-          {isCurrentMonth
+            : `Nothing logged in ${formatMonthYear(monthDate)}`
+        }
+        body={
+          isCurrentMonth
             ? 'Trends fill in as Steadily logs your purchases. Check back after a few alerts.'
-            : 'Steadily only knows about purchases logged on this phone.'}
-        </AppText>
-      </Glass>
+            : 'Steadily only knows about purchases logged on this phone.'
+        }
+      />
     );
   }
 
   return (
     <>
-      <Glass variant="strong" radius={radius.card} contentStyle={styles.card}>
+      <Card tier="hero" contentStyle={styles.card}>
         <View style={styles.cardHeader}>
           <AppText variant="heading" color={colors.ink2}>
             Spent in {monthName}
@@ -286,10 +278,10 @@ function TrendsBody({
             />
           </View>
         ) : null}
-      </Glass>
+      </Card>
 
       <SectionLabel>Last 6 months</SectionLabel>
-      <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.card}>
+      <Card contentStyle={styles.card}>
         <AppText variant="caption" color={colors.ink2} accessibilityLabel={summary.spoken}>
           {summary.text}
         </AppText>
@@ -299,27 +291,25 @@ function TrendsBody({
           canSelect={canSelectMonth}
           onSelect={onSelectMonth}
         />
-      </Glass>
+      </Card>
 
       <SectionLabel>By category</SectionLabel>
       {trends.byCategory.length > 0 ? (
-        <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-          <Divided>
-            {trends.byCategory.map((item) => (
-              <CategoryRow
-                key={item.categoryId}
-                item={item}
-                totalMinor={trends.totalMinor}
-                onPress={() =>
-                  router.navigate({
-                    pathname: '/activity',
-                    params: { category: item.categoryId, since: trends.month.from },
-                  })
-                }
-              />
-            ))}
-          </Divided>
-        </Glass>
+        <ListCard>
+          {trends.byCategory.map((item) => (
+            <CategoryRow
+              key={item.categoryId}
+              item={item}
+              totalMinor={trends.totalMinor}
+              onPress={() =>
+                router.navigate({
+                  pathname: '/activity',
+                  params: { category: item.categoryId, since: trends.month.from },
+                })
+              }
+            />
+          ))}
+        </ListCard>
       ) : (
         <AppText variant="body" color={colors.ink2}>
           No spending logged in {monthName}.
@@ -329,13 +319,11 @@ function TrendsBody({
       {trends.topMerchants.length > 0 ? (
         <>
           <SectionLabel>Top merchants</SectionLabel>
-          <Glass variant="light" radius={radius.cardSmall} contentStyle={styles.list}>
-            <Divided>
-              {trends.topMerchants.map((item) => (
-                <MerchantRow key={item.name} item={item} />
-              ))}
-            </Divided>
-          </Glass>
+          <ListCard>
+            {trends.topMerchants.map((item) => (
+              <MerchantRow key={item.name} item={item} />
+            ))}
+          </ListCard>
         </>
       ) : null}
     </>
@@ -370,6 +358,7 @@ export function TrendsScreen() {
         <IconButton
           icon="chevronLeft"
           accessibilityLabel="Previous month"
+          flat
           disabled={offset >= TREND_MONTH_CHOICES - 1}
           onPress={() => setOffset((o) => Math.min(TREND_MONTH_CHOICES - 1, o + 1))}
         />
@@ -384,6 +373,7 @@ export function TrendsScreen() {
         <IconButton
           icon="chevronRight"
           accessibilityLabel="Next month"
+          flat
           disabled={offset === 0}
           onPress={() => setOffset((o) => Math.max(0, o - 1))}
         />
@@ -426,7 +416,7 @@ const styles = StyleSheet.create({
     padding: space.xs,
   },
   selectorLabel: { flex: 1, textAlign: 'center' },
-  card: { padding: layout.cardPadding, gap: space.sm },
+  card: { gap: space.sm },
   cardHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',
