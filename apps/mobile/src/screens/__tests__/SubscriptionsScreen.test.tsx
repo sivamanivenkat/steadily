@@ -83,7 +83,22 @@ describe('SubscriptionsScreen', () => {
       ...source,
       listSubscriptions: () => new Promise(() => {}),
     });
-    expect(await screen.findByText('Looking for repeating charges…')).toBeOnTheScreen();
+    expect(await screen.findByLabelText('Looking for repeating charges…')).toBeOnTheScreen();
+  });
+
+  it('offers a retry when loading fails', async () => {
+    const source = makeSource();
+    let calls = 0;
+    await renderWithData(<SubscriptionsScreen />, {
+      ...source,
+      listSubscriptions: () => {
+        calls += 1;
+        return calls === 1 ? Promise.reject(new Error('boom')) : source.listSubscriptions();
+      },
+    });
+    expect(await screen.findByText('Could not load subscriptions')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('$29.98')).toBeOnTheScreen();
   });
 });
 

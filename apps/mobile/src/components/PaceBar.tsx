@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 import { useReduceMotion } from '@/hooks/useAccessibilitySettings';
-import { radius, space, useTheme } from '@/theme';
+import { iconSize, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { Icon } from './Icon';
@@ -73,7 +73,7 @@ export function PaceBar({ spentRatio, monthRatio }: PaceBarProps) {
       <View style={[styles.statusPill, { backgroundColor: statusColors.bg }]}>
         <Icon
           name={status === 'ahead' ? 'arrowUp' : 'check'}
-          size={12}
+          size={iconSize.badge}
           color={statusColors.text}
           strokeWidth={2.4}
         />
@@ -97,8 +97,10 @@ export function PaceBar({ spentRatio, monthRatio }: PaceBarProps) {
       </View>
 
       <View style={styles.legend}>
-        <AppText variant="captionStrong">{pct(spentRatio)}% spent</AppText>
-        <AppText variant="caption" color={colors.ink2}>
+        <AppText variant="captionStrong" tabular>
+          {pct(spentRatio)}% spent
+        </AppText>
+        <AppText variant="caption" color={colors.ink2} tabular>
           {pct(monthRatio)}% of month
         </AppText>
       </View>

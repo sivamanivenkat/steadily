@@ -9,13 +9,15 @@ import {
   Card,
   CategoryTile,
   EmptyState,
-  Glass,
   ListCard,
   OnDeviceBadge,
   Screen,
   ScreenHeader,
   SectionLabel,
+  SkeletonHero,
+  SkeletonList,
   StatusPill,
+  Toast,
   Touchable,
 } from '@/components';
 import { useData, useDataSource, useNow } from '@/data';
@@ -32,7 +34,7 @@ import {
   subscriptionsMonthlyTotal,
   type PriceChange,
 } from '@/lib/subscriptions';
-import { layout, radius, space, useTheme } from '@/theme';
+import { layout, space, useTheme } from '@/theme';
 
 const money = (cents: number) => formatMoney(cents, { cents: 'auto' });
 
@@ -166,9 +168,7 @@ function SubscriptionSheet({
 
           <SectionLabel>Recent charges</SectionLabel>
           {charges === undefined ? (
-            <AppText variant="caption" color={colors.ink2}>
-              Loading charges…
-            </AppText>
+            <SkeletonList count={2} tile={false} label="Loading charges" />
           ) : charges.length === 0 ? (
             <AppText variant="caption" color={colors.ink2}>
               No charges logged on this phone yet.
@@ -216,7 +216,9 @@ export function SubscriptionsScreen() {
   const source = useDataSource();
   const { colors } = useTheme();
   const now = useNow();
-  const { data, error } = useData((s) => s.listSubscriptions());
+  /** Bumped by "Try again" to re-run the query. */
+  const [attempt, setAttempt] = useState(0);
+  const { data, error } = useData((s) => s.listSubscriptions(), [attempt]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState<Subscription | null>(null);
 
@@ -239,84 +241,93 @@ export function SubscriptionsScreen() {
   };
 
   return (
-    <Screen withTabBar={false}>
-      <ScreenHeader title="Subscriptions" onBack={() => router.back()} />
+    <View style={styles.flex}>
+      <Screen withTabBar={false}>
+        <ScreenHeader title="Subscriptions" onBack={() => router.back()} />
 
-      {dismissed ? (
-        <Glass variant="strong" radius={radius.row} contentStyle={styles.undoBar}>
-          <AppText
-            variant="body"
-            style={styles.flex}
-            accessibilityLiveRegion="polite"
-            accessibilityRole="alert"
-          >
-            {dismissed.merchantName} is no longer counted as a subscription.
-          </AppText>
-          <Button
-            label="Undo"
-            variant="accentTint"
-            accessibilityLabel={`Undo, count ${dismissed.merchantName} as a subscription again`}
-            onPress={undo}
-          />
-        </Glass>
-      ) : null}
-
-      {subscriptions === undefined ? (
-        <Card>
-          <AppText variant="body" color={colors.ink2} accessibilityLiveRegion="polite">
-            {error !== undefined
-              ? 'Could not load subscriptions. Try again in a moment.'
-              : 'Looking for repeating charges…'}
-          </AppText>
-        </Card>
-      ) : count === 0 ? (
-        <EmptyState
-          tier="hero"
-          icon="repeat"
-          title="No subscriptions found yet"
-          body="When the same charge repeats, like a streaming plan or a gym, Steadily lists it here with the next due date."
-        />
-      ) : (
-        <>
-          <Card tier="hero" contentStyle={styles.card}>
-            <View style={styles.cardHeader}>
-              <AppText variant="heading" color={colors.ink2}>
-                Every month
-              </AppText>
-              <OnDeviceBadge />
+        {subscriptions === undefined ? (
+          error !== undefined ? (
+            <EmptyState
+              icon="repeat"
+              tone="headsUp"
+              title="Could not load subscriptions"
+              body="Your data is safe on this phone. Try again in a moment."
+              action={{
+                label: 'Try again',
+                variant: 'secondary',
+                onPress: () => setAttempt((a) => a + 1),
+              }}
+            />
+          ) : (
+            <View style={styles.skeleton}>
+              <SkeletonHero label="Looking for repeating charges…" />
+              <SkeletonList count={3} label="Loading the list" />
             </View>
-            <AppText
-              variant="amountL"
-              accessibilityLabel={`About ${spokenMoney(monthly)} a month for ${count} ${count === 1 ? 'subscription' : 'subscriptions'}`}
-            >
-              {money(monthly)}
-            </AppText>
-            <AppText variant="caption" color={colors.ink2}>
-              {`About this much a month for ${count} ${count === 1 ? 'subscription' : 'subscriptions'}, spotted from repeating charges on this phone.`}
-            </AppText>
-          </Card>
+          )
+        ) : count === 0 ? (
+          <EmptyState
+            tier="hero"
+            icon="repeat"
+            title="No subscriptions found yet"
+            body="When the same charge repeats, like a streaming plan or a gym, Steadily lists it here with the next due date."
+          />
+        ) : (
+          <>
+            <Card tier="hero" contentStyle={styles.card}>
+              <View style={styles.cardHeader}>
+                <AppText variant="heading" color={colors.ink2}>
+                  Every month
+                </AppText>
+                <OnDeviceBadge />
+              </View>
+              <AppText
+                variant="amountL"
+                accessibilityLabel={`About ${spokenMoney(monthly)} a month for ${count} ${count === 1 ? 'subscription' : 'subscriptions'}`}
+              >
+                {money(monthly)}
+              </AppText>
+              <AppText variant="caption" color={colors.ink2}>
+                {`About this much a month for ${count} ${count === 1 ? 'subscription' : 'subscriptions'}, spotted from repeating charges on this phone.`}
+              </AppText>
+            </Card>
 
-          <SectionLabel>Next up first</SectionLabel>
-          <ListCard>
-            {subscriptions.map((summary) => (
-              <SubscriptionRow
-                key={summary.subscription.id}
-                summary={summary}
-                now={now}
-                onPress={() => setOpenId(summary.subscription.id)}
-              />
-            ))}
-          </ListCard>
-        </>
-      )}
+            <SectionLabel>Next up first</SectionLabel>
+            <ListCard>
+              {subscriptions.map((summary) => (
+                <SubscriptionRow
+                  key={summary.subscription.id}
+                  summary={summary}
+                  now={now}
+                  onPress={() => setOpenId(summary.subscription.id)}
+                />
+              ))}
+            </ListCard>
+          </>
+        )}
 
-      <SubscriptionSheet
-        summary={open}
-        now={now}
-        onDismissSubscription={dismiss}
-        onClose={() => setOpenId(null)}
+        <SubscriptionSheet
+          summary={open}
+          now={now}
+          onDismissSubscription={dismiss}
+          onClose={() => setOpenId(null)}
+        />
+      </Screen>
+      <Toast
+        message={
+          dismissed ? `${dismissed.merchantName} is no longer counted as a subscription.` : null
+        }
+        {...(dismissed
+          ? {
+              action: {
+                label: 'Undo',
+                accessibilityLabel: `Undo, count ${dismissed.merchantName} as a subscription again`,
+                onPress: undo,
+              },
+            }
+          : {})}
+        onHide={() => setDismissed(null)}
       />
-    </Screen>
+    </View>
   );
 }
 
@@ -330,14 +341,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: space.sm,
   },
-  undoBar: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: space.md,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.sm,
-  },
+  skeleton: { gap: layout.cardGap },
   divider: { borderTopWidth: StyleSheet.hairlineWidth * 2 },
   row: {
     flexDirection: 'row',

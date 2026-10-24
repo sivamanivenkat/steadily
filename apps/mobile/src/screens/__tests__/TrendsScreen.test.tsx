@@ -6,7 +6,7 @@ import { mockRouter, resetRouter } from '@/testing/router';
 
 import { BudgetsScreen } from '../BudgetsScreen';
 import { HomeScreen } from '../HomeScreen';
-import { chartSummary, deltaLabel, TrendsScreen } from '../TrendsScreen';
+import { chartSummary, compactMoney, deltaLabel, TrendsScreen } from '../TrendsScreen';
 
 jest.mock('expo-router', () => require('@/testing/router').routerModule);
 
@@ -103,6 +103,8 @@ describe('TrendsScreen', () => {
     ).toBeOnTheScreen();
     const october = screen.getByRole('button', { name: 'October 2026: 75 dollars and 70 cents' });
     expect(october).toBeSelected();
+    // The selected bar shows its value.
+    expect(screen.getByText('$76')).toBeOnTheScreen();
 
     await fireEvent.press(screen.getByRole('button', { name: 'August 2026: 100 dollars' }));
     expect(await screen.findByText('Spent in August')).toBeOnTheScreen();
@@ -117,7 +119,8 @@ describe('TrendsScreen', () => {
     expect(screen.getByRole('button', { name: 'Next month' })).toBeDisabled();
     await fireEvent.press(screen.getByRole('button', { name: 'Previous month' }));
     expect(await screen.findByText('Spent in September')).toBeOnTheScreen();
-    expect(screen.getByText('$30')).toBeOnTheScreen();
+    // "$30" also labels the selected bar, so check the hero by its spoken label.
+    expect(screen.getByLabelText('Spent in September: 30 dollars')).toBeOnTheScreen();
     expect(screen.getByText('$70 less than August')).toBeOnTheScreen();
 
     for (let i = 0; i < 10; i++) {
@@ -148,7 +151,22 @@ describe('TrendsScreen', () => {
   it('shows a loading state until the numbers are in', async () => {
     const source = makeSource(seed);
     await renderWithData(<TrendsScreen />, { ...source, getTrends: () => new Promise(() => {}) });
-    expect(await screen.findByText('Adding up October…')).toBeOnTheScreen();
+    expect(await screen.findByLabelText('Adding up October…')).toBeOnTheScreen();
+  });
+
+  it('offers a retry when the numbers cannot be added up', async () => {
+    const source = makeSource(seed);
+    let calls = 0;
+    await renderWithData(<TrendsScreen />, {
+      ...source,
+      getTrends: (month: Date) => {
+        calls += 1;
+        return calls === 1 ? Promise.reject(new Error('boom')) : source.getTrends(month);
+      },
+    });
+    expect(await screen.findByText('Could not add up October')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('$75.70')).toBeOnTheScreen();
   });
 
   it('goes back', async () => {
@@ -169,7 +187,7 @@ describe('Trends entry points', () => {
 
   it('opens from Budgets', async () => {
     await renderWithData(<BudgetsScreen />);
-    await fireEvent.press(await screen.findByRole('button', { name: 'See spending trends' }));
+    await fireEvent.press(await screen.findByRole('button', { name: /^Spending trends/ }));
     expect(mockRouter.push).toHaveBeenCalledWith('/trends');
   });
 });
@@ -187,5 +205,12 @@ describe('trend labels', () => {
 
   it('summarizes months with no spending', () => {
     expect(chartSummary([]).text).toBe('Nothing logged yet');
+  });
+
+  it('shortens bar values', () => {
+    expect(compactMoney(7_570)).toBe('$76');
+    expect(compactMoney(123_456)).toBe('$1.2k');
+    expect(compactMoney(100_000)).toBe('$1k');
+    expect(compactMoney(1_250_000)).toBe('$13k');
   });
 });
