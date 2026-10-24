@@ -66,6 +66,29 @@ describe('AddTransactionScreen', () => {
     expect(new Date(tx!.occurredAt).getDate()).toBe(14);
   });
 
+  it('picks a day from the calendar', async () => {
+    const source = makeSource(emptySeed);
+    await renderWithData(<AddTransactionScreen />, source);
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Date: Today, Oct 15' }));
+    // Days after today cannot be picked.
+    expect(screen.getByRole('button', { name: 'Friday, October 16' })).toBeDisabled();
+    await fireEvent.press(screen.getByRole('button', { name: 'Previous month' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Monday, September 28' }));
+    expect(screen.getByTestId('add-date')).toHaveTextContent('Monday, Sep 28');
+
+    await fireEvent.press(screen.getByRole('button', { name: /^Date: / }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Yesterday' }));
+    expect(screen.getByTestId('add-date')).toHaveTextContent('Yesterday, Oct 14');
+  });
+
+  it('says what is missing before Save works', async () => {
+    await renderWithData(<AddTransactionScreen />, makeSource(emptySeed));
+    expect(screen.getByRole('button', { name: 'Save' }).props.accessibilityHint).toBe(
+      'Add an amount, a merchant, a category first',
+    );
+  });
+
   it('closes to Home when there is nothing to go back to', async () => {
     mockRouter.canGoBack.mockReturnValueOnce(false);
     await renderWithData(<AddTransactionScreen />, makeSource(emptySeed));

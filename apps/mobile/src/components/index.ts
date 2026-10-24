@@ -15,6 +15,7 @@ export { BudgetRow, budgetStatus } from './BudgetRow';
 export { Button, type ButtonVariant } from './Button';
 export { ConfirmSheet } from './ConfirmSheet';
 export { CategoryPickerSheet } from './CategoryPickerSheet';
+export { DateSheet } from './DateSheet';
 export { CategoryTile, categoryMeta, CATEGORY_TILE_SIZE } from './CategoryTile';
 export { EntranceView } from './EntranceView';
 export { MiniPaceBar } from './MiniPaceBar';
