@@ -13,20 +13,21 @@ import {
   Button,
   CategoryChip,
   CategoryPickerSheet,
+  EmptyState,
   EntranceView,
-  Glass,
   Icon,
   P2PPrompt,
   ReviewCard,
   Screen,
   ScreenHeader,
+  SkeletonHero,
   ToggleRow,
 } from '@/components';
 import { categoryMeta } from '@/components/CategoryTile';
 import { isP2PIssuer, issuerName, useData, useDataSource } from '@/data';
 import type { P2PPurpose, ReviewItem } from '@/data/types';
 import { dateTimeLabel } from '@/lib/dates';
-import { iconSize, layout, radius, space, useTheme } from '@/theme';
+import { iconSize, space, useTheme } from '@/theme';
 
 /** P2P purposes that map straight to a category; the others ask what the money was for. */
 const P2P_DIRECT: Partial<Record<P2PPurpose, BuiltInCategoryId>> = {
@@ -176,20 +177,15 @@ function ReviewItemCard({ item, behind }: { item: ReviewItem; behind: number }) 
 }
 
 function AllCaughtUp({ onDone }: { onDone: () => void }) {
-  const { colors } = useTheme();
   return (
-    <Glass variant="strong" radius={radius.card} contentStyle={styles.empty}>
-      <View style={[styles.emptyIcon, { backgroundColor: colors.status.onTrack.bg }]}>
-        <Icon name="check" size={iconSize.lg} color={colors.status.onTrack.text} />
-      </View>
-      <AppText variant="heading" accessibilityRole="header">
-        All caught up
-      </AppText>
-      <AppText variant="body" color={colors.ink2} style={styles.center}>
-        New transactions that need a look will show up here.
-      </AppText>
-      <Button label="Back to Home" variant="secondary" onPress={onDone} />
-    </Glass>
+    <EmptyState
+      tier="hero"
+      icon="check"
+      tone="onTrack"
+      title="All caught up"
+      body="New transactions that need a look will show up here."
+      action={{ label: 'Back to Home', variant: 'secondary', onPress: onDone }}
+    />
   );
 }
 
@@ -206,7 +202,9 @@ export function ReviewScreen() {
     <Screen withTabBar={false}>
       <ScreenHeader title="To review" subtitle={subtitle} onBack={() => router.back()} />
 
-      {items === undefined ? null : current ? (
+      {items === undefined ? (
+        <SkeletonHero label="Loading the review queue" />
+      ) : current ? (
         <EntranceView key={current.transaction.id}>
           <ReviewItemCard item={current} behind={items.length - 1} />
         </EntranceView>
@@ -246,17 +244,4 @@ const styles = StyleSheet.create({
     marginTop: space.sm,
   },
   footerText: { flexShrink: 1, textAlign: 'center' },
-  empty: {
-    padding: layout.cardPadding + 4,
-    alignItems: 'center',
-    gap: space.md,
-  },
-  emptyIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  center: { textAlign: 'center' },
 });
