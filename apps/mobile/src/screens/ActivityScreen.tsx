@@ -7,8 +7,6 @@ import {
   AppText,
   CategoryChip,
   EmptyState,
-  Glass,
-  Icon,
   IconButton,
   IconTile,
   ListCard,
@@ -17,7 +15,6 @@ import {
   ScreenHeader,
   SearchField,
   SkeletonList,
-  Touchable,
   TransactionRow,
 } from '@/components';
 import { useData, useNow } from '@/data';
@@ -25,7 +22,10 @@ import type { Transaction } from '@/data/types';
 import { spendingDelta } from '@/lib/budget';
 import { dayHeading, dayKey, formatTime, recentRange } from '@/lib/dates';
 import { formatMoney, spokenMoney } from '@/lib/money';
-import { iconSize, layout, radius, space, useTheme } from '@/theme';
+import { layout, space, useTheme } from '@/theme';
+
+/** Width of the Android edge fade on the filter strip. */
+const FILTER_FADE = 32;
 
 export type DayGroup = { key: string; date: Date; totalMinor: number; items: Transaction[] };
 
@@ -134,29 +134,17 @@ export function ActivityScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filters}
         style={styles.filterStrip}
+        // Android fades the strip's edges to hint that more chips scroll in.
+        fadingEdgeLength={FILTER_FADE}
         accessibilityLabel="Filter by category"
       >
-        <Touchable
-          onPress={() => setCategory(null)}
-          feedback="scale"
-          accessibilityRole="button"
+        <CategoryChip
+          kind="filter"
+          label="All"
           accessibilityLabel="All categories"
-          accessibilityState={{ selected: category === null }}
-        >
-          <Glass
-            variant="light"
-            radius={radius.pill}
-            elevation="none"
-            fixed
-            contentStyle={[
-              styles.allChip,
-              { borderColor: category === null ? colors.ink : colors.solidBorder },
-            ]}
-          >
-            {category === null ? <Icon name="check" size={iconSize.sm} color={colors.ink} /> : null}
-            <AppText variant="bodyStrong">All</AppText>
-          </Glass>
-        </Touchable>
+          selected={category === null}
+          onPress={() => setCategory(null)}
+        />
         {filterIds.map((id) => (
           <CategoryChip
             key={id}
@@ -171,6 +159,7 @@ export function ActivityScreen() {
         <ListCard>
           <ListRow
             title={`${reviewCount} to review`}
+            subtitle="Confirm categories in a tap"
             leading={<IconTile icon="inbox" tone="headsUp" />}
             chevron
             onPress={() => router.push('/review')}
@@ -253,15 +242,8 @@ export function ActivityScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   filterStrip: { marginHorizontal: -layout.screenPadding },
-  filters: { gap: space.sm, paddingHorizontal: layout.screenPadding },
-  allChip: {
-    minHeight: layout.touchTarget,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.xs + 2,
-    paddingHorizontal: space.lg,
-    borderWidth: 2,
-  },
+  // Vertical padding keeps the chips' 48 dp hit slop inside the strip.
+  filters: { gap: space.sm, paddingHorizontal: layout.screenPadding, paddingVertical: space.xxs },
   group: { gap: space.sm, marginTop: space.xs },
   dayHeader: {
     flexDirection: 'row',
